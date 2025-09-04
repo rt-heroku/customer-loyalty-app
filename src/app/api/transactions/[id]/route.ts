@@ -1,0 +1,71 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
+import { query } from '@/lib/db';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const transactionId = parseInt(params.id);
+    if (isNaN(transactionId)) {
+      return NextResponse.json({ error: 'Invalid transaction ID' }, { status: 400 });
+    }
+
+    // Get customer ID
+    const customerResult = await query(
+      'SELECT id FROM customers WHERE user_id = $1',
+      [user.id]
+    );
+
+    if (customerResult.rows.length === 0) {
+      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+    }
+
+    const customerId = customerResult.rows[0].id;
+
+    // Get transaction details
+    const transactionResult = await query(
+      `SELECT t.id, t.total, t.points_earned, t.points_redeemed, t.created_at, t.payment_method
+       FROM transactions t
+       WHERE t.id = $1 AND t.customer_id = $2`,
+      [transactionId, customerId]
+    );
+
+    if (transactionResult.rows.length === 0) {
+      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+    }
+
+    const transaction = transactionResult.rows[0];
+
+    // Get transaction items
+    const itemsResult = await query(
+      `SELECT ti.id, ti.product_name, ti.product_price, ti.quantity, ti.subtotal
+       FROM transaction_items ti
+       WHERE ti.transaction_id = $1
+       ORDER BY ti.id`,
+      [transactionId]
+    );
+
+    return NextResponse.json({
+      transaction: {
+        ...transaction,
+        items: itemsResult.rows
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching transaction details:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+
