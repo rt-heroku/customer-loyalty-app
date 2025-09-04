@@ -1,0 +1,26 @@
+'use client';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { usePathname } from 'next/navigation';
+import AppLayout from './AppLayout';
+
+interface ConditionalLayoutProps {
+  children: React.ReactNode;
+}
+
+export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
+  const { user, loading } = useAuth();
+  const pathname = usePathname();
+
+  // Pages that don't require authentication
+  const publicPages = ['/login', '/register'];
+  const isPublicPage = publicPages.includes(pathname);
+
+  // If it's a public page, render children directly
+  if (isPublicPage) {
+    return <>{children}</>;
+  }
+
+  // For protected pages, use AppLayout which handles authentication
+  return <AppLayout>{children}</AppLayout>;
+}

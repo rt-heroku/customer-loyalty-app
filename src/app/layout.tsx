@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
-import AppLayout from '@/components/layout/AppLayout';
+import ConditionalLayout from '@/components/layout/ConditionalLayout';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -83,9 +83,9 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <AppLayout>
+          <ConditionalLayout>
             {children}
-          </AppLayout>
+          </ConditionalLayout>
           <MobileBottomNav />
         </AuthProvider>
         
