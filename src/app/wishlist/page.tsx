@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import AppLayout from '@/components/layout/AppLayout';
 import { Wishlist } from '@/types/product';
 import { Heart, Share2, Trash2, ShoppingCart, Eye, Users, Lock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -194,20 +193,17 @@ export default function WishlistPage() {
 
   if (loading) {
     return (
-      <AppLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading your wishlists...</p>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your wishlists...</p>
         </div>
-      </AppLayout>
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -596,6 +592,5 @@ export default function WishlistPage() {
           </div>
         )}
       </div>
-    </AppLayout>
   );
 }

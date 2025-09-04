@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import AppLayout from '@/components/layout/AppLayout';
 import ProductGrid from '@/components/products/ProductGrid';
 import ProductList from '@/components/products/ProductList';
 import ProductFilters from '@/components/products/ProductFilters';
@@ -113,8 +112,7 @@ export default function ProductsPage() {
   const hasActiveFilters = Object.keys(filters).length > 0 || searchQuery || (sort.field !== 'name' || sort.direction !== 'asc');
 
   return (
-    <AppLayout>
-      <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -345,6 +343,5 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
   );
 }

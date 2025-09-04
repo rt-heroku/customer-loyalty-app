@@ -17,7 +17,6 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import AppLayout from '@/components/layout/AppLayout';
 
 interface Transaction {
   id: number;
@@ -174,8 +173,7 @@ export default function TransactionsPage() {
   if (!user) return null;
 
   return (
-    <AppLayout>
-      <div className="p-6">
+    <div className="p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -553,6 +551,5 @@ export default function TransactionsPage() {
         </div>
       )}
       </div>
-    </AppLayout>
   );
 }

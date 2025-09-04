@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import AppLayout from '@/components/layout/AppLayout';
 import { 
   Star,
   Gift,
@@ -48,7 +47,7 @@ export default function Dashboard() {
   const pointsToNextTier = nextTier ? tierInfo.pointsToNext : 0;
 
   return (
-    <AppLayout>
+    <>
       {/* Test button for debugging */}
       <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
         <button 
@@ -247,6 +246,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
 }

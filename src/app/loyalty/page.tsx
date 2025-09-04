@@ -20,7 +20,6 @@ import {
   Percent
 } from 'lucide-react';
 import { cn, formatCurrency, formatDate, getLoyaltyTierInfo } from '@/lib/utils';
-import AppLayout from '@/components/layout/AppLayout';
 
 interface PointsData {
   currentBalance: number;
@@ -186,8 +185,7 @@ export default function LoyaltyPage() {
   ];
 
   return (
-    <AppLayout>
-      <div className="p-6">
+    <div className="p-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Loyalty Program</h1>
@@ -618,6 +616,5 @@ export default function LoyaltyPage() {
         </div>
       )}
       </div>
-    </AppLayout>
   );
 }
