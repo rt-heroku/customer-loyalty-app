@@ -9,7 +9,6 @@ interface ConditionalLayoutProps {
 }
 
 export default function ConditionalLayout({ children }: ConditionalLayoutProps) {
-  const { user, loading } = useAuth();
   const pathname = usePathname();
 
   // Pages that don't require authentication
