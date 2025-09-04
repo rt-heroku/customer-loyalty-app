@@ -21,6 +21,7 @@
     "@hookform/resolvers": "^3.3.2",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.0.0",
+    "critters": "^0.0.23",
     "dotenv": "^17.2.1",
     "framer-motion": "^10.16.16",
     "jsonwebtoken": "^9.0.2",
