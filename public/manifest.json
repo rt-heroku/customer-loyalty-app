@@ -1,7 +1,7 @@
 {
   "name": "Customer Loyalty App",
-  "short_name": "Loyalty",
-  "description": "Manage your loyalty program, track points, and access exclusive rewards",
+  "short_name": "LoyaltyApp",
+  "description": "Customer loyalty and rewards management application",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -9,115 +9,53 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
-  "categories": ["business", "lifestyle", "shopping"],
+  "categories": ["business", "productivity"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     },
     {
-      "src": "/icons/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     }
   ],
   "screenshots": [
     {
-      "src": "/screenshots/mobile-dashboard.png",
+      "src": "/screenshot-mobile.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshots/desktop-dashboard.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide"
     }
   ],
   "shortcuts": [
     {
       "name": "Dashboard",
-      "short_name": "Home",
-      "description": "View your loyalty status and recent activity",
+      "short_name": "Dashboard",
+      "description": "View your loyalty dashboard",
       "url": "/dashboard",
       "icons": [
         {
-          "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "Scan QR Code",
-      "short_name": "Scan",
-      "description": "Scan QR codes to earn points",
-      "url": "/scan",
+      "name": "Rewards",
+      "short_name": "Rewards",
+      "description": "View available rewards",
+      "url": "/rewards",
       "icons": [
         {
-          "src": "/icons/shortcut-scan.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Store Locator",
-      "short_name": "Stores",
-      "description": "Find stores near you",
-      "url": "/stores",
-      "icons": [
-        {
-          "src": "/icons/shortcut-stores.png",
-          "sizes": "96x96"
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
         }
       ]
     }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false,
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  }
+  ]
 }

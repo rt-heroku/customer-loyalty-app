@@ -2,415 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Offline - Customer Loyalty App</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
             color: white;
         }
-
-        .offline-container {
+        .container {
             text-align: center;
             max-width: 400px;
-            width: 100%;
-        }
-
-        .offline-icon {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-
-        .offline-icon svg {
-            width: 60px;
-            height: 60px;
-            fill: currentColor;
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
         }
-
         h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 0 0 16px 0;
+            font-size: 24px;
+            font-weight: 600;
         }
-
-        .subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
+        p {
+            margin: 0 0 24px 0;
             opacity: 0.9;
             line-height: 1.5;
         }
-
-        .offline-features {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 25px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .feature-item:hover {
+        .retry-btn {
             background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .feature-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .feature-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 15px;
-            opacity: 0.8;
-        }
-
-        .feature-text {
-            flex: 1;
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            min-width: 120px;
-        }
-
-        .btn-primary {
-            background: rgba(255, 255, 255, 0.9);
-            color: #3b82f6;
-        }
-
-        .btn-primary:hover {
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
-
-        .btn-secondary:hover {
+        .retry-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
-        }
-
-        .connection-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 20px;
-            font-size: 0.9rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .connection-status.show {
-            opacity: 1;
-        }
-
-        .connection-status.online {
-            background: rgba(34, 197, 94, 0.9);
-        }
-
-        .connection-status.offline {
-            background: rgba(239, 68, 68, 0.9);
-        }
-
-        @media (max-width: 480px) {
-            .offline-container {
-                padding: 0 10px;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
-
-        /* Loading animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Haptic feedback simulation */
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Safe area support */
-        @supports (padding: max(0px)) {
-            body {
-                padding-left: max(20px, env(safe-area-inset-left));
-                padding-right: max(20px, env(safe-area-inset-right));
-                padding-top: max(20px, env(safe-area-inset-top));
-                padding-bottom: max(20px, env(safe-area-inset-bottom));
-            }
         }
     </style>
 </head>
 <body>
-    <div class="connection-status" id="connectionStatus">
-        <span id="statusText">Checking connection...</span>
-    </div>
-
-    <div class="offline-container">
-        <div class="offline-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-        </div>
-
+    <div class="container">
+        <div class="icon">📱</div>
         <h1>You're Offline</h1>
-        <p class="subtitle">
-            Don't worry! You can still access your cached data and use some features while offline.
-        </p>
-
-        <div class="offline-features">
-            <div class="feature-item">
-                <svg class="feature-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                <span class="feature-text">View your loyalty points and tier status</span>
-            </div>
-            <div class="feature-item">
-                <svg class="feature-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                <span class="feature-text">Access recent transactions and activity</span>
-            </div>
-            <div class="feature-item">
-                <svg class="feature-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                <span class="feature-text">Browse cached product information</span>
-            </div>
-            <div class="feature-item">
-                <svg class="feature-icon" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
-                <span class="feature-text">Store information and service details</span>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <button class="btn btn-primary" id="retryBtn" onclick="retryConnection()">
-                <span id="retryText">Try Again</span>
-                <span id="retryLoading" class="loading" style="display: none;"></span>
-            </button>
-            <button class="btn btn-secondary" onclick="goToCachedData()">
-                View Cached Data
-            </button>
-        </div>
+        <p>It looks like you're not connected to the internet. Please check your connection and try again.</p>
+        <button class="retry-btn" onclick="window.location.reload()">Try Again</button>
     </div>
-
-    <script>
-        // Connection status management
-        const connectionStatus = document.getElementById('connectionStatus');
-        const statusText = document.getElementById('statusText');
-        const retryBtn = document.getElementById('retryBtn');
-        const retryText = document.getElementById('retryText');
-        const retryLoading = document.getElementById('retryLoading');
-
-        let isOnline = navigator.onLine;
-
-        // Update connection status
-        function updateConnectionStatus() {
-            if (isOnline) {
-                connectionStatus.className = 'connection-status show online';
-                statusText.textContent = 'Back Online!';
-                
-                // Redirect to main app after a short delay
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 2000);
-            } else {
-                connectionStatus.className = 'connection-status show offline';
-                statusText.textContent = 'Currently Offline';
-            }
-        }
-
-        // Check connection
-        function checkConnection() {
-            return fetch('/api/health', { 
-                method: 'HEAD',
-                cache: 'no-cache'
-            }).then(() => {
-                isOnline = true;
-                updateConnectionStatus();
-                return true;
-            }).catch(() => {
-                isOnline = false;
-                updateConnectionStatus();
-                return false;
-            });
-        }
-
-        // Retry connection
-        async function retryConnection() {
-            retryText.style.display = 'none';
-            retryLoading.style.display = 'inline-block';
-            retryBtn.disabled = true;
-
-            try {
-                await checkConnection();
-            } catch (error) {
-                console.error('Connection check failed:', error);
-            } finally {
-                retryText.style.display = 'inline';
-                retryLoading.style.display = 'none';
-                retryBtn.disabled = false;
-            }
-        }
-
-        // Go to cached data
-        function goToCachedData() {
-            // Try to access cached dashboard data
-            if ('caches' in window) {
-                caches.match('/dashboard').then(response => {
-                    if (response) {
-                        window.location.href = '/dashboard';
-                    } else {
-                        alert('No cached data available. Please check your connection and try again.');
-                    }
-                });
-            } else {
-                alert('Caching not supported. Please check your connection and try again.');
-            }
-        }
-
-        // Event listeners
-        window.addEventListener('online', () => {
-            isOnline = true;
-            updateConnectionStatus();
-        });
-
-        window.addEventListener('offline', () => {
-            isOnline = false;
-            updateConnectionStatus();
-        });
-
-        // Initial connection check
-        document.addEventListener('DOMContentLoaded', () => {
-            updateConnectionStatus();
-            
-            // Check connection periodically
-            setInterval(checkConnection, 10000);
-        });
-
-        // Service Worker registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('Service Worker registered:', registration);
-                })
-                .catch(error => {
-                    console.error('Service Worker registration failed:', error);
-                });
-        }
-
-        // Haptic feedback simulation
-        function simulateHapticFeedback() {
-            if ('vibrate' in navigator) {
-                navigator.vibrate(10);
-            }
-        }
-
-        // Add haptic feedback to buttons
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('click', simulateHapticFeedback);
-        });
-
-        // Keyboard navigation support
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                const activeElement = document.activeElement;
-                if (activeElement && activeElement.classList.contains('btn')) {
-                    activeElement.click();
-                }
-            }
-        });
-
-        // Focus management for accessibility
-        retryBtn.focus();
-    </script>
 </body>
 </html>

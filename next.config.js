@@ -304,6 +304,16 @@ const nextConfig = {
     ];
   },
 
+  // Rewrites for PWA
+  async rewrites() {
+    return [
+      {
+        source: '/manifest.json',
+        destination: '/api/manifest',
+      },
+    ];
+  },
+
   // Environment variables
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
