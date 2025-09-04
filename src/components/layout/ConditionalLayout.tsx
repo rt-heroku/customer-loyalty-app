@@ -1,6 +1,5 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import AppLayout from './AppLayout';
 
