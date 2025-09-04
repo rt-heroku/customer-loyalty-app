@@ -125,7 +125,7 @@ export default function RootLayout({
                 // PWA Install Prompt
                 let deferredPrompt;
                 window.addEventListener('beforeinstallprompt', function(e) {
-                  e.preventDefault();
+                  // Don't prevent default immediately - let the browser handle it naturally
                   deferredPrompt = e;
                   
                   // Show install button or notification
@@ -133,15 +133,17 @@ export default function RootLayout({
                   if (installButton) {
                     installButton.style.display = 'block';
                     installButton.addEventListener('click', function() {
-                      deferredPrompt.prompt();
-                      deferredPrompt.userChoice.then(function(choiceResult) {
-                        if (choiceResult.outcome === 'accepted') {
-                          console.log('User accepted the install prompt');
-                        } else {
-                          console.log('User dismissed the install prompt');
-                        }
-                        deferredPrompt = null;
-                      });
+                      if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then(function(choiceResult) {
+                          if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                          } else {
+                            console.log('User dismissed the install prompt');
+                          }
+                          deferredPrompt = null;
+                        });
+                      }
                     });
                   }
                 });

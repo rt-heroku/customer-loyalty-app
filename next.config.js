@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const withPWA = require('next-pwa')({
   dest: 'public',
-  register: true,
+  register: false, // Disable automatic registration
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  buildExcludes: [/sw\.js$/], // Exclude our custom sw.js from being overwritten
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,
