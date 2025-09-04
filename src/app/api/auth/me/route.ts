@@ -24,12 +24,15 @@ export async function GET() {
     const mockUser = {
       id: 1,
       email: 'user@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
       name: 'John Doe',
       role: 'customer',
+      tier: 'Gold',
       isAuthenticated: true
     };
 
-    return NextResponse.json(mockUser);
+    return NextResponse.json({ user: mockUser });
   } catch (error) {
     console.error('Auth me error:', error);
     return NextResponse.json(
