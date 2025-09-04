@@ -268,7 +268,7 @@ export default function ProfilePage() {
           <p className="text-gray-600">Manage your account information and preferences</p>
         </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
