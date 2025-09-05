@@ -127,7 +127,7 @@ export default function ProfilePage() {
                 <div className="flex items-center space-x-6 mb-6">
                   <div className="relative">
                     <div className="w-24 h-24 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-3xl font-bold">
-                      {user.firstName?.[0] || user.name?.[0] || 'U'}
+                      {user.firstName?.[0] || user.email?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <button
                       type="button"
