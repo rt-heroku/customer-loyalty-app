@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, Camera, Lock, Bell, Shield, Download, Trash2, Save, Eye, EyeOff, Check, X, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
