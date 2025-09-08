@@ -9,7 +9,6 @@ import {
   Paperclip, 
   Download, 
   Trash2,
-  Settings,
   History,
   Plus
 } from 'lucide-react';
