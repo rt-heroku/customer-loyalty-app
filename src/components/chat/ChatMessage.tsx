@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { 
   Check, 
   CheckCheck, 
@@ -21,7 +20,6 @@ interface ChatMessageProps {
 }
 
 export default function ChatMessage({ message }: ChatMessageProps) {
-  const [showAttachments, setShowAttachments] = useState(false);
 
   const getStatusIcon = () => {
     switch (message.status) {
