@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     // Prepare request for Mulesoft API
     const mulesoftRequest: MulesoftChatRequest = {
       message,
-      userId: user.id,
+      userId: user.id.toString(),
       sessionId,
       attachments: attachments.map(att => ({
         fileName: att.fileName,
