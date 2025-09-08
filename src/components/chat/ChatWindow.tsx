@@ -7,7 +7,6 @@ import {
   Maximize2, 
   Send, 
   Paperclip, 
-  RotateCcw,
   Download,
   Trash2
 } from 'lucide-react';
