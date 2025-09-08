@@ -7,7 +7,6 @@ import {
   Maximize2, 
   Send, 
   Paperclip, 
-  MoreVertical,
   RotateCcw,
   Download,
   Trash2
