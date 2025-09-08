@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ChatProvider } from '@/contexts/ChatContext';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
+import ChatLayout from '@/components/chat/ChatLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -83,10 +85,13 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <ConditionalLayout>
-            {children}
-          </ConditionalLayout>
-          <MobileBottomNav />
+          <ChatProvider>
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+            <MobileBottomNav />
+            <ChatLayout />
+          </ChatProvider>
         </AuthProvider>
         
         {/* PWA Installation Script */}

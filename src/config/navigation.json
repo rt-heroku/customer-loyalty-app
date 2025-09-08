@@ -37,6 +37,13 @@
       ]
     },
     {
+      "id": "chat",
+      "label": "AI Assistant",
+      "icon": "MessageCircle",
+      "href": "/chat",
+      "description": "Chat with our AI-powered support agent"
+    },
+    {
       "id": "profile",
       "label": "Profile",
       "icon": "User",
@@ -51,9 +58,9 @@
       "submenu": [
         {
           "id": "chat",
-          "label": "Live Chat",
+          "label": "AI Assistant",
           "icon": "MessageCircle",
-          "href": "/support/chat",
+          "href": "/chat",
           "description": "Chat with our AI-powered support agent"
         },
         {
