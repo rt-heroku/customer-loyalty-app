@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from '@/components/chat/ChatMessage';
 import TypingIndicator from '@/components/chat/TypingIndicator';
 import FileUploadModal from '@/components/chat/FileUploadModal';
-import { ChatMessage as ChatMessageType, ChatSession } from '@/types/chat';
+import { ChatSession } from '@/types/chat';
 
 export default function ChatPage() {
   const { user } = useAuth();
