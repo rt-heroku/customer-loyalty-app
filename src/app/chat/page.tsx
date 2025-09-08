@@ -7,7 +7,6 @@ import {
   MessageCircle, 
   Send, 
   Paperclip, 
-  RotateCcw, 
   Download, 
   Trash2,
   Settings,
