@@ -31,7 +31,6 @@ interface ChatWindowState {
 export default function ChatWindow({ 
   isOpen, 
   onClose, 
-  onMaximize, 
   className = '' 
 }: ChatWindowProps) {
   const [state, setState] = useState<ChatWindowState>({

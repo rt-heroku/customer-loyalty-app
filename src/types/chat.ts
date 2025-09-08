@@ -112,7 +112,6 @@ export interface ChatState {
 export interface ChatWindowProps {
   isOpen: boolean;
   onClose: () => void;
-  onMaximize: () => void;
   className?: string;
 }
 
