@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       message,
       userId: user.id.toString(),
       sessionId,
-      attachments: attachments.map(att => ({
+      attachments: attachments.map((att: any) => ({
         fileName: att.fileName,
         mimeType: att.mimeType,
         fileData: att.fileData || '' // This should be base64 encoded file data
