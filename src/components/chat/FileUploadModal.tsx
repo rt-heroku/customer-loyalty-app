@@ -92,7 +92,7 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
       const file = newFiles[index];
       
       // Clean up preview URL
-      if (file.preview) {
+      if (file?.preview) {
         URL.revokeObjectURL(file.preview);
       }
       
