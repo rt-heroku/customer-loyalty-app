@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ChatState, ChatSettings, ChatSession } from '@/types/chat';
+import { ChatState, ChatSettings } from '@/types/chat';
 
 interface ChatContextType {
   // State
