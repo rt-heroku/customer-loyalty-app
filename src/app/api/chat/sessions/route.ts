@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { pool } from '@/lib/db';
+import { query } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const result = await pool.query(
+    const result = await query(
       'SELECT * FROM get_user_ai_chat_sessions($1, $2, $3)',
       [user.id, limit, offset]
     );
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
     const { title } = await request.json();
 
-    const result = await pool.query(
+    const result = await query(
       'SELECT create_ai_chat_session($1, $2) as session_id',
       [user.id, title]
     );

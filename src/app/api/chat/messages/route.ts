@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { pool } from '@/lib/db';
+import { query } from '@/lib/db';
 import { MulesoftChatRequest, MulesoftChatResponse } from '@/types/chat';
 
 // Mulesoft API integration function
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify session belongs to user
-    const sessionResult = await pool.query(
+    const sessionResult = await query(
       'SELECT id FROM ai_chat_sessions WHERE id = $1 AND user_id = $2',
       [sessionId, user.id]
     );
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add user message to database
-    const messageResult = await pool.query(
+    const messageResult = await query(
       'SELECT add_ai_chat_message($1, $2, $3, $4, $5, $6) as message_id',
       [sessionId, user.id, message, true, 'text', '{}']
     );
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
     // Add attachments if any
     for (const attachment of attachments) {
-      await pool.query(
+      await query(
         'SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)',
         [
           userMessageId,
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get chat settings
-    const settingsResult = await pool.query(
+    const settingsResult = await query(
       'SELECT get_system_setting_or_default($1, $2) as value',
       ['chat_api_url', 'https://your-mulesoft-api.com/chat/v1/messages']
     );
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     if (!mulesoftResponse.success) {
       // Update user message status to failed
-      await pool.query(
+      await query(
         'SELECT update_ai_chat_message_status($1, $2)',
         [userMessageId, 'failed']
       );
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add AI response to database
-    const aiMessageResult = await pool.query(
+    const aiMessageResult = await query(
       'SELECT add_ai_chat_message($1, $2, $3, $4, $5, $6) as message_id',
       [
         sessionId,
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
         // In a real implementation, you'd save the file data and get a file path
         const filePath = `/attachments/ai/${attachment.fileName}`;
         
-        await pool.query(
+        await query(
           'SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)',
           [
             aiMessageId,
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user message status to delivered
-    await pool.query(
+    await query(
       'SELECT update_ai_chat_message_status($1, $2)',
       [userMessageId, 'delivered']
     );

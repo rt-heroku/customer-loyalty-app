@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { pool } from '@/lib/db';
+import { query } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,14 +16,14 @@ export async function GET(request: NextRequest) {
 
     // Get all chat-related settings
     const settings = await Promise.all([
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_enabled', 'true']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_api_url', 'https://your-mulesoft-api.com/chat/v1/messages']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_floating_button', 'true']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_max_file_size', '10485760']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_allowed_file_types', 'image/jpeg,image/png,image/gif,application/pdf,text/plain']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_typing_indicator_delay', '1000']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_message_retry_attempts', '3']),
-      pool.query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_session_timeout', '3600000'])
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_enabled', 'true']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_api_url', 'https://your-mulesoft-api.com/chat/v1/messages']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_floating_button', 'true']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_max_file_size', '10485760']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_allowed_file_types', 'image/jpeg,image/png,image/gif,application/pdf,text/plain']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_typing_indicator_delay', '1000']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_message_retry_attempts', '3']),
+      query('SELECT get_system_setting_or_default($1, $2) as value', ['chat_session_timeout', '3600000'])
     ]);
 
     const chatSettings = {
@@ -78,56 +78,56 @@ export async function PUT(request: NextRequest) {
     
     if (chatEnabled !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_enabled', chatEnabled.toString(), 'Enable/disable chat functionality', 'chat', user.email])
       );
     }
     
     if (chatApiUrl !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_api_url', chatApiUrl, 'Mulesoft chat API endpoint', 'chat', user.email])
       );
     }
     
     if (chatFloatingButton !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_floating_button', chatFloatingButton.toString(), 'Show floating chat button', 'chat', user.email])
       );
     }
     
     if (maxFileSize !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_max_file_size', maxFileSize.toString(), 'Maximum file size in bytes', 'chat', user.email])
       );
     }
     
     if (allowedFileTypes !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_allowed_file_types', allowedFileTypes.join(','), 'Allowed file types for chat attachments', 'chat', user.email])
       );
     }
     
     if (typingIndicatorDelay !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_typing_indicator_delay', typingIndicatorDelay.toString(), 'Delay in ms before showing typing indicator', 'chat', user.email])
       );
     }
     
     if (messageRetryAttempts !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_message_retry_attempts', messageRetryAttempts.toString(), 'Number of retry attempts for failed messages', 'chat', user.email])
       );
     }
     
     if (sessionTimeout !== undefined) {
       updates.push(
-        pool.query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
+        query('SELECT set_system_setting($1, $2, $3, $4, $5)', 
           ['chat_session_timeout', sessionTimeout.toString(), 'Session timeout in ms', 'chat', user.email])
       );
     }

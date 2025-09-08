@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { pool } from '@/lib/db';
+import { query } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
@@ -19,7 +19,7 @@ export async function GET(
 
     const sessionId = params.id;
 
-    const result = await pool.query(
+    const result = await query(
       'SELECT * FROM get_ai_chat_session_with_messages($1, $2)',
       [sessionId, user.id]
     );
@@ -78,7 +78,7 @@ export async function DELETE(
     const sessionId = params.id;
 
     // Verify session belongs to user
-    const sessionResult = await pool.query(
+    const sessionResult = await query(
       'SELECT id FROM ai_chat_sessions WHERE id = $1 AND user_id = $2',
       [sessionId, user.id]
     );
@@ -88,7 +88,7 @@ export async function DELETE(
     }
 
     // Delete session (cascade will delete messages and attachments)
-    await pool.query(
+    await query(
       'DELETE FROM ai_chat_sessions WHERE id = $1',
       [sessionId]
     );
