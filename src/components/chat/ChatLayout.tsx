@@ -9,7 +9,6 @@ export default function ChatLayout() {
     chatState, 
     openChat, 
     closeChat, 
-    minimizeChat, 
     maximizeChat,
     shouldShowFloatingButton 
   } = useChat();
@@ -19,7 +18,6 @@ export default function ChatLayout() {
       <ChatWindow
         isOpen={chatState.isOpen}
         onClose={closeChat}
-        onMinimize={minimizeChat}
         onMaximize={maximizeChat}
       />
       {shouldShowFloatingButton && (

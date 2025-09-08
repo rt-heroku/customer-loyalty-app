@@ -31,7 +31,6 @@ interface ChatWindowState {
 export default function ChatWindow({ 
   isOpen, 
   onClose, 
-  onMinimize, 
   onMaximize, 
   className = '' 
 }: ChatWindowProps) {
