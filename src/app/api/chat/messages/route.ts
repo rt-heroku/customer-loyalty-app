@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
         fileData: att.fileData || '' // This should be base64 encoded file data
       })),
       metadata: {
-        userAgent: request.headers.get('user-agent') || undefined,
+        userAgent: request.headers.get('user-agent') || '',
         timestamp: new Date().toISOString(),
         source: 'web'
       }
