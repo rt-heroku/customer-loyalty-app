@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
-import { useAuth } from '@/contexts/AuthContext';
 import { 
   MessageCircle, 
   Send, 
@@ -19,7 +18,6 @@ import FileUploadModal from '@/components/chat/FileUploadModal';
 import { ChatSession } from '@/types/chat';
 
 export default function ChatPage() {
-  const { user } = useAuth();
   const { 
     chatState, 
     sendMessage, 
