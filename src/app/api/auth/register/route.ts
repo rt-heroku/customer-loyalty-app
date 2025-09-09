@@ -80,8 +80,11 @@ export async function POST(request: NextRequest) {
 
       const user = userResult.rows[0];
 
+      console.log('User created:', user);
+      console.log('existingCustomer.rows.length', existingCustomer.rows.length);
       // If customer exists, update the user_id; otherwise create new customer record
       if (existingCustomer.rows.length > 0) {
+        console.log('Updating existing customer with new user_id');
         // Update existing customer with new user_id
         await query(
           `UPDATE customers 
@@ -100,6 +103,7 @@ export async function POST(request: NextRequest) {
           ]
         );
       } else {
+        console.log('Creating new customer record');
         // Create new customer record
         await query(
           `INSERT INTO customers (user_id, name, email, phone, points, total_spent, visit_count, created_at, updated_at, marketing_consent, member_status, enrollment_date, member_type, customer_tier)
@@ -119,14 +123,14 @@ export async function POST(request: NextRequest) {
           ]
         );
       }
-
+      console.log('Logging registration activity');
       // Log registration activity
       await query(
         `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
          VALUES ($1, $2, $3, $4)`,
         [user.id, 'registration', 'User registered successfully', clientIp]
       );
-
+      console.log('Registration activity logged');
       return NextResponse.json({
         success: true,
         message: 'Registration successful',
@@ -138,8 +142,9 @@ export async function POST(request: NextRequest) {
           role: user.role,
         },
       });
-
+      console.log('Registration successful'); 
     } catch (error) {
+      console.error('Registration error:', error);
       throw error;
     }
 
