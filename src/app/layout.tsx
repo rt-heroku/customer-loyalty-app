@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ChatProvider } from '@/contexts/ChatContext';
+import { SystemSettingsProvider } from '@/contexts/SystemSettingsContext';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
 import MobileBottomNav from '@/components/layout/MobileBottomNav';
 import ChatLayout from '@/components/chat/ChatLayout';
@@ -85,13 +86,15 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <AuthProvider>
-          <ChatProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-            <MobileBottomNav />
-            <ChatLayout />
-          </ChatProvider>
+          <SystemSettingsProvider>
+            <ChatProvider>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+              <MobileBottomNav />
+              <ChatLayout />
+            </ChatProvider>
+          </SystemSettingsProvider>
         </AuthProvider>
         
         {/* PWA Installation Script */}
