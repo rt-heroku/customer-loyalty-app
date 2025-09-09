@@ -106,8 +106,8 @@ export async function POST(request: NextRequest) {
         console.log('Creating new customer record');
         // Create new customer record
         await query(
-          `INSERT INTO customers (user_id, name, email, phone, points, total_spent, visit_count, created_at, updated_at, marketing_consent, member_status, enrollment_date, member_type, customer_tier)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8, $9, NOW(), $10, $11)`,
+          `INSERT INTO customers (user_id, loyalty_number, name, email, phone, points, total_spent, visit_count, created_at, updated_at, marketing_consent, member_status, enrollment_date, member_type, customer_tier)
+           VALUES ($1, generate_loyalty_number(), $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8, $9, NOW(), $10, $11)`,
           [
             user.id,
             `${firstName} ${lastName}`,
