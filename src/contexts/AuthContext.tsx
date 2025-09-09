@@ -103,6 +103,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(data.user);
         return { success: true };
       } else {
+        // Handle user already exists case with redirect
+        if (data.redirectTo) {
+          return { 
+            success: false, 
+            error: data.message || data.error || 'Registration failed',
+            redirectTo: data.redirectTo
+          };
+        }
         return { success: false, error: data.error || 'Registration failed' };
       }
     } catch (error) {

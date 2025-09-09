@@ -15,7 +15,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   const { user, loading } = useAuth();
 
   // Pages that don't require authentication
-  const publicPages = ['/login', '/register'];
+  const publicPages = ['/login', '/register', '/forgot-password'];
   const isPublicPage = publicPages.includes(pathname);
 
   // Handle main page redirect

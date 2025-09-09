@@ -81,7 +81,12 @@ export default function RegisterPage() {
     if (result.success) {
       router.push('/dashboard');
     } else {
-      setError(result.error || 'Registration failed');
+      // Handle redirect to forgot password if user already exists
+      if (result.redirectTo) {
+        router.push(result.redirectTo);
+      } else {
+        setError(result.error || 'Registration failed');
+      }
     }
 
     setIsLoading(false);

@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     const { email, password, firstName, lastName, phone } = validation.data;
     const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
-    // Check if user already exists
+    // Check if user already exists in users table
     const existingUser = await query(
       'SELECT id FROM users WHERE email = $1',
       [email]
@@ -41,10 +41,20 @@ export async function POST(request: NextRequest) {
 
     if (existingUser.rows.length > 0) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { 
+          error: 'User already exists',
+          redirectTo: '/forgot-password',
+          message: 'An account with this email already exists. Please use the forgot password feature to reset your password.'
+        },
         { status: 409 }
       );
     }
+
+    // Check if email exists in customers table
+    const existingCustomer = await query(
+      'SELECT id, user_id FROM customers WHERE email = $1',
+      [email]
+    );
 
     // Hash password
     const saltRounds = 12;
@@ -70,24 +80,45 @@ export async function POST(request: NextRequest) {
 
       const user = userResult.rows[0];
 
-      // Create customer record
-      await query(
-        `INSERT INTO customers (user_id, name, email, phone, points, total_spent, visit_count, created_at, updated_at, marketing_consent, member_status, enrollment_date, member_type, customer_tier)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8, $9, NOW(), $10, $11)`,
-        [
-          user.id,
-          `${firstName} ${lastName}`,
-          email,
-          phone || null,
-          0, // Starting points
-          '0.00', // Starting total spent
-          0, // Starting visit count
-          validation.data.marketingConsent,
-          'Active',
-          'Individual',
-          'Bronze', // Starting tier
-        ]
-      );
+      // If customer exists, update the user_id; otherwise create new customer record
+      if (existingCustomer.rows.length > 0) {
+        // Update existing customer with new user_id
+        await query(
+          `UPDATE customers 
+           SET user_id = $1, 
+               name = $2, 
+               phone = $3, 
+               marketing_consent = $4,
+               updated_at = NOW()
+           WHERE email = $5`,
+          [
+            user.id,
+            `${firstName} ${lastName}`,
+            phone || null,
+            validation.data.marketingConsent,
+            email
+          ]
+        );
+      } else {
+        // Create new customer record
+        await query(
+          `INSERT INTO customers (user_id, name, email, phone, points, total_spent, visit_count, created_at, updated_at, marketing_consent, member_status, enrollment_date, member_type, customer_tier)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8, $9, NOW(), $10, $11)`,
+          [
+            user.id,
+            `${firstName} ${lastName}`,
+            email,
+            phone || null,
+            0, // Starting points
+            '0.00', // Starting total spent
+            0, // Starting visit count
+            validation.data.marketingConsent,
+            'Active',
+            'Individual',
+            'Bronze', // Starting tier
+          ]
+        );
+      }
 
       // Log registration activity
       await query(
