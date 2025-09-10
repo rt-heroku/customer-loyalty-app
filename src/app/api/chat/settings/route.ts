@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { 
   getSystemSettingWithDefault, 
-  setSystemSetting, 
-  getSystemSettingsByCategory 
+  setSystemSetting
 } from '@/lib/system-settings';
 
 export async function GET(request: NextRequest) {

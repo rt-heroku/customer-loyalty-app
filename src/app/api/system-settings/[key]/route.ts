@@ -5,7 +5,6 @@ import {
   getSystemSettingWithDefault,
   setSystemSetting,
   deleteSystemSetting,
-  systemSettingExists,
   getSystemSettingAsType,
   setSystemSettingWithType
 } from '@/lib/system-settings';

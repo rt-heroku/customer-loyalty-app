@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import {
   getSystemSetting,
-  getSystemSettingWithDefault,
   setSystemSetting,
   getSystemSettingsByCategory,
   getAllSystemSettings,
   deleteSystemSetting,
-  systemSettingExists,
   getSystemSettingAsType,
-  setSystemSettingWithType,
-  SYSTEM_SETTING_KEYS
+  setSystemSettingWithType
 } from '@/lib/system-settings';
 
 /**

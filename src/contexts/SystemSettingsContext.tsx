@@ -1,20 +1,12 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import {
-  getSystemSetting,
-  getSystemSettingWithDefault,
-  setSystemSetting,
-  getSystemSettingsByCategory,
-  getAllSystemSettings,
-  deleteSystemSetting,
-  systemSettingExists,
-  getSystemSettingAsType,
-  setSystemSettingWithType,
-  initializeDefaultSettings,
-  SystemSettingOptions,
-  SystemSettingKey
-} from '@/lib/system-settings';
+
+export interface SystemSettingOptions {
+  description?: string;
+  category?: 'general' | 'pos' | 'loyalty' | 'inventory' | 'email' | 'integration' | 'chat';
+  user?: string;
+}
 
 interface SystemSettingsContextType {
   // Core functions
@@ -52,32 +44,16 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize default settings on mount
-  useEffect(() => {
-    const initializeSettings = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        await initializeDefaultSettings();
-        await refreshCache();
-      } catch (err) {
-        console.error('Failed to initialize system settings:', err);
-        setError('Failed to initialize system settings');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initializeSettings();
-  }, []);
-
   // Refresh cache by loading all settings
   const refreshCache = useCallback(async () => {
     try {
-      const allSettings = await getAllSystemSettings();
+      const response = await fetch('/api/system-settings');
+      if (!response.ok) throw new Error('Failed to fetch settings');
+      
+      const data = await response.json();
       const newCache = new Map<string, string>();
       
-      allSettings.forEach(setting => {
+      data.settings?.forEach((setting: any) => {
         newCache.set(setting.key, setting.value);
       });
       
@@ -88,11 +64,33 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
     }
   }, []);
 
+  // Initialize settings on mount
+  useEffect(() => {
+    const initializeSettings = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        await refreshCache();
+      } catch (err) {
+        console.error('Failed to initialize system settings:', err);
+        setError('Failed to initialize system settings');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeSettings();
+  }, [refreshCache]);
+
   // Core functions
   const getSetting = useCallback(async (key: string): Promise<string | null> => {
     try {
       setError(null);
-      const value = await getSystemSetting(key);
+      const response = await fetch(`/api/system-settings/${key}`);
+      if (!response.ok) throw new Error('Failed to fetch setting');
+      
+      const data = await response.json();
+      const value = data.value;
       
       // Update cache
       if (value !== null) {
@@ -110,7 +108,11 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const getSettingWithDefault = useCallback(async (key: string, defaultValue: string): Promise<string> => {
     try {
       setError(null);
-      const value = await getSystemSettingWithDefault(key, defaultValue);
+      const response = await fetch(`/api/system-settings/${key}?default=${encodeURIComponent(defaultValue)}`);
+      if (!response.ok) throw new Error('Failed to fetch setting');
+      
+      const data = await response.json();
+      const value = data.value || defaultValue;
       
       // Update cache
       setCachedSettings(prev => new Map(prev.set(key, value)));
@@ -130,14 +132,18 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   ): Promise<boolean> => {
     try {
       setError(null);
-      const success = await setSystemSetting(key, value, options);
+      const response = await fetch(`/api/system-settings/${key}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value, ...options })
+      });
       
-      if (success) {
-        // Update cache
-        setCachedSettings(prev => new Map(prev.set(key, value)));
-      }
+      if (!response.ok) throw new Error('Failed to set setting');
       
-      return success;
+      // Update cache
+      setCachedSettings(prev => new Map(prev.set(key, value)));
+      
+      return true;
     } catch (err) {
       console.error(`Failed to set setting '${key}':`, err);
       setError(`Failed to set setting '${key}'`);
@@ -149,7 +155,11 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const getSettingsByCategory = useCallback(async (category: string) => {
     try {
       setError(null);
-      return await getSystemSettingsByCategory(category);
+      const response = await fetch(`/api/system-settings?category=${category}`);
+      if (!response.ok) throw new Error('Failed to fetch settings');
+      
+      const data = await response.json();
+      return data.settings || [];
     } catch (err) {
       console.error(`Failed to get settings for category '${category}':`, err);
       setError(`Failed to get settings for category '${category}'`);
@@ -160,7 +170,11 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const getAllSettings = useCallback(async () => {
     try {
       setError(null);
-      return await getAllSystemSettings();
+      const response = await fetch('/api/system-settings');
+      if (!response.ok) throw new Error('Failed to fetch settings');
+      
+      const data = await response.json();
+      return data.settings || [];
     } catch (err) {
       console.error('Failed to get all settings:', err);
       setError('Failed to get all settings');
@@ -171,18 +185,19 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const deleteSetting = useCallback(async (key: string): Promise<boolean> => {
     try {
       setError(null);
-      const success = await deleteSystemSetting(key);
+      const response = await fetch(`/api/system-settings/${key}`, { method: 'DELETE' });
       
-      if (success) {
+      if (response.ok) {
         // Remove from cache
         setCachedSettings(prev => {
           const newCache = new Map(prev);
           newCache.delete(key);
           return newCache;
         });
+        return true;
       }
       
-      return success;
+      return false;
     } catch (err) {
       console.error(`Failed to delete setting '${key}':`, err);
       setError(`Failed to delete setting '${key}'`);
@@ -193,7 +208,8 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   const settingExists = useCallback(async (key: string): Promise<boolean> => {
     try {
       setError(null);
-      return await systemSettingExists(key);
+      const response = await fetch(`/api/system-settings/${key}`);
+      return response.ok;
     } catch (err) {
       console.error(`Failed to check if setting '${key}' exists:`, err);
       setError(`Failed to check if setting '${key}' exists`);
@@ -202,14 +218,18 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   }, []);
 
   // Typed functions
-  const getSettingAsType = useCallback(async <T>(
+  const getSettingAsType = useCallback(async function<T>(
     key: string,
     type: 'string' | 'number' | 'boolean' | 'json',
     defaultValue: T
-  ): Promise<T> => {
+  ): Promise<T> {
     try {
       setError(null);
-      return await getSystemSettingAsType(key, type, defaultValue);
+      const response = await fetch(`/api/system-settings/${key}?type=${type}`);
+      if (!response.ok) throw new Error('Failed to fetch setting');
+      
+      const data = await response.json();
+      return data.value !== undefined ? data.value : defaultValue;
     } catch (err) {
       console.error(`Failed to get setting '${key}' as type '${type}':`, err);
       setError(`Failed to get setting '${key}' as type '${type}'`);
@@ -225,32 +245,35 @@ export function SystemSettingsProvider({ children }: SystemSettingsProviderProps
   ): Promise<boolean> => {
     try {
       setError(null);
-      const success = await setSystemSettingWithType(key, value, type, options);
+      const response = await fetch(`/api/system-settings/${key}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value, type, ...options })
+      });
       
-      if (success) {
-        // Update cache with string representation
-        let stringValue: string;
-        switch (type) {
-          case 'string':
-            stringValue = String(value);
-            break;
-          case 'number':
-            stringValue = String(Number(value));
-            break;
-          case 'boolean':
-            stringValue = String(Boolean(value));
-            break;
-          case 'json':
-            stringValue = JSON.stringify(value);
-            break;
-          default:
-            stringValue = String(value);
-        }
-        
-        setCachedSettings(prev => new Map(prev.set(key, stringValue)));
+      if (!response.ok) throw new Error('Failed to set setting');
+      
+      // Update cache with string representation
+      let stringValue: string;
+      switch (type) {
+        case 'string':
+          stringValue = String(value);
+          break;
+        case 'number':
+          stringValue = String(Number(value));
+          break;
+        case 'boolean':
+          stringValue = String(Boolean(value));
+          break;
+        case 'json':
+          stringValue = JSON.stringify(value);
+          break;
+        default:
+          stringValue = String(value);
       }
       
-      return success;
+      setCachedSettings(prev => new Map(prev.set(key, stringValue)));
+      return true;
     } catch (err) {
       console.error(`Failed to set setting '${key}' with type '${type}':`, err);
       setError(`Failed to set setting '${key}' with type '${type}'`);
