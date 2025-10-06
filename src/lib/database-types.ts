@@ -64,11 +64,9 @@ export interface Product {
   updated_at: Timestamp;
   sku?: string;
   product_type?: string;
-  laptop_size?: string;
   brand?: string;
   collection?: string;
   material?: string;
-  gender?: string;
   color?: string;
   description?: string;
   dimensions?: string;

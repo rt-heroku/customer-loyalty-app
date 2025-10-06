@@ -10,10 +10,8 @@ export interface Product {
   stockQuantity: number;
   stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pre_order';
   productType: string;
-  laptopSize: string;
   collection: string;
   material: string;
-  gender: string;
   color: string;
   dimensions: string;
   weight: number;
@@ -75,7 +73,6 @@ export interface ProductFilter {
     | undefined;
   stockStatus?: string[] | undefined;
   productType?: string | undefined;
-  gender?: string | undefined;
   color?: string | undefined;
   material?: string | undefined;
 }
