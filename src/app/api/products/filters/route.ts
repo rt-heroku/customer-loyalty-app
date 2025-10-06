@@ -37,69 +37,31 @@ export async function GET(_request: NextRequest) {
     `;
     const priceRangeResult = await query(priceRangeQuery);
 
-    // Get stock status options
+    // Get stock status options (based on stock quantity)
     const stockStatusQuery = `
       SELECT 
-        stock_status,
+        CASE 
+          WHEN stock > 0 THEN 'in_stock'
+          WHEN stock <= 0 THEN 'out_of_stock'
+          ELSE 'unknown'
+        END as stock_status,
         COUNT(*) as product_count
       FROM products
-      WHERE stock_status IS NOT NULL
-      GROUP BY stock_status
+      WHERE stock IS NOT NULL
+      GROUP BY 
+        CASE 
+          WHEN stock > 0 THEN 'in_stock'
+          WHEN stock <= 0 THEN 'out_of_stock'
+          ELSE 'unknown'
+        END
       ORDER BY product_count DESC
     `;
     const stockStatusResult = await query(stockStatusQuery);
 
-    // Get rating options
-    const ratingQuery = `
-      SELECT 
-        CASE 
-          WHEN rating >= 4.5 THEN '4.5+'
-          WHEN rating >= 4.0 THEN '4.0+'
-          WHEN rating >= 3.5 THEN '3.5+'
-          WHEN rating >= 3.0 THEN '3.0+'
-          ELSE 'Any'
-        END as rating_range,
-        COUNT(*) as product_count
-      FROM products
-      WHERE rating IS NOT NULL
-      GROUP BY 
-        CASE 
-          WHEN rating >= 4.5 THEN '4.5+'
-          WHEN rating >= 4.0 THEN '4.0+'
-          WHEN rating >= 3.5 THEN '3.5+'
-          WHEN rating >= 3.0 THEN '3.0+'
-          ELSE 'Any'
-        END
-      ORDER BY 
-        CASE rating_range
-          WHEN '4.5+' THEN 1
-          WHEN '4.0+' THEN 2
-          WHEN '3.5+' THEN 3
-          WHEN '3.0+' THEN 4
-          ELSE 5
-        END
-    `;
-    const ratingResult = await query(ratingQuery);
-
-    // Get popular tags
-    const tagsQuery = `
-      SELECT 
-        unnest(tags) as tag,
-        COUNT(*) as product_count
-      FROM products
-      WHERE tags IS NOT NULL AND array_length(tags, 1) > 0
-      GROUP BY unnest(tags)
-      ORDER BY product_count DESC
-      LIMIT 20
-    `;
-    const tagsResult = await query(tagsQuery);
-
-    // Get on-sale and new product counts
+    // Get feature counts (only featured exists in database)
     const featureCountsQuery = `
       SELECT 
-        COUNT(*) FILTER (WHERE is_on_sale = true) as on_sale_count,
-        COUNT(*) FILTER (WHERE is_new = true) as new_count,
-        COUNT(*) FILTER (WHERE is_featured = true) as featured_count
+        COUNT(*) FILTER (WHERE featured = true) as featured_count
       FROM products
     `;
     const featureCountsResult = await query(featureCountsQuery);
@@ -130,22 +92,7 @@ export async function GET(_request: NextRequest) {
           .replace(/\b\w/g, (l: string) => l.toUpperCase()),
         count: parseInt(row.product_count),
       })),
-      ratings: ratingResult.rows.map((row: any) => ({
-        value:
-          row.rating_range === 'Any'
-            ? 0
-            : parseFloat(row.rating_range.replace('+', '')),
-        label: row.rating_range,
-        count: parseInt(row.product_count),
-      })),
-      tags: tagsResult.rows.map((row: any) => ({
-        value: row.tag,
-        label: row.tag,
-        count: parseInt(row.product_count),
-      })),
       features: {
-        onSale: parseInt(featureCountsResult.rows[0]?.on_sale_count || '0'),
-        new: parseInt(featureCountsResult.rows[0]?.new_count || '0'),
         featured: parseInt(featureCountsResult.rows[0]?.featured_count || '0'),
       },
     };

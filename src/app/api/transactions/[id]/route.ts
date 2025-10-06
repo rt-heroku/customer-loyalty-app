@@ -61,10 +61,31 @@ export async function GET(
       [transactionId]
     );
 
+    // Get transaction vouchers
+    const vouchersResult = await query(
+      `SELECT 
+        tv.id,
+        tv.applied_amount,
+        tv.discount_amount,
+        cv.voucher_code,
+        cv.name as voucher_name,
+        cv.voucher_type,
+        cv.face_value,
+        cv.discount_percent,
+        cv.image_url,
+        cv.description
+       FROM transaction_vouchers tv
+       JOIN customer_vouchers cv ON tv.voucher_id = cv.id
+       WHERE tv.transaction_id = $1
+       ORDER BY tv.id`,
+      [transactionId]
+    );
+
     return NextResponse.json({
       transaction: {
         ...transaction,
         items: itemsResult.rows,
+        vouchers: vouchersResult.rows,
       },
     });
   } catch (error) {

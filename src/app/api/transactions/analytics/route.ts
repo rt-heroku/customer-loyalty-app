@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+    console.log('User ID: ', user.id);
     // Get customer ID
     const customerResult = await query(
       'SELECT id FROM customers WHERE user_id = $1',

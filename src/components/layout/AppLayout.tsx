@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 import Sidebar from './Sidebar';
 import TopNav from './TopNav';
 
@@ -34,6 +35,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
     }
   }, []);
 
+  // Debug logging
+  useEffect(() => {
+    console.log('AppLayout isSidebarOpen state:', isSidebarOpen);
+  }, [isSidebarOpen]);
+
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !user) {
@@ -62,7 +68,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main content area */}
-      <div className="lg:ml-80">
+      <div className={cn(
+        'transition-all duration-300',
+        isSidebarOpen ? 'lg:ml-80' : 'lg:ml-0'
+      )}>
         {/* Top navigation */}
         <TopNav
           onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)}

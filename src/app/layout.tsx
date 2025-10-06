@@ -155,8 +155,15 @@ export default function RootLayout({
               (function() {
                 if ('serviceWorker' in navigator) {
                   window.addEventListener('load', function() {
-                    navigator.serviceWorker.register('/sw.js')
-                      .then(function(registration) {
+                    // Clear any existing service workers first
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                      for(let registration of registrations) {
+                        registration.unregister();
+                      }
+                    }).then(function() {
+                      // Register new service worker
+                      return navigator.serviceWorker.register('/sw.js');
+                    }).then(function(registration) {
                         console.log('SW registered: ', registration);
                         
                         // Handle updates
@@ -173,9 +180,12 @@ export default function RootLayout({
                             });
                           }
                         });
-                      })
-                      .catch(function(registrationError) {
+                      }).catch(function(registrationError) {
                         console.log('SW registration failed: ', registrationError);
+                        // Don't show error if it's just a 404 (SW file doesn't exist)
+                        if (!registrationError.message.includes('404')) {
+                          console.warn('Service Worker registration failed, continuing without SW');
+                        }
                       });
                   });
                 }
@@ -257,6 +267,25 @@ export default function RootLayout({
                     }, 0);
                   });
                 }
+
+                // Cache clearing utility
+                window.clearAppCache = function() {
+                  if ('caches' in window) {
+                    caches.keys().then(function(cacheNames) {
+                      return Promise.all(
+                        cacheNames.map(function(cacheName) {
+                          console.log('Clearing cache:', cacheName);
+                          return caches.delete(cacheName);
+                        })
+                      );
+                    }).then(function() {
+                      console.log('All caches cleared, reloading...');
+                      window.location.reload(true);
+                    });
+                  } else {
+                    window.location.reload(true);
+                  }
+                };
               })();
             `,
           }}

@@ -111,8 +111,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
         const isInWishlist = wishlistItems.has(product.id);
         const isLoading = loadingStates.has(product.id);
         const primaryImage =
-          product.images.find(img => img.isPrimary) || product.images[0];
-
+          product.images.find(img => img.isPrimary || product.images[0]);
         return (
           <div
             key={product.id}

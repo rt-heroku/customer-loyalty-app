@@ -16,15 +16,13 @@ export async function GET(request: NextRequest) {
       SELECT DISTINCT
         p.name,
         p.category,
-        p.brand,
-        p.tags
+        p.brand
       FROM products p
       WHERE 
         p.name ILIKE $1 
         OR p.description ILIKE $1 
         OR p.category ILIKE $1 
         OR p.brand ILIKE $1
-        OR p.tags @> $2
       ORDER BY 
         CASE 
           WHEN p.name ILIKE $1 THEN 1

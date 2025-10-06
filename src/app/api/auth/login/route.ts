@@ -49,9 +49,12 @@ export async function POST(request: NextRequest) {
       attempts.count = 0;
     }
 
-    // Find user by email
+    // Find user by email with role information
     const userResult = await query(
-      'SELECT id, email, password_hash, role, is_active, last_login FROM users WHERE email = $1',
+      `SELECT u.id, u.email, u.password_hash, u.is_active, u.last_login, r.name as role_name
+       FROM users u 
+       LEFT JOIN roles r ON u.role_id = r.id 
+       WHERE u.email = $1`,
       [email]
     );
 
@@ -97,7 +100,7 @@ export async function POST(request: NextRequest) {
       {
         userId: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role_name,
       },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
@@ -125,7 +128,7 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role,
+        role: user.role_name,
       },
     });
 

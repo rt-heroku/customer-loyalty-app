@@ -48,6 +48,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Sidebar isOpen prop:', isOpen);
+  }, [isOpen]);
+
   // Close sidebar on mobile when route changes
   useEffect(() => {
     if (isOpen && window.innerWidth < 1024) {
@@ -176,12 +181,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-80 border-r border-gray-200 bg-white shadow-xl transition-transform duration-300 ease-in-out',
-          'lg:translate-x-0',
+          // Mobile: slide in/out
+          'lg:hidden',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
-        style={{
-          border: isOpen ? '2px solid green' : '2px solid red', // Debug border
-        }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
@@ -281,6 +284,128 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <span>Sign Out</span>
           </button>
         </div>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div
+        className={cn(
+          'lg:fixed lg:inset-y-0 lg:left-0 lg:w-80 lg:border-r lg:border-gray-200 lg:bg-white lg:shadow-none',
+          isOpen ? 'lg:block' : 'lg:hidden'
+        )}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500">
+              <span className="text-lg font-bold text-white">L</span>
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Loyalty App</h1>
+              <p className="text-sm text-gray-500">Customer Portal</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="border-b border-gray-200 p-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search menu..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-transparent focus:ring-2 focus:ring-primary-500"
+            />
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1 p-4">
+          {/* Main Menu */}
+          <div className="space-y-1">
+            {filteredMainMenu.map((item) => {
+              const Icon = iconMap[item.icon] || Home;
+              const isActive = isItemActive(item);
+              const isExpanded = expandedItems.has(item.id);
+
+              return (
+                <div key={item.id}>
+                  <button
+                    onClick={() => handleItemClick(item)}
+                    className={cn(
+                      'flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-primary-50 text-primary-700'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                    )}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Icon className="h-5 w-5" />
+                      <span>{item.label}</span>
+                    </div>
+                    {item.submenu && (
+                      <ChevronDown
+                        className={cn(
+                          'h-4 w-4 transition-transform',
+                          isExpanded && 'rotate-180'
+                        )}
+                      />
+                    )}
+                  </button>
+
+                  {/* Submenu */}
+                  {item.submenu && isExpanded && (
+                    <div className="ml-6 mt-1 space-y-1">
+                      {item.submenu.map((subItem) => {
+                        const SubIcon = iconMap[subItem.icon] || Home;
+                        const isSubActive = pathname === subItem.href;
+
+                        return (
+                          <button
+                            key={subItem.id}
+                            onClick={() => router.push(subItem.href!)}
+                            className={cn(
+                              'flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm transition-colors',
+                              isSubActive
+                                ? 'bg-primary-50 text-primary-700'
+                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                            )}
+                          >
+                            <SubIcon className="h-4 w-4" />
+                            <span>{subItem.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* User Section */}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center space-x-3 rounded-lg px-3 py-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700">
+                {getInitials(user?.firstName, user?.lastName)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={logout}
+              className="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sign out</span>
+            </button>
+          </div>
+        </nav>
       </div>
     </>
   );

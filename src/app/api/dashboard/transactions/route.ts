@@ -14,11 +14,22 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
 
-    // Get customer ID from users table
-    const customerResult = await query(
-      'SELECT id FROM customers WHERE email = $1',
-      [user.email]
+    // Get customer ID - try both user_id and email approaches
+    let customerResult;
+    
+    // First try with user_id (more reliable)
+    customerResult = await query(
+      'SELECT id FROM customers WHERE user_id = $1',
+      [user.id]
     );
+
+    // If not found, try with email (fallback)
+    if (customerResult.rows.length === 0) {
+      customerResult = await query(
+        'SELECT id FROM customers WHERE email = $1',
+        [user.email]
+      );
+    }
 
     if (customerResult.rows.length === 0) {
       return NextResponse.json({ transactions: [], total: 0 });

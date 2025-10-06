@@ -26,6 +26,7 @@ interface Transaction {
   created_at: string;
   payment_method: string;
   items?: TransactionItem[];
+  vouchers?: TransactionVoucher[];
 }
 
 interface TransactionItem {
@@ -34,6 +35,19 @@ interface TransactionItem {
   product_price: string;
   quantity: number;
   subtotal: string;
+}
+
+interface TransactionVoucher {
+  id: number;
+  applied_amount: string;
+  discount_amount: string;
+  voucher_code: string;
+  voucher_name: string;
+  voucher_type: string;
+  face_value?: string;
+  discount_percent?: string;
+  image_url?: string;
+  description?: string;
 }
 
 interface AnalyticsData {
@@ -544,6 +558,79 @@ export default function TransactionsPage() {
                 </div>
               </div>
 
+              {/* Vouchers Redeemed */}
+              {selectedTransaction.vouchers &&
+                selectedTransaction.vouchers.length > 0 && (
+                  <div>
+                    <h4 className="mb-4 font-semibold text-gray-900">
+                      Vouchers Redeemed
+                    </h4>
+                    <div className="space-y-3">
+                      {selectedTransaction.vouchers.map(voucher => (
+                        <div
+                          key={voucher.id}
+                          className="flex items-center justify-between rounded-lg bg-green-50 p-4 border border-green-200"
+                        >
+                          <div className="flex items-center space-x-3">
+                            {/* Voucher Image */}
+                            {voucher.image_url && (
+                              <div className="flex-shrink-0">
+                                <img
+                                  src={voucher.image_url}
+                                  alt={voucher.voucher_name}
+                                  className="h-12 w-12 rounded-lg object-cover border border-green-300"
+                                  onError={(e) => {
+                                    // Hide image if it fails to load
+                                    e.currentTarget.style.display = 'none';
+                                  }}
+                                />
+                              </div>
+                            )}
+                            
+                            {/* Voucher Details */}
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                <p className="font-medium text-gray-900">
+                                  {voucher.voucher_name}
+                                </p>
+                                <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
+                                  {voucher.voucher_code}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {voucher.description || `${voucher.voucher_type} Voucher`}
+                              </p>
+                              <div className="mt-1 flex items-center space-x-4 text-sm">
+                                {voucher.voucher_type === 'Value' && voucher.face_value && (
+                                  <span className="text-gray-500">
+                                    Face Value: {formatCurrency(parseFloat(voucher.face_value))}
+                                  </span>
+                                )}
+                                {voucher.voucher_type === 'Discount' && voucher.discount_percent && (
+                                  <span className="text-gray-500">
+                                    {voucher.discount_percent}% Off
+                                  </span>
+                                )}
+                                <span className="text-gray-500">
+                                  Applied: {formatCurrency(parseFloat(voucher.applied_amount))}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Discount Amount */}
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-green-600">
+                              -{formatCurrency(parseFloat(voucher.discount_amount))}
+                            </p>
+                            <p className="text-xs text-gray-500">Savings</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               {/* Items List */}
               {selectedTransaction.items &&
                 selectedTransaction.items.length > 0 && (
@@ -611,6 +698,14 @@ export default function TransactionsPage() {
                         <span>-{selectedTransaction.points_redeemed}</span>
                       </div>
                     )}
+                    {selectedTransaction.vouchers &&
+                      selectedTransaction.vouchers.length > 0 &&
+                      selectedTransaction.vouchers.map(voucher => (
+                        <div key={voucher.id} className="flex justify-between text-green-600">
+                          <span>Voucher ({voucher.voucher_code}):</span>
+                          <span>-{formatCurrency(parseFloat(voucher.discount_amount))}</span>
+                        </div>
+                      ))}
                   </div>
                   <div className="mt-4 border-t border-gray-300 pt-4 text-center">
                     <p className="text-gray-600">

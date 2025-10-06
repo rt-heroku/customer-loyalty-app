@@ -43,19 +43,6 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* Test button for debugging */}
-      <div className="mb-4 rounded-lg border border-yellow-300 bg-yellow-100 p-4">
-        <button
-          onClick={testSidebarToggle}
-          className="rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600"
-        >
-          Test Sidebar Toggle (Debug)
-        </button>
-        <p className="mt-2 text-sm text-yellow-700">
-          Click this button to test if the sidebar toggle is working. Check the
-          console for logs.
-        </p>
-      </div>
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Welcome Section */}

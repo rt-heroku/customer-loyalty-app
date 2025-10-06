@@ -9,6 +9,11 @@ export async function GET(
   try {
     const { id } = params;
 
+    // Validate that id is a valid integer
+    if (!id || isNaN(parseInt(id))) {
+      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 });
+    }
+
     // Get product details
     const productQuery = `
       SELECT 
@@ -51,10 +56,9 @@ export async function GET(
     const imagesQuery = `
       SELECT 
         id,
-        url,
+        image_url as url,
         alt_text as alt,
-        is_primary as "isPrimary",
-        thumbnail_url as "thumbnailUrl"
+        is_primary as "isPrimary"
       FROM product_images 
       WHERE product_id = $1 
       ORDER BY is_primary DESC, id ASC
@@ -69,13 +73,13 @@ export async function GET(
         p.id,
         p.name,
         p.price,
-        p.rating,
-        p.stock_status as "stockStatus"
+        p.stock,
+        p.is_active
       FROM products p
       WHERE p.category = $1 
         AND p.id != $2 
-        AND p.stock_status != 'out_of_stock'
-      ORDER BY p.rating DESC, p.created_at DESC
+        AND p.is_active = true
+      ORDER BY p.featured DESC, p.created_at DESC
       LIMIT 4
     `;
     const relatedResult = await query(relatedQuery, [row.category, id]);
@@ -91,7 +95,7 @@ export async function GET(
         url: img.url,
         alt: img.alt || row.name,
         isPrimary: img.isPrimary || false,
-        thumbnailUrl: img.thumbnailUrl || img.url,
+        thumbnailUrl: img.url, // Use the same URL as thumbnail since we don't have separate thumbnail_url
       })),
       category: row.category,
       brand: row.brand,
@@ -120,8 +124,8 @@ export async function GET(
       id: rel.id,
       name: rel.name,
       price: parseFloat(rel.price),
-      rating: parseFloat(rel.rating || '0'),
-      stockStatus: rel.stockStatus || 'out_of_stock',
+      stockQuantity: parseInt(rel.stock || '0'),
+      isActive: rel.is_active || false,
     }));
 
     return NextResponse.json({

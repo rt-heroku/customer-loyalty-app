@@ -25,10 +25,10 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       whereConditions.push(
-        `(p.name ILIKE $${paramIndex} OR p.description ILIKE $${paramIndex} OR p.tags @> $${paramIndex + 1})`
+        `(p.name ILIKE $${paramIndex} OR p.description ILIKE $${paramIndex} OR p.brand ILIKE $${paramIndex} OR p.category ILIKE $${paramIndex})`
       );
-      queryParams.push(`%${search}%`, `[${search}]`);
-      paramIndex += 2;
+      queryParams.push(`%${search}%`);
+      paramIndex += 1;
     }
 
     if (category) {
@@ -56,9 +56,13 @@ export async function GET(request: NextRequest) {
     }
 
     if (stockStatus) {
-      whereConditions.push(`p.stock_status = $${paramIndex}`);
-      queryParams.push(stockStatus);
-      paramIndex++;
+      if (stockStatus === 'in_stock') {
+        whereConditions.push(`p.stock > 0`);
+      } else if (stockStatus === 'out_of_stock') {
+        whereConditions.push(`p.stock <= 0`);
+      } else if (stockStatus === 'low_stock') {
+        whereConditions.push(`p.stock > 0 AND p.stock <= 10`);
+      }
     }
 
     // Remove rating, onSale, and isNew filters as these fields don't exist
@@ -138,7 +142,13 @@ export async function GET(request: NextRequest) {
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
-      images: [], // Will be populated separately
+      images: row.main_image_url ? [{
+        id: 'main',
+        url: row.main_image_url, 
+        alt: row.name, 
+        isPrimary: true,
+        thumbnailUrl: row.main_image_url
+      }] : [], // Will be populated separately
       category: row.category,
       brand: row.brand,
       sku: row.sku,
@@ -166,22 +176,21 @@ export async function GET(request: NextRequest) {
       const imagesQuery = `
         SELECT 
           id,
-          url,
+          image_url as url,
           alt_text as alt,
-          is_primary as "isPrimary",
-          thumbnail_url as "thumbnailUrl"
+          is_primary as "isPrimary"
         FROM product_images 
         WHERE product_id = $1 
         ORDER BY is_primary DESC, id ASC
       `;
       const imagesResult = await query(imagesQuery, [product.id]);
-      product.images = imagesResult.rows.map((img: any) => ({
+      product.images = product.images.concat(imagesResult.rows.map((img: any) => ({
         id: img.id,
-        url: img.url,
+        url: img.image_url,
         alt: img.alt || product.name,
         isPrimary: img.isPrimary || false,
-        thumbnailUrl: img.thumbnailUrl || img.url,
-      }));
+        thumbnailUrl: img.image_url,
+      })));
     }
 
     const result: ProductSearchResult = {
