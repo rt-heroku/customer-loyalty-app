@@ -71,7 +71,7 @@ export async function getAllSystemSettings() {
 export async function deleteSystemSetting(key: string): Promise<boolean> {
   try {
     const result = await query('UPDATE system_settings SET is_active = false WHERE setting_key = $1', [key]);
-    return (result.rowCount || 0) > 0;
+    return result.rowCount !== null && result.rowCount > 0;
   } catch (error) {
     console.error(`Error deleting system setting '${key}':`, error);
     return false;
@@ -123,37 +123,6 @@ export async function setSystemSettingWithType(key: string, value: any, type: 's
     return false;
   }
 }
-
-// Common system setting keys for type safety
-export const SYSTEM_SETTING_KEYS = {
-  // General
-  COMPANY_NAME: 'company_name',
-  CURRENCY_SYMBOL: 'currency_symbol',
-  CURRENCY_CODE: 'currency_code',
-  DATE_FORMAT: 'date_format',
-  TIME_FORMAT: 'time_format',
-  
-  // POS
-  TAX_INCLUSIVE: 'tax_inclusive',
-  DEFAULT_TAX_RATE: 'default_tax_rate',
-  
-  // Loyalty
-  POINTS_PER_DOLLAR: 'points_per_dollar',
-  POINTS_REDEMPTION_RATE: 'points_redemption_rate',
-  
-  // Inventory
-  LOW_STOCK_THRESHOLD: 'low_stock_threshold',
-  
-  // Chat
-  CHAT_ENABLED: 'chat_enabled',
-  CHAT_API_URL: 'chat_api_url',
-  CHAT_FLOATING_BUTTON: 'chat_floating_button',
-  CHAT_MAX_FILE_SIZE: 'chat_max_file_size',
-  CHAT_ALLOWED_FILE_TYPES: 'chat_allowed_file_types',
-  CHAT_TYPING_INDICATOR_DELAY: 'chat_typing_indicator_delay',
-  CHAT_MESSAGE_RETRY_ATTEMPTS: 'chat_message_retry_attempts',
-  CHAT_SESSION_TIMEOUT: 'chat_session_timeout',
-} as const;
 
 export async function initializeDefaultSettings(): Promise<void> {
   const defaultSettings = [

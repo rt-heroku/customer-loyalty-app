@@ -105,6 +105,10 @@ export async function POST(request: NextRequest) {
             email
           ]
         );
+
+        //if customer exists, pull loyalty member from Loyalty cloud.
+
+        // Sync customer with external system
       } else {
         console.log('Creating new customer record');
         // Create new customer record
@@ -125,70 +129,75 @@ export async function POST(request: NextRequest) {
             'Bronze', // Starting tier
           ]
         );
-      }
-      console.log('Logging registration activity');
 
-      // Sync user with external system
-      try {
-        console.log('Syncing user with external system');
-        
-        // Get the integration endpoint and loyalty program ID from system settings
-        const integrationEndpoint = await getSystemSetting('integration_endpoint');
-//        const loyaltyProgramId = await getSystemSetting('loyalty_program_id');
-        
-        if (integrationEndpoint) {
-          // Get the complete customer data for sync
-          const customerSyncData = await query(
-            `SELECT c.id, u.first_name, u.last_name, c.name, c.loyalty_number, c.enrollment_date,
-                    get_system_setting('loyalty_program_id') as sf_loyalty_program_id, c.sf_id,
-                    c.address_line1, c.address_line2, c.city, c.state, c.zip_code,
-                    c.phone, u.email, c.date_of_birth
-             FROM users u, customers c
-             WHERE u.id = c.user_id AND u.id = $1`,
-            [user.id]
-          );
+        //if customer doesn't exists, create loyalty member.
+
+        // Sync customer with external system
+        try {
+          console.log('Syncing user with external system');
           
-          if (customerSyncData.rows.length > 0) {
-            const customerData = customerSyncData.rows[0];
+          // Get the integration endpoint and loyalty program ID from system settings
+          const integrationEndpoint = await getSystemSetting('integration_endpoint');
+  //        const loyaltyProgramId = await getSystemSetting('loyalty_program_id');
+          
+          if (integrationEndpoint) {
+            // Get the complete customer data for sync
+            const customerSyncData = await query(
+              `SELECT c.id, u.first_name, u.last_name, c.name, c.loyalty_number, c.enrollment_date,
+                      get_system_setting('loyalty_program_id') as sf_loyalty_program_id, c.sf_id,
+                      c.address_line1, c.address_line2, c.city, c.state, c.zip_code,
+                      c.phone, u.email, c.date_of_birth
+              FROM users u, customers c
+              WHERE u.id = c.user_id AND u.id = $1`,
+              [user.id]
+            );
             
-            const syncPayload = {
-              id: customerData.id,
-              first_name: customerData.first_name,
-              last_name: customerData.last_name,
-              name: customerData.name,
-              loyalty_number: customerData.loyalty_number,
-              enrollment_date: customerData.enrollment_date,
-              sf_loyalty_program_id: customerData.sf_loyalty_program_id,
-              sf_id: customerData.sf_id,
-              address_line1: customerData.address_line1,
-              address_line2: customerData.address_line2,
-              city: customerData.city,
-              state: customerData.state,
-              zip_code: customerData.zip_code,
-              phone: customerData.phone,
-              email: customerData.email,
-              date_of_birth: customerData.date_of_birth
-            };
-            
-            const syncResponse = await fetch(`${integrationEndpoint}/member/create`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(syncPayload)
-            });
-            
-            if (syncResponse.ok) {
-              console.log('User successfully synced with external system');
-            } else {
-              console.error('Failed to sync user with external system:', syncResponse.statusText);
+            if (customerSyncData.rows.length > 0) {
+              const customerData = customerSyncData.rows[0];
+              
+              const syncPayload = {
+                id: customerData.id,
+                first_name: customerData.first_name,
+                last_name: customerData.last_name,
+                name: customerData.name,
+                loyalty_number: customerData.loyalty_number,
+                enrollment_date: customerData.enrollment_date,
+                sf_loyalty_program_id: customerData.sf_loyalty_program_id,
+                sf_id: customerData.sf_id,
+                address_line1: customerData.address_line1,
+                address_line2: customerData.address_line2,
+                city: customerData.city,
+                state: customerData.state,
+                zip_code: customerData.zip_code,
+                phone: customerData.phone,
+                email: customerData.email,
+                date_of_birth: customerData.date_of_birth
+              };
+              
+              const syncResponse = await fetch(`${integrationEndpoint}/member/create`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(syncPayload)
+              });
+              
+              if (syncResponse.ok) {
+                console.log('User successfully synced with Loyalty Cloud');
+              } else {
+                console.error('Failed to sync user with Loyalty Cloud, check MuleSoft logs for more details:', syncResponse.statusText);
+              }
             }
           }
+        } catch (syncError) {
+          console.error('Error syncing user with Loyalty Cloud, check MuleSoft logs for more details:', syncError);
+          // Don't fail the registration if sync fails
+          // TODO: Add message to Q to be processed later
         }
-      } catch (syncError) {
-        console.error('Error syncing user with external system:', syncError);
-        // Don't fail the registration if sync fails
+
+
       }
+      console.log('Logging registration activity');
 
       
       // Log registration activity

@@ -1,0 +1,1 @@
+web: node update-cache-version.js; npm start
