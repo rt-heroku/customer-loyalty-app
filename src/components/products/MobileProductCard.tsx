@@ -5,7 +5,6 @@ import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import {
   Heart,
   Share2,
-  Star,
   Eye,
   ChevronLeft,
   ChevronRight,
@@ -239,14 +238,14 @@ export default function MobileProductCard({
               )}
             </AnimatePresence>
 
-            {/* Sale Badge */}
-            {product.isOnSale && (
+            {/* Featured Badge */}
+            {product.isFeatured && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute left-3 top-3 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"
+                className="absolute left-3 top-3 rounded-full bg-blue-500 px-2 py-1 text-xs font-bold text-white"
               >
-                SALE
+                FEATURED
               </motion.div>
             )}
 
@@ -294,15 +293,10 @@ export default function MobileProductCard({
 
             <div className="mb-2 flex items-center space-x-2">
               <div className="flex items-center">
-                <Star size={14} className="fill-current text-yellow-400" />
-                <span className="ml-1 text-xs text-gray-600">
-                  {product.rating || 0}
+                <span className="text-xs text-gray-600">
+                  {product.productType}
                 </span>
               </div>
-              <span className="text-xs text-gray-400">•</span>
-              <span className="text-xs text-gray-600">
-                {product.reviewCount || 0} reviews
-              </span>
             </div>
 
             {/* Price */}
@@ -310,17 +304,6 @@ export default function MobileProductCard({
               <span className="text-lg font-bold text-gray-900">
                 ${product.price}
               </span>
-              {product.originalPrice &&
-                product.originalPrice > product.price && (
-                  <span className="text-sm text-gray-500 line-through">
-                    ${product.originalPrice}
-                  </span>
-                )}
-              {product.salePercentage && (
-                <span className="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600">
-                  -{product.salePercentage}%
-                </span>
-              )}
             </div>
           </div>
 

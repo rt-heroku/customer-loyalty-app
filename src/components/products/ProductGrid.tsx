@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Star, Eye, ShoppingCart, Share2 } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Share2 } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn, formatCurrency } from '@/lib/utils';
@@ -150,14 +150,9 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
               {/* Badges */}
               <div className="absolute left-2 top-2 flex flex-col gap-1">
-                {product.isNew && (
+                {product.isFeatured && (
                   <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                    New
-                  </span>
-                )}
-                {product.isOnSale && (
-                  <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                    {product.salePercentage}% OFF
+                    Featured
                   </span>
                 )}
                 <span
@@ -229,39 +224,19 @@ export default function ProductGrid({ products }: ProductGridProps) {
 
               {/* Rating */}
               <div className="mb-2 flex items-center">
-                <div className="flex items-center">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className={cn(
-                        'h-4 w-4',
-                        i < Math.floor(product.rating)
-                          ? 'fill-current text-yellow-400'
-                          : 'text-gray-300'
-                      )}
-                    />
-                  ))}
-                </div>
-                <span className="ml-1 text-xs text-gray-500">
-                  ({product.reviewCount})
-                </span>
+                      <div className="flex items-center">
+                        <span className="text-xs text-gray-500">
+                          {product.productType}
+                        </span>
+                      </div>
               </div>
 
               {/* Price */}
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-lg font-semibold text-gray-900">
-                    {formatCurrency(product.price, product.currency)}
+                    {formatCurrency(product.price)}
                   </span>
-                  {product.originalPrice &&
-                    product.originalPrice > product.price && (
-                      <span className="text-sm text-gray-500 line-through">
-                        {formatCurrency(
-                          product.originalPrice,
-                          product.currency
-                        )}
-                      </span>
-                    )}
                 </div>
               </div>
 

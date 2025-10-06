@@ -14,9 +14,7 @@ export async function GET(request: NextRequest) {
     const minPrice = searchParams.get('minPrice');
     const maxPrice = searchParams.get('maxPrice');
     const stockStatus = searchParams.get('stockStatus') || '';
-    const rating = searchParams.get('rating');
-    const onSale = searchParams.get('onSale');
-    const isNew = searchParams.get('isNew');
+    // Removed rating, onSale, and isNew filters as these fields don't exist in the database
     const sortField = searchParams.get('sortField') || 'name';
     const sortDirection = searchParams.get('sortDirection') || 'asc';
 
@@ -63,19 +61,7 @@ export async function GET(request: NextRequest) {
       paramIndex++;
     }
 
-    if (rating) {
-      whereConditions.push(`p.rating >= $${paramIndex}`);
-      queryParams.push(parseFloat(rating));
-      paramIndex++;
-    }
-
-    if (onSale === 'true') {
-      whereConditions.push(`p.is_on_sale = true`);
-    }
-
-    if (isNew === 'true') {
-      whereConditions.push(`p.is_new = true`);
-    }
+    // Remove rating, onSale, and isNew filters as these fields don't exist
 
     const whereClause =
       whereConditions.length > 0
@@ -88,14 +74,14 @@ export async function GET(request: NextRequest) {
       case 'price':
         orderByClause += `p.price ${sortDirection.toUpperCase()}`;
         break;
-      case 'rating':
-        orderByClause += `p.rating ${sortDirection.toUpperCase()}`;
-        break;
       case 'createdAt':
         orderByClause += `p.created_at ${sortDirection.toUpperCase()}`;
         break;
-      case 'popularity':
-        orderByClause += `p.review_count ${sortDirection.toUpperCase()}`;
+      case 'category':
+        orderByClause += `p.category ${sortDirection.toUpperCase()}`;
+        break;
+      case 'brand':
+        orderByClause += `p.brand ${sortDirection.toUpperCase()}`;
         break;
       default:
         orderByClause += `p.name ${sortDirection.toUpperCase()}`;
@@ -118,22 +104,25 @@ export async function GET(request: NextRequest) {
         p.name,
         p.description,
         p.price,
-        p.original_price,
-        p.currency,
         p.category,
-        p.subcategory,
         p.brand,
         p.sku,
-        p.stock_quantity,
-        p.stock_status,
-        p.rating,
-        p.review_count,
-        p.tags,
-        p.specifications,
-        p.is_on_sale,
-        p.sale_percentage,
-        p.is_new,
-        p.is_featured,
+        p.stock,
+        p.product_type,
+        p.laptop_size,
+        p.collection,
+        p.material,
+        p.gender,
+        p.color,
+        p.dimensions,
+        p.weight,
+        p.warranty_info,
+        p.care_instructions,
+        p.main_image_url,
+        p.is_active,
+        p.featured,
+        p.sort_order,
+        p.sf_id,
         p.created_at,
         p.updated_at
       FROM products p
@@ -151,28 +140,27 @@ export async function GET(request: NextRequest) {
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
-      originalPrice: row.original_price
-        ? parseFloat(row.original_price)
-        : undefined,
-      currency: row.currency || 'USD',
       images: [], // Will be populated separately
       category: row.category,
-      subcategory: row.subcategory,
       brand: row.brand,
       sku: row.sku,
-      stockQuantity: parseInt(row.stock_quantity || '0'),
-      stockStatus: row.stock_status || 'out_of_stock',
-      rating: parseFloat(row.rating || '0'),
-      reviewCount: parseInt(row.review_count || '0'),
-      tags: row.tags || [],
-      specifications: row.specifications || {},
-      variants: [], // Will be populated separately
-      isOnSale: row.is_on_sale || false,
-      salePercentage: row.sale_percentage
-        ? parseFloat(row.sale_percentage)
-        : undefined,
-      isNew: row.is_new || false,
-      isFeatured: row.is_featured || false,
+      stockQuantity: parseInt(row.stock || '0'),
+      stockStatus: 'in_stock', // Default status
+      productType: row.product_type || '',
+      laptopSize: row.laptop_size || '',
+      collection: row.collection || '',
+      material: row.material || '',
+      gender: row.gender || '',
+      color: row.color || '',
+      dimensions: row.dimensions || '',
+      weight: parseFloat(row.weight || '0'),
+      warrantyInfo: row.warranty_info || '',
+      careInstructions: row.care_instructions || '',
+      mainImageUrl: row.main_image_url || '',
+      isActive: row.is_active || false,
+      isFeatured: row.featured || false,
+      sortOrder: parseInt(row.sort_order || '0'),
+      sfId: row.sf_id || '',
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     }));

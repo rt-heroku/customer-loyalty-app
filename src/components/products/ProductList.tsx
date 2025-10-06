@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   Heart,
-  Star,
   Eye,
   ShoppingCart,
   Share2,
@@ -164,14 +163,9 @@ export default function ProductList({ products }: ProductListProps) {
                   <div className="flex-1">
                     {/* Badges */}
                     <div className="mb-3 flex items-center gap-2">
-                      {product.isNew && (
+                      {product.isFeatured && (
                         <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                          New
-                        </span>
-                      )}
-                      {product.isOnSale && (
-                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
-                          {product.salePercentage}% OFF
+                          Featured
                         </span>
                       )}
                       <span
@@ -205,46 +199,18 @@ export default function ProductList({ products }: ProductListProps) {
                       {product.description}
                     </p>
 
-                    {/* Rating and Reviews */}
-                    <div className="mb-4 flex items-center">
-                      <div className="flex items-center">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={cn(
-                              'h-4 w-4',
-                              i < Math.floor(product.rating)
-                                ? 'fill-current text-yellow-400'
-                                : 'text-gray-300'
-                            )}
-                          />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-500">
-                        {product.rating.toFixed(1)} ({product.reviewCount}{' '}
-                        reviews)
+                    {/* Product Type */}
+                    <div className="mb-4">
+                      <span className="text-sm text-gray-500">
+                        {product.productType}
                       </span>
                     </div>
 
-                    {/* Tags */}
-                    {product.tags.length > 0 && (
-                      <div className="mb-4 flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Tags:</span>
-                        {product.tags.slice(0, 3).map(tag => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {product.tags.length > 3 && (
-                          <span className="text-xs text-gray-500">
-                            +{product.tags.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* Product Details */}
+                    <div className="mb-4 flex items-center gap-2">
+                      <span className="text-sm text-gray-500">Brand:</span>
+                      <span className="text-sm font-medium">{product.brand}</span>
+                    </div>
                   </div>
 
                   {/* Price and Actions */}
@@ -252,17 +218,8 @@ export default function ProductList({ products }: ProductListProps) {
                     {/* Price */}
                     <div className="text-right">
                       <div className="text-2xl font-bold text-gray-900">
-                        {formatCurrency(product.price, product.currency)}
+                        {formatCurrency(product.price)}
                       </div>
-                      {product.originalPrice &&
-                        product.originalPrice > product.price && (
-                          <div className="text-sm text-gray-500 line-through">
-                            {formatCurrency(
-                              product.originalPrice,
-                              product.currency
-                            )}
-                          </div>
-                        )}
                     </div>
 
                     {/* Action Buttons */}

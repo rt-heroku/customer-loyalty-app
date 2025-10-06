@@ -495,10 +495,7 @@ export default function WishlistPage() {
 
                             <div className="mb-3 flex items-center justify-between">
                               <span className="text-lg font-semibold text-gray-900">
-                                {formatCurrency(
-                                  item.product.price,
-                                  item.product.currency
-                                )}
+                                {formatCurrency(item.product.price)}
                               </span>
                               <span className="text-sm text-gray-500">
                                 {item.product.brand}

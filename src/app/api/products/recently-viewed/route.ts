@@ -23,16 +23,24 @@ export async function GET(request: NextRequest) {
         p.name,
         p.description,
         p.price,
-        p.original_price,
-        p.currency,
-        p.stock_quantity,
-        p.stock_status,
-        p.rating,
-        p.review_count,
-        p.is_on_sale,
-        p.sale_percentage,
-        p.is_new,
-        p.is_featured
+        p.stock,
+        p.product_type,
+        p.laptop_size,
+        p.collection,
+        p.material,
+        p.gender,
+        p.color,
+        p.dimensions,
+        p.weight,
+        p.warranty_info,
+        p.care_instructions,
+        p.main_image_url,
+        p.is_active,
+        p.featured,
+        p.sort_order,
+        p.sf_id,
+        p.created_at,
+        p.updated_at
       FROM product_views pv
       JOIN products p ON pv.product_id = p.id
       WHERE pv.user_id = $1
@@ -67,10 +75,6 @@ export async function GET(request: NextRequest) {
             name: row.name,
             description: row.description,
             price: parseFloat(row.price),
-            originalPrice: row.original_price
-              ? parseFloat(row.original_price)
-              : undefined,
-            currency: row.currency || 'USD',
             images:
               imageResult.rows.length > 0
                 ? [
@@ -86,24 +90,27 @@ export async function GET(request: NextRequest) {
                   ]
                 : [],
             category: '',
-            subcategory: undefined,
             brand: '',
             sku: '',
-            stockQuantity: parseInt(row.stock_quantity || '0'),
-            stockStatus: row.stock_status || 'out_of_stock',
-            rating: parseFloat(row.rating || '0'),
-            reviewCount: parseInt(row.review_count || '0'),
-            tags: [],
-            specifications: {},
-            variants: [],
-            isOnSale: row.is_on_sale || false,
-            salePercentage: row.sale_percentage
-              ? parseFloat(row.sale_percentage)
-              : undefined,
-            isNew: row.is_new || false,
-            isFeatured: row.is_featured || false,
-            createdAt: '',
-            updatedAt: '',
+            stockQuantity: parseInt(row.stock || '0'),
+            stockStatus: 'in_stock', // Default status
+            productType: row.product_type || '',
+            laptopSize: row.laptop_size || '',
+            collection: row.collection || '',
+            material: row.material || '',
+            gender: row.gender || '',
+            color: row.color || '',
+            dimensions: row.dimensions || '',
+            weight: parseFloat(row.weight || '0'),
+            warrantyInfo: row.warranty_info || '',
+            careInstructions: row.care_instructions || '',
+            mainImageUrl: row.main_image_url || '',
+            isActive: row.is_active || false,
+            isFeatured: row.featured || false,
+            sortOrder: parseInt(row.sort_order || '0'),
+            sfId: row.sf_id || '',
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
           },
         };
       })

@@ -266,14 +266,9 @@ export default function ProductDetailPage() {
             {/* Product Header */}
             <div>
               <div className="mb-2 flex items-center space-x-2">
-                {product.isNew && (
-                  <span className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white">
-                    New
-                  </span>
-                )}
-                {product.isOnSale && (
-                  <span className="rounded bg-red-600 px-2 py-1 text-xs font-medium text-white">
-                    {product.salePercentage}% OFF
+                {product.isFeatured && (
+                  <span className="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                    Featured
                   </span>
                 )}
                 <span
@@ -289,18 +284,8 @@ export default function ProductDetailPage() {
 
               <div className="mb-4 flex items-center space-x-4">
                 <div className="flex items-center">
-                  {[1, 2, 3, 4, 5].map(star => (
-                    <Star
-                      key={star}
-                      className={`h-5 w-5 ${
-                        star <= (product.rating || 0)
-                          ? 'fill-current text-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                  <span className="ml-2 text-sm text-gray-600">
-                    ({product.reviewCount || 0} reviews)
+                  <span className="text-sm text-gray-600">
+                    {product.productType}
                   </span>
                 </div>
                 <span className="text-sm text-gray-500">
@@ -314,12 +299,6 @@ export default function ProductDetailPage() {
               <span className="text-3xl font-bold text-gray-900">
                 ${(product.price || 0).toFixed(2)}
               </span>
-              {product.originalPrice &&
-                product.originalPrice > (product.price || 0) && (
-                  <span className="text-xl text-gray-500 line-through">
-                    ${product.originalPrice.toFixed(2)}
-                  </span>
-                )}
             </div>
 
             {/* Description */}
@@ -332,31 +311,34 @@ export default function ProductDetailPage() {
               </p>
             </div>
 
-            {/* Variants */}
-            {product.variants && product.variants.length > 0 && (
-              <div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                  Options
-                </h3>
-                <div className="space-y-2">
-                  {product.variants.map(variant => (
-                    <div
-                      key={variant.id}
-                      className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
-                    >
-                      <span className="text-sm text-gray-700">
-                        {variant.name}: {variant.value}
-                      </span>
-                      {variant.price && (
-                        <span className="text-sm font-medium text-gray-900">
-                          +${variant.price.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+            {/* Product Details */}
+            <div>
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                Product Details
+              </h3>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Brand:</span>
+                  <span className="font-medium">{product.brand}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Material:</span>
+                  <span className="font-medium">{product.material}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Color:</span>
+                  <span className="font-medium">{product.color}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Dimensions:</span>
+                  <span className="font-medium">{product.dimensions}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Weight:</span>
+                  <span className="font-medium">{product.weight} lbs</span>
                 </div>
               </div>
-            )}
+            </div>
 
             {/* Quantity and Actions */}
             <div className="space-y-4">
@@ -461,9 +443,8 @@ export default function ProductDetailPage() {
                         ${(relatedProduct.price || 0).toFixed(2)}
                       </span>
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 fill-current text-yellow-400" />
-                        <span className="ml-1 text-sm text-gray-600">
-                          {(relatedProduct.rating || 0).toFixed(1)}
+                        <span className="text-sm text-gray-600">
+                          {relatedProduct.productType}
                         </span>
                       </div>
                     </div>

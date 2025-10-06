@@ -26,7 +26,6 @@ export default function ProductFilters({
     { id: 'brand', title: 'Brand', isOpen: true },
     { id: 'price', title: 'Price Range', isOpen: true },
     { id: 'stock', title: 'Stock Status', isOpen: true },
-    { id: 'rating', title: 'Rating', isOpen: true },
     { id: 'features', title: 'Features', isOpen: true },
   ]);
 
@@ -303,51 +302,7 @@ export default function ProductFilters({
           )}
         </div>
 
-        {/* Rating Filter */}
-        <div className="border-b border-gray-200 pb-4">
-          <button
-            onClick={() => toggleSection('rating')}
-            className="flex w-full items-center justify-between text-left"
-          >
-            <span className="font-medium text-gray-900">Minimum Rating</span>
-            {filterSections.find(s => s.id === 'rating')?.isOpen ? (
-              <ChevronDown className="h-4 w-4 text-gray-500" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-gray-500" />
-            )}
-          </button>
-
-          {filterSections.find(s => s.id === 'rating')?.isOpen && (
-            <div className="mt-3 space-y-2">
-              {[4, 3, 2, 1].map(rating => (
-                <label key={rating} className="flex items-center">
-                  <input
-                    type="radio"
-                    name="rating"
-                    value={rating}
-                    checked={filters.rating === rating}
-                    onChange={e =>
-                      updateFilter('rating', Number(e.target.value))
-                    }
-                    className="h-4 w-4 border-gray-300 text-primary-600 focus:ring-primary-500"
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    {rating}+ stars
-                  </span>
-                </label>
-              ))}
-              {filters.rating && (
-                <button
-                  onClick={() => clearFilter('rating')}
-                  className="mt-2 flex items-center text-xs text-primary-600 hover:text-primary-700"
-                >
-                  <X className="mr-1 h-3 w-3" />
-                  Clear rating
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        {/* Rating filter removed as rating field doesn't exist in database */}
 
         {/* Features Filter */}
         <div className="border-b border-gray-200 pb-4">
@@ -365,38 +320,7 @@ export default function ProductFilters({
 
           {filterSections.find(s => s.id === 'features')?.isOpen && (
             <div className="mt-3 space-y-2">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={filters.onSale || false}
-                  onChange={e => updateFilter('onSale', e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">On Sale</span>
-              </label>
-
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={filters.isNew || false}
-                  onChange={e => updateFilter('isNew', e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
-                <span className="ml-2 text-sm text-gray-700">New Arrivals</span>
-              </label>
-
-              {(filters.onSale || filters.isNew) && (
-                <button
-                  onClick={() => {
-                    clearFilter('onSale');
-                    clearFilter('isNew');
-                  }}
-                  className="mt-2 flex items-center text-xs text-primary-600 hover:text-primary-700"
-                >
-                  <X className="mr-1 h-3 w-3" />
-                  Clear features
-                </button>
-              )}
+              {/* On Sale and New Arrivals filters removed as these fields don't exist in database */}
             </div>
           )}
         </div>
@@ -459,38 +383,8 @@ export default function ProductFilters({
                 </button>
               </div>
             )}
-            {filters.rating && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">
-                  Rating: {filters.rating}+ stars
-                </span>
-                <button
-                  onClick={() => clearFilter('rating')}
-                  className="text-primary-600 hover:text-primary-700"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            )}
-            {(filters.onSale || filters.isNew) && (
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">
-                  Features:{' '}
-                  {[filters.onSale && 'On Sale', filters.isNew && 'New']
-                    .filter(Boolean)
-                    .join(', ')}
-                </span>
-                <button
-                  onClick={() => {
-                    clearFilter('onSale');
-                    clearFilter('isNew');
-                  }}
-                  className="text-primary-600 hover:text-primary-700"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </div>
-            )}
+            {/* Rating filter removed as rating field doesn't exist in database */}
+            {/* Features filter removed as onSale and isNew fields don't exist in database */}
           </div>
         </div>
       )}

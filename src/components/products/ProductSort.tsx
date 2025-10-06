@@ -4,10 +4,10 @@ import { useState } from 'react';
 import {
   ChevronDown,
   ArrowUpDown,
-  Star,
   DollarSign,
   Calendar,
-  TrendingUp,
+  Tag,
+  Building2,
 } from 'lucide-react';
 import type { ProductSort } from '@/types/product';
 
@@ -33,22 +33,22 @@ export default function ProductSort({ value, onChange }: ProductSortProps) {
       description: 'Sort by price',
     },
     {
-      field: 'rating' as const,
-      label: 'Rating',
-      icon: Star,
-      description: 'Sort by customer rating',
-    },
-    {
       field: 'createdAt' as const,
       label: 'Newest',
       icon: Calendar,
       description: 'Sort by arrival date',
     },
     {
-      field: 'popularity' as const,
-      label: 'Popularity',
-      icon: TrendingUp,
-      description: 'Sort by popularity',
+      field: 'category' as const,
+      label: 'Category',
+      icon: Tag,
+      description: 'Sort by category',
+    },
+    {
+      field: 'brand' as const,
+      label: 'Brand',
+      icon: Building2,
+      description: 'Sort by brand',
     },
   ];
 
@@ -175,22 +175,22 @@ export default function ProductSort({ value, onChange }: ProductSortProps) {
             {value.direction === 'asc' ? 'low to high' : 'high to low'}
           </span>
         )}
-        {value.field === 'rating' && (
-          <span>
-            Sorting by rating{' '}
-            {value.direction === 'asc' ? 'low to high' : 'high to low'}
-          </span>
-        )}
         {value.field === 'createdAt' && (
           <span>
             Sorting by date{' '}
             {value.direction === 'asc' ? 'oldest first' : 'newest first'}
           </span>
         )}
-        {value.field === 'popularity' && (
+        {value.field === 'category' && (
           <span>
-            Sorting by popularity{' '}
-            {value.direction === 'asc' ? 'least popular' : 'most popular'}
+            Sorting by category{' '}
+            {value.direction === 'asc' ? 'A to Z' : 'Z to A'}
+          </span>
+        )}
+        {value.field === 'brand' && (
+          <span>
+            Sorting by brand{' '}
+            {value.direction === 'asc' ? 'A to Z' : 'Z to A'}
           </span>
         )}
       </div>

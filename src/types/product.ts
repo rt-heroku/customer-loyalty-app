@@ -3,24 +3,27 @@ export interface Product {
   name: string;
   description: string;
   price: number;
-  originalPrice: number | undefined;
-  currency: string;
   images: ProductImage[];
   category: string;
-  subcategory: string | undefined;
   brand: string;
   sku: string;
   stockQuantity: number;
   stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock' | 'pre_order';
-  rating: number;
-  reviewCount: number;
-  tags: string[];
-  specifications: Record<string, string>;
-  variants: ProductVariant[] | undefined;
-  isOnSale: boolean;
-  salePercentage: number | undefined;
-  isNew: boolean;
+  productType: string;
+  laptopSize: string;
+  collection: string;
+  material: string;
+  gender: string;
+  color: string;
+  dimensions: string;
+  weight: number;
+  warrantyInfo: string;
+  careInstructions: string;
+  mainImageUrl: string;
+  isActive: boolean;
   isFeatured: boolean;
+  sortOrder: number;
+  sfId: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -71,14 +74,14 @@ export interface ProductFilter {
       }
     | undefined;
   stockStatus?: string[] | undefined;
-  rating?: number | undefined;
-  tags?: string[] | undefined;
-  onSale?: boolean | undefined;
-  isNew?: boolean | undefined;
+  productType?: string | undefined;
+  gender?: string | undefined;
+  color?: string | undefined;
+  material?: string | undefined;
 }
 
 export interface ProductSort {
-  field: 'name' | 'price' | 'rating' | 'createdAt' | 'popularity';
+  field: 'name' | 'price' | 'createdAt' | 'category' | 'brand';
   direction: 'asc' | 'desc';
 }
 

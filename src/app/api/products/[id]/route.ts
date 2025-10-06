@@ -16,22 +16,25 @@ export async function GET(
         p.name,
         p.description,
         p.price,
-        p.original_price,
-        p.currency,
         p.category,
-        p.subcategory,
         p.brand,
         p.sku,
-        p.stock_quantity,
-        p.stock_status,
-        p.rating,
-        p.review_count,
-        p.tags,
-        p.specifications,
-        p.is_on_sale,
-        p.sale_percentage,
-        p.is_new,
-        p.is_featured,
+        p.stock,
+        p.product_type,
+        p.laptop_size,
+        p.collection,
+        p.material,
+        p.gender,
+        p.color,
+        p.dimensions,
+        p.weight,
+        p.warranty_info,
+        p.care_instructions,
+        p.main_image_url,
+        p.is_active,
+        p.featured,
+        p.sort_order,
+        p.sf_id,
         p.created_at,
         p.updated_at
       FROM products p
@@ -60,19 +63,7 @@ export async function GET(
     `;
     const imagesResult = await query(imagesQuery, [id]);
 
-    // Get product variants
-    const variantsQuery = `
-      SELECT 
-        id,
-        name,
-        value,
-        price,
-        stock_quantity as "stockQuantity"
-      FROM product_variants 
-      WHERE product_id = $1 
-      ORDER BY name, value
-    `;
-    const variantsResult = await query(variantsQuery, [id]);
+    // Product variants not available in current schema
 
     // Get related products
     const relatedQuery = `
@@ -97,10 +88,6 @@ export async function GET(
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
-      originalPrice: row.original_price
-        ? parseFloat(row.original_price)
-        : undefined,
-      currency: row.currency || 'USD',
       images: imagesResult.rows.map((img: any) => ({
         id: img.id,
         url: img.url,
@@ -109,28 +96,25 @@ export async function GET(
         thumbnailUrl: img.thumbnailUrl || img.url,
       })),
       category: row.category,
-      subcategory: row.subcategory,
       brand: row.brand,
       sku: row.sku,
-      stockQuantity: parseInt(row.stock_quantity || '0'),
-      stockStatus: row.stock_status || 'out_of_stock',
-      rating: parseFloat(row.rating || '0'),
-      reviewCount: parseInt(row.review_count || '0'),
-      tags: row.tags || [],
-      specifications: row.specifications || {},
-      variants: variantsResult.rows.map((variant: any) => ({
-        id: variant.id,
-        name: variant.name,
-        value: variant.value,
-        price: variant.price ? parseFloat(variant.price) : undefined,
-        stockQuantity: parseInt(variant.stockQuantity || '0'),
-      })),
-      isOnSale: row.is_on_sale || false,
-      salePercentage: row.sale_percentage
-        ? parseFloat(row.sale_percentage)
-        : undefined,
-      isNew: row.is_new || false,
-      isFeatured: row.is_featured || false,
+      stockQuantity: parseInt(row.stock || '0'),
+      stockStatus: 'in_stock', // Default status
+      productType: row.product_type || '',
+      laptopSize: row.laptop_size || '',
+      collection: row.collection || '',
+      material: row.material || '',
+      gender: row.gender || '',
+      color: row.color || '',
+      dimensions: row.dimensions || '',
+      weight: parseFloat(row.weight || '0'),
+      warrantyInfo: row.warranty_info || '',
+      careInstructions: row.care_instructions || '',
+      mainImageUrl: row.main_image_url || '',
+      isActive: row.is_active || false,
+      isFeatured: row.featured || false,
+      sortOrder: parseInt(row.sort_order || '0'),
+      sfId: row.sf_id || '',
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };

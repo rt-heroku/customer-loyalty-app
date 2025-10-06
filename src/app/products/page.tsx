@@ -48,9 +48,7 @@ export default function ProductsPage() {
           params.append('stockStatus', status)
         );
       }
-      if (filters.rating) params.append('rating', filters.rating.toString());
-      if (filters.onSale) params.append('onSale', 'true');
-      if (filters.isNew) params.append('isNew', 'true');
+      // Removed rating, onSale, and isNew filters as these fields don't exist in the database
 
       // Add sort
       params.append('sortBy', sort.field);

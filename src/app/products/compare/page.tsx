@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Star, X, Plus, Heart, Share2, ShoppingCart } from 'lucide-react';
+import { X, Plus, Heart, Share2, ShoppingCart } from 'lucide-react';
 import type { Product } from '@/types/product';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -311,38 +311,20 @@ export default function ProductComparePage() {
                         <div className="text-lg font-bold text-gray-900">
                           ${product.price.toFixed(2)}
                         </div>
-                        {product.originalPrice &&
-                          product.originalPrice > product.price && (
-                            <div className="text-sm text-gray-500 line-through">
-                              ${product.originalPrice.toFixed(2)}
-                            </div>
-                          )}
                       </div>
                     </td>
                   ))}
                 </tr>
 
-                {/* Rating */}
+                {/* Product Type */}
                 <tr>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    Rating
+                    Product Type
                   </td>
                   {products.map(product => (
                     <td key={product.id} className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center space-x-1">
-                        {[1, 2, 3, 4, 5].map(star => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= product.rating
-                                ? 'fill-current text-yellow-400'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                        <span className="ml-2 text-sm text-gray-600">
-                          ({product.reviewCount})
-                        </span>
+                      <div className="text-sm text-gray-600">
+                        {product.productType}
                       </div>
                     </td>
                   ))}
@@ -402,16 +384,6 @@ export default function ProductComparePage() {
                   {products.map(product => (
                     <td key={product.id} className="px-6 py-4 text-center">
                       <div className="flex flex-wrap justify-center gap-2">
-                        {product.isNew && (
-                          <span className="rounded bg-green-600 px-2 py-1 text-xs font-medium text-white">
-                            New
-                          </span>
-                        )}
-                        {product.isOnSale && (
-                          <span className="rounded bg-red-600 px-2 py-1 text-xs font-medium text-white">
-                            Sale
-                          </span>
-                        )}
                         {product.isFeatured && (
                           <span className="rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
                             Featured
