@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
+import {
   Search,
   Filter,
   DollarSign,
@@ -14,7 +14,7 @@ import {
   Eye,
   X,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
@@ -53,7 +53,8 @@ export default function TransactionsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filters, setFilters] = useState({
     dateFrom: '',
@@ -161,9 +162,9 @@ export default function TransactionsPage() {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
           <p className="text-gray-600">Loading transactions...</p>
         </div>
       </div>
@@ -174,26 +175,30 @@ export default function TransactionsPage() {
 
   return (
     <div className="p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Transaction History</h1>
-            <p className="text-gray-600">View and manage your order history and analytics</p>
-          </div>
-          <button
-            onClick={exportTransactions}
-            className="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <Download className="w-4 h-4" />
-            <span>Export</span>
-          </button>
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
+            Transaction History
+          </h1>
+          <p className="text-gray-600">
+            View and manage your order history and analytics
+          </p>
         </div>
+        <button
+          onClick={exportTransactions}
+          className="flex items-center space-x-2 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
+        >
+          <Download className="h-4 w-4" />
+          <span>Export</span>
+        </button>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Analytics Overview */}
         {analytics && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+          <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Spent</p>
@@ -201,13 +206,13 @@ export default function TransactionsPage() {
                     {formatCurrency(analytics.totalSpent)}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-blue-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  <DollarSign className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Total Transactions</p>
@@ -215,13 +220,13 @@ export default function TransactionsPage() {
                     {analytics.totalTransactions}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <ShoppingBag className="w-6 h-6 text-green-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                  <ShoppingBag className="h-6 w-6 text-green-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Average Order</p>
@@ -229,13 +234,13 @@ export default function TransactionsPage() {
                     {formatCurrency(analytics.averageOrderValue)}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-purple-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600">Loyalty Savings</p>
@@ -243,8 +248,8 @@ export default function TransactionsPage() {
                     {formatCurrency(analytics.savingsFromLoyalty)}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                  <BarChart3 className="w-6 h-6 text-orange-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
+                  <BarChart3 className="h-6 w-6 text-orange-600" />
                 </div>
               </div>
             </div>
@@ -252,78 +257,102 @@ export default function TransactionsPage() {
         )}
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+        <div className="mb-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
+          <div className="flex flex-col space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-x-4 lg:space-y-0">
             <div className="flex-1">
               <div className="relative">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search transactions..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex items-center space-x-2 rounded-lg border border-gray-300 px-4 py-2 transition-colors hover:bg-gray-50"
             >
-              <Filter className="w-4 h-4" />
+              <Filter className="h-4 w-4" />
               <span>Filters</span>
-              {showFilters ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {showFilters ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </button>
           </div>
 
           {/* Filter Panel */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="mt-6 border-t border-gray-200 pt-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">From Date</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    From Date
+                  </label>
                   <input
                     type="date"
                     value={filters.dateFrom}
-                    onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e =>
+                      setFilters({ ...filters, dateFrom: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">To Date</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    To Date
+                  </label>
                   <input
                     type="date"
                     value={filters.dateTo}
-                    onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e =>
+                      setFilters({ ...filters, dateTo: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Min Amount</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Min Amount
+                  </label>
                   <input
                     type="number"
                     placeholder="0.00"
                     value={filters.minAmount}
-                    onChange={(e) => setFilters({ ...filters, minAmount: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e =>
+                      setFilters({ ...filters, minAmount: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Max Amount</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Max Amount
+                  </label>
                   <input
                     type="number"
                     placeholder="0.00"
                     value={filters.maxAmount}
-                    onChange={(e) => setFilters({ ...filters, maxAmount: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e =>
+                      setFilters({ ...filters, maxAmount: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">
+                    Payment Method
+                  </label>
                   <select
                     value={filters.paymentMethod}
-                    onChange={(e) => setFilters({ ...filters, paymentMethod: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e =>
+                      setFilters({ ...filters, paymentMethod: e.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="">All Methods</option>
                     <option value="credit_card">Credit Card</option>
@@ -336,7 +365,7 @@ export default function TransactionsPage() {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={clearFilters}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                  className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800"
                 >
                   Clear Filters
                 </button>
@@ -346,18 +375,23 @@ export default function TransactionsPage() {
         </div>
 
         {/* Transactions List */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Transaction History</h2>
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-xl">
+          <div className="border-b border-gray-200 p-6">
+            <h2 className="text-xl font-bold text-gray-900">
+              Transaction History
+            </h2>
           </div>
 
           <div className="divide-y divide-gray-200">
-            {transactions.map((transaction) => (
-              <div key={transaction.id} className="p-6 hover:bg-gray-50 transition-colors">
+            {transactions.map(transaction => (
+              <div
+                key={transaction.id}
+                className="p-6 transition-colors hover:bg-gray-50"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
-                      <ShoppingBag className="w-6 h-6 text-primary-600" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+                      <ShoppingBag className="h-6 w-6 text-primary-600" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">
@@ -366,7 +400,7 @@ export default function TransactionsPage() {
                       <p className="text-sm text-gray-600">
                         {formatDate(transaction.created_at)}
                       </p>
-                      <p className="text-xs text-gray-500 capitalize">
+                      <p className="text-xs capitalize text-gray-500">
                         {transaction.payment_method}
                       </p>
                     </div>
@@ -377,18 +411,22 @@ export default function TransactionsPage() {
                     </p>
                     <div className="flex items-center space-x-2 text-sm">
                       {transaction.points_earned > 0 && (
-                        <span className="text-green-600">+{transaction.points_earned} pts</span>
+                        <span className="text-green-600">
+                          +{transaction.points_earned} pts
+                        </span>
                       )}
                       {transaction.points_redeemed > 0 && (
-                        <span className="text-red-600">-{transaction.points_redeemed} pts</span>
+                        <span className="text-red-600">
+                          -{transaction.points_redeemed} pts
+                        </span>
                       )}
                     </div>
                   </div>
                   <button
                     onClick={() => fetchTransactionDetails(transaction.id)}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                   >
-                    <Eye className="w-5 h-5" />
+                    <Eye className="h-5 w-5" />
                   </button>
                 </div>
               </div>
@@ -396,16 +434,18 @@ export default function TransactionsPage() {
           </div>
 
           {transactions.length === 0 && (
-            <div className="text-center py-12">
-              <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <div className="py-12 text-center">
+              <ShoppingBag className="mx-auto mb-4 h-16 w-16 text-gray-300" />
               <p className="text-gray-500">No transactions found</p>
-              <p className="text-sm text-gray-400">Try adjusting your search or filters</p>
+              <p className="text-sm text-gray-400">
+                Try adjusting your search or filters
+              </p>
             </div>
           )}
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="p-6 border-t border-gray-200">
+            <div className="border-t border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-600">
                   Page {currentPage} of {totalPages}
@@ -414,14 +454,16 @@ export default function TransactionsPage() {
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="rounded-lg border border-gray-300 px-3 py-1 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Previous
                   </button>
                   <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    onClick={() =>
+                      setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    className="rounded-lg border border-gray-300 px-3 py-1 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -434,21 +476,23 @@ export default function TransactionsPage() {
 
       {/* Transaction Details Modal */}
       {showDetailsModal && selectedTransaction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Transaction Details</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="text-xl font-bold text-gray-900">
+                Transaction Details
+              </h3>
               <button
                 onClick={() => setShowDetailsModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <X className="w-6 h-6" />
+                <X className="h-6 w-6" />
               </button>
             </div>
 
             <div className="space-y-6">
               {/* Transaction Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="rounded-lg bg-gray-50 p-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Transaction ID</p>
@@ -456,77 +500,104 @@ export default function TransactionsPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Date</p>
-                    <p className="font-medium">{formatDate(selectedTransaction.created_at)}</p>
+                    <p className="font-medium">
+                      {formatDate(selectedTransaction.created_at)}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Payment Method</p>
-                    <p className="font-medium capitalize">{selectedTransaction.payment_method}</p>
+                    <p className="font-medium capitalize">
+                      {selectedTransaction.payment_method}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Total Amount</p>
-                    <p className="font-bold text-lg">{formatCurrency(parseFloat(selectedTransaction.total))}</p>
+                    <p className="text-lg font-bold">
+                      {formatCurrency(parseFloat(selectedTransaction.total))}
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Points Summary */}
-              <div className="bg-blue-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Loyalty Points</h4>
+              <div className="rounded-lg bg-blue-50 p-4">
+                <h4 className="mb-2 font-semibold text-gray-900">
+                  Loyalty Points
+                </h4>
                 <div className="flex space-x-6">
                   {selectedTransaction.points_earned > 0 && (
                     <div>
                       <p className="text-sm text-gray-600">Points Earned</p>
-                      <p className="text-green-600 font-bold">+{selectedTransaction.points_earned}</p>
+                      <p className="font-bold text-green-600">
+                        +{selectedTransaction.points_earned}
+                      </p>
                     </div>
                   )}
                   {selectedTransaction.points_redeemed > 0 && (
                     <div>
                       <p className="text-sm text-gray-600">Points Redeemed</p>
-                      <p className="text-red-600 font-bold">-{selectedTransaction.points_redeemed}</p>
+                      <p className="font-bold text-red-600">
+                        -{selectedTransaction.points_redeemed}
+                      </p>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Items List */}
-              {selectedTransaction.items && selectedTransaction.items.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-4">Items</h4>
-                  <div className="space-y-3">
-                    {selectedTransaction.items.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-gray-900">{item.product_name}</p>
-                          <p className="text-sm text-gray-600">
-                            {formatCurrency(parseFloat(item.product_price))} × {item.quantity}
+              {selectedTransaction.items &&
+                selectedTransaction.items.length > 0 && (
+                  <div>
+                    <h4 className="mb-4 font-semibold text-gray-900">Items</h4>
+                    <div className="space-y-3">
+                      {selectedTransaction.items.map(item => (
+                        <div
+                          key={item.id}
+                          className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {item.product_name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {formatCurrency(parseFloat(item.product_price))} ×{' '}
+                              {item.quantity}
+                            </p>
+                          </div>
+                          <p className="font-semibold text-gray-900">
+                            {formatCurrency(parseFloat(item.subtotal))}
                           </p>
                         </div>
-                        <p className="font-semibold text-gray-900">
-                          {formatCurrency(parseFloat(item.subtotal))}
-                        </p>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Receipt */}
               <div className="border-t border-gray-200 pt-4">
-                <h4 className="font-semibold text-gray-900 mb-4">Receipt</h4>
-                <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm">
-                  <div className="text-center mb-4">
+                <h4 className="mb-4 font-semibold text-gray-900">Receipt</h4>
+                <div className="rounded-lg bg-gray-50 p-4 font-mono text-sm">
+                  <div className="mb-4 text-center">
                     <p className="font-bold">LOYALTY STORE</p>
-                    <p className="text-gray-600">Transaction #{selectedTransaction.id}</p>
-                    <p className="text-gray-600">{formatDate(selectedTransaction.created_at)}</p>
+                    <p className="text-gray-600">
+                      Transaction #{selectedTransaction.id}
+                    </p>
+                    <p className="text-gray-600">
+                      {formatDate(selectedTransaction.created_at)}
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span>Total:</span>
-                      <span>{formatCurrency(parseFloat(selectedTransaction.total))}</span>
+                      <span>
+                        {formatCurrency(parseFloat(selectedTransaction.total))}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Payment:</span>
-                      <span className="capitalize">{selectedTransaction.payment_method}</span>
+                      <span className="capitalize">
+                        {selectedTransaction.payment_method}
+                      </span>
                     </div>
                     {selectedTransaction.points_earned > 0 && (
                       <div className="flex justify-between text-green-600">
@@ -541,8 +612,10 @@ export default function TransactionsPage() {
                       </div>
                     )}
                   </div>
-                  <div className="text-center mt-4 pt-4 border-t border-gray-300">
-                    <p className="text-gray-600">Thank you for your purchase!</p>
+                  <div className="mt-4 border-t border-gray-300 pt-4 text-center">
+                    <p className="text-gray-600">
+                      Thank you for your purchase!
+                    </p>
                   </div>
                 </div>
               </div>
@@ -550,6 +623,6 @@ export default function TransactionsPage() {
           </div>
         </div>
       )}
-      </div>
+    </div>
   );
 }

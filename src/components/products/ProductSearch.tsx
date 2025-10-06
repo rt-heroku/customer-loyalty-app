@@ -11,7 +11,11 @@ interface ProductSearchProps {
   placeholder?: string;
 }
 
-export default function ProductSearch({ value, onChange, placeholder = "Search products..." }: ProductSearchProps) {
+export default function ProductSearch({
+  value,
+  onChange,
+  placeholder = 'Search products...',
+}: ProductSearchProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<Product[]>([]);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
@@ -26,7 +30,9 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
     const loadSearchData = async () => {
       try {
         // Load recent searches from localStorage
-        const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        const recent = JSON.parse(
+          localStorage.getItem('recentSearches') || '[]'
+        );
         setRecentSearches(recent.slice(0, 5));
 
         // Load trending searches
@@ -46,7 +52,10 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
         setSelectedIndex(-1);
       }
@@ -64,13 +73,13 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
       switch (event.key) {
         case 'ArrowDown':
           event.preventDefault();
-          setSelectedIndex(prev => 
+          setSelectedIndex(prev =>
             prev < suggestions.length - 1 ? prev + 1 : prev
           );
           break;
         case 'ArrowUp':
           event.preventDefault();
-          setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
           break;
         case 'Enter':
           event.preventDefault();
@@ -101,7 +110,9 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
 
     setLoading(true);
     try {
-      const response = await fetch(`/api/products/search-suggestions?q=${encodeURIComponent(query)}`);
+      const response = await fetch(
+        `/api/products/search-suggestions?q=${encodeURIComponent(query)}`
+      );
       if (response.ok) {
         const data = await response.json();
         setSuggestions(data.suggestions);
@@ -172,7 +183,10 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
   };
 
   const addToRecentSearches = (search: string) => {
-    const recent = [search, ...recentSearches.filter(s => s !== search)].slice(0, 5);
+    const recent = [search, ...recentSearches.filter(s => s !== search)].slice(
+      0,
+      5
+    );
     setRecentSearches(recent);
     localStorage.setItem('recentSearches', JSON.stringify(recent));
   };
@@ -188,14 +202,17 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
     const regex = new RegExp(`(${query})`, 'gi');
-    return text.replace(regex, '<mark class="bg-yellow-200 font-semibold">$1</mark>');
+    return text.replace(
+      regex,
+      '<mark class="bg-yellow-200 font-semibold">$1</mark>'
+    );
   };
 
   return (
     <div className="relative" ref={searchRef}>
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
         <input
           ref={inputRef}
           type="text"
@@ -203,25 +220,25 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+          className="w-full rounded-lg border border-gray-300 py-3 pl-10 pr-10 text-sm focus:border-transparent focus:ring-2 focus:ring-primary-500"
         />
         {value && (
           <button
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 transform p-1 text-gray-400 hover:text-gray-600"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
           {/* Search Suggestions */}
           {suggestions.length > 0 && (
             <div className="p-2">
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+              <div className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-gray-500">
                 Products
               </div>
               {suggestions.map((product, index) => (
@@ -229,27 +246,28 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
                   key={product.id}
                   onClick={() => handleSuggestionSelect(product)}
                   className={cn(
-                    "w-full flex items-center space-x-3 p-2 rounded-md text-left hover:bg-gray-50 transition-colors",
-                    selectedIndex === index && "bg-primary-50 border-primary-200"
+                    'flex w-full items-center space-x-3 rounded-md p-2 text-left transition-colors hover:bg-gray-50',
+                    selectedIndex === index &&
+                      'border-primary-200 bg-primary-50'
                   )}
                 >
-                  <div className="w-10 h-10 bg-gray-100 rounded-md flex-shrink-0">
+                  <div className="h-10 w-10 flex-shrink-0 rounded-md bg-gray-100">
                     {product.images[0] && (
                       <img
                         src={product.images[0].thumbnailUrl}
                         alt={product.images[0].alt}
-                        className="w-full h-full object-cover rounded-md"
+                        className="h-full w-full rounded-md object-cover"
                       />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div
-                      className="text-sm font-medium text-gray-900 truncate"
+                      className="truncate text-sm font-medium text-gray-900"
                       dangerouslySetInnerHTML={{
-                        __html: highlightText(product.name, value)
+                        __html: highlightText(product.name, value),
                       }}
                     />
-                    <div className="text-xs text-gray-500 truncate">
+                    <div className="truncate text-xs text-gray-500">
                       {product.brand} • {product.category}
                     </div>
                   </div>
@@ -263,17 +281,17 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
 
           {/* Recent Searches */}
           {recentSearches.length > 0 && (
-            <div className="p-2 border-t border-gray-100">
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+            <div className="border-t border-gray-100 p-2">
+              <div className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-gray-500">
                 Recent Searches
               </div>
               {recentSearches.map((search, index) => (
                 <button
                   key={index}
                   onClick={() => handleRecentSearchSelect(search)}
-                  className="w-full flex items-center space-x-2 p-2 rounded-md text-left hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center space-x-2 rounded-md p-2 text-left transition-colors hover:bg-gray-50"
                 >
-                  <Clock className="w-4 h-4 text-gray-400" />
+                  <Clock className="h-4 w-4 text-gray-400" />
                   <span className="text-sm text-gray-700">{search}</span>
                 </button>
               ))}
@@ -282,17 +300,17 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
 
           {/* Trending Searches */}
           {trendingSearches.length > 0 && (
-            <div className="p-2 border-t border-gray-100">
-              <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-2">
+            <div className="border-t border-gray-100 p-2">
+              <div className="mb-2 px-2 text-xs font-medium uppercase tracking-wide text-gray-500">
                 Trending
               </div>
               {trendingSearches.map((search, index) => (
                 <button
                   key={index}
                   onClick={() => handleTrendingSearchSelect(search)}
-                  className="w-full flex items-center space-x-2 p-2 rounded-md text-left hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center space-x-2 rounded-md p-2 text-left transition-colors hover:bg-gray-50"
                 >
-                  <TrendingUp className="w-4 h-4 text-green-400" />
+                  <TrendingUp className="h-4 w-4 text-green-400" />
                   <span className="text-sm text-gray-700">{search}</span>
                 </button>
               ))}
@@ -302,27 +320,31 @@ export default function ProductSearch({ value, onChange, placeholder = "Search p
           {/* Loading State */}
           {loading && (
             <div className="p-4 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mx-auto"></div>
-              <p className="text-sm text-gray-500 mt-2">Searching...</p>
+              <div className="mx-auto h-6 w-6 animate-spin rounded-full border-b-2 border-primary-600"></div>
+              <p className="mt-2 text-sm text-gray-500">Searching...</p>
             </div>
           )}
 
           {/* No Results */}
           {!loading && suggestions.length === 0 && value && (
             <div className="p-4 text-center">
-              <p className="text-sm text-gray-500">No products found for "{value}"</p>
-              <p className="text-xs text-gray-400 mt-1">Try different keywords or browse categories</p>
+              <p className="text-sm text-gray-500">
+                No products found for "{value}"
+              </p>
+              <p className="mt-1 text-xs text-gray-400">
+                Try different keywords or browse categories
+              </p>
             </div>
           )}
 
           {/* Search Button */}
           {value && (
-            <div className="p-2 border-t border-gray-100">
+            <div className="border-t border-gray-100 p-2">
               <button
                 onClick={() => handleSearch(value)}
-                className="w-full flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
+                className="flex w-full items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
               >
-                <Search className="w-4 h-4 mr-2" />
+                <Search className="mr-2 h-4 w-4" />
                 Search for "{value}"
               </button>
             </div>

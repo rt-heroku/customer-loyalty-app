@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -42,10 +42,7 @@ export async function PATCH(
     }
 
     if (verifyResult.rows[0].user_id !== userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Update the appointment
@@ -93,9 +90,8 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      message: 'Appointment updated successfully'
+      message: 'Appointment updated successfully',
     });
-
   } catch (error) {
     console.error('Error updating appointment:', error);
     return NextResponse.json(

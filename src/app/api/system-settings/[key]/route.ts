@@ -6,7 +6,7 @@ import {
   setSystemSetting,
   deleteSystemSetting,
   getSystemSettingAsType,
-  setSystemSettingWithType
+  setSystemSettingWithType,
 } from '@/lib/system-settings';
 
 /**
@@ -30,7 +30,12 @@ export async function GET(
 
     const { key } = params;
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type') as 'string' | 'number' | 'boolean' | 'json' | null;
+    const type = searchParams.get('type') as
+      | 'string'
+      | 'number'
+      | 'boolean'
+      | 'json'
+      | null;
     const defaultValue = searchParams.get('default');
 
     if (type) {
@@ -86,7 +91,7 @@ export async function GET(
             break;
         }
       }
-      
+
       const value = await getSystemSettingAsType(key, type, defaultVal);
       return NextResponse.json({ key, value, type });
     } else if (defaultValue !== null) {
@@ -98,7 +103,6 @@ export async function GET(
       const value = await getSystemSetting(key);
       return NextResponse.json({ key, value });
     }
-
   } catch (error) {
     console.error(`Error fetching system setting '${params.key}':`, error);
     return NextResponse.json(
@@ -129,18 +133,10 @@ export async function PUT(
 
     const { key } = params;
     const body = await request.json();
-    const {
-      value,
-      type = 'string',
-      description,
-      category = 'general'
-    } = body;
+    const { value, type = 'string', description, category = 'general' } = body;
 
     if (value === undefined) {
-      return NextResponse.json(
-        { error: 'Value is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Value is required' }, { status: 400 });
     }
 
     let success: boolean;
@@ -149,7 +145,7 @@ export async function PUT(
       success = await setSystemSetting(key, String(value), {
         description,
         category: category as any,
-        user: user.email
+        user: user.email,
       });
     } else {
       success = await setSystemSettingWithType(
@@ -159,7 +155,7 @@ export async function PUT(
         {
           description,
           category: category as any,
-          user: user.email
+          user: user.email,
         }
       );
     }
@@ -169,7 +165,7 @@ export async function PUT(
         message: 'Setting updated successfully',
         key,
         value,
-        type
+        type,
       });
     } else {
       return NextResponse.json(
@@ -177,7 +173,6 @@ export async function PUT(
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error(`Error updating system setting '${params.key}':`, error);
     return NextResponse.json(
@@ -212,7 +207,7 @@ export async function DELETE(
     if (success) {
       return NextResponse.json({
         message: 'Setting deleted successfully',
-        key
+        key,
       });
     } else {
       return NextResponse.json(
@@ -220,7 +215,6 @@ export async function DELETE(
         { status: 404 }
       );
     }
-
   } catch (error) {
     console.error(`Error deleting system setting '${params.key}':`, error);
     return NextResponse.json(

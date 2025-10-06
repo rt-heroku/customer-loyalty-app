@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  Gift, 
-  Star, 
-  TrendingUp, 
-  Calendar, 
-  Search, 
+import {
+  Gift,
+  Star,
+  TrendingUp,
+  Calendar,
+  Search,
   Crown,
   Award,
   Users,
@@ -17,9 +17,14 @@ import {
   X,
   AlertCircle,
   ShoppingBag,
-  Percent
+  Percent,
 } from 'lucide-react';
-import { cn, formatCurrency, formatDate, getLoyaltyTierInfo } from '@/lib/utils';
+import {
+  cn,
+  formatCurrency,
+  formatDate,
+  getLoyaltyTierInfo,
+} from '@/lib/utils';
 
 interface PointsData {
   currentBalance: number;
@@ -75,7 +80,10 @@ export default function LoyaltyPage() {
   const [showRedeemModal, setShowRedeemModal] = useState(false);
   const [redeemQuantity, setRedeemQuantity] = useState(1);
   const [isRedeeming, setIsRedeeming] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [toast, setToast] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -92,7 +100,7 @@ export default function LoyaltyPage() {
   const fetchLoyaltyData = async () => {
     try {
       setIsLoading(true);
-      
+
       // Fetch points data
       const pointsResponse = await fetch('/api/loyalty/points');
       if (pointsResponse.ok) {
@@ -157,16 +165,18 @@ export default function LoyaltyPage() {
     setTimeout(() => setToast(null), 5000);
   };
 
-  const filteredRewards = rewardsData?.rewards.filter(reward =>
-    reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reward.description.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredRewards =
+    rewardsData?.rewards.filter(
+      reward =>
+        reward.reward_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reward.description.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
           <p className="text-gray-600">Loading loyalty program...</p>
         </div>
       </div>
@@ -186,19 +196,23 @@ export default function LoyaltyPage() {
 
   return (
     <div className="p-6">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Loyalty Program</h1>
-          <p className="text-gray-600">Manage your points, rewards, and tier status</p>
-        </div>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="mb-2 text-3xl font-bold text-gray-900">
+          Loyalty Program
+        </h1>
+        <p className="text-gray-600">
+          Manage your points, rewards, and tier status
+        </p>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Points Overview Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mb-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Current Balance */}
             <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600 mb-2">
+              <div className="mb-2 text-4xl font-bold text-primary-600">
                 {pointsData?.currentBalance?.toLocaleString() || 0}
               </div>
               <p className="text-gray-600">Current Points</p>
@@ -206,7 +220,7 @@ export default function LoyaltyPage() {
 
             {/* Total Earned */}
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 mb-2">
+              <div className="mb-2 text-2xl font-bold text-green-600">
                 {pointsData?.totalEarned?.toLocaleString() || 0}
               </div>
               <p className="text-gray-600">Total Earned</p>
@@ -214,7 +228,7 @@ export default function LoyaltyPage() {
 
             {/* Total Redeemed */}
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600 mb-2">
+              <div className="mb-2 text-2xl font-bold text-orange-600">
                 {pointsData?.totalRedeemed?.toLocaleString() || 0}
               </div>
               <p className="text-gray-600">Total Redeemed</p>
@@ -222,13 +236,17 @@ export default function LoyaltyPage() {
           </div>
 
           {/* Tier Progress */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mt-6 border-t border-gray-200 pt-6">
+            <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <Crown className="w-6 h-6 text-primary-600" />
+                <Crown className="h-6 w-6 text-primary-600" />
                 <div>
-                  <h3 className="font-semibold text-gray-900">{pointsData?.tier || 'Bronze'} Member</h3>
-                  <p className="text-sm text-gray-600">Progress to {tierInfo.nextTier}</p>
+                  <h3 className="font-semibold text-gray-900">
+                    {pointsData?.tier || 'Bronze'} Member
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Progress to {tierInfo.nextTier}
+                  </p>
                 </div>
               </div>
               <div className="text-right">
@@ -240,9 +258,9 @@ export default function LoyaltyPage() {
                 </div>
               </div>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-gradient-to-r from-primary-500 to-secondary-500 h-3 rounded-full transition-all duration-1000"
+            <div className="h-3 w-full rounded-full bg-gray-200">
+              <div
+                className="h-3 rounded-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-1000"
                 style={{ width: `${tierInfo.progressToNext}%` }}
               ></div>
             </div>
@@ -250,22 +268,22 @@ export default function LoyaltyPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-gray-100">
+        <div className="mb-8 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
           <nav className="flex space-x-8">
-            {tabs.map((tab) => {
+            {tabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    "flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors",
+                    'flex items-center space-x-2 rounded-lg px-4 py-2 transition-colors',
                     activeTab === tab.id
-                      ? "bg-primary-50 text-primary-700 border border-primary-200"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? 'border border-primary-200 bg-primary-50 text-primary-700'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                   )}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="h-5 w-5" />
                   <span className="font-medium">{tab.label}</span>
                 </button>
               );
@@ -274,20 +292,27 @@ export default function LoyaltyPage() {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
           {/* Overview Tab */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Loyalty Overview</h2>
-              
+              <h2 className="text-2xl font-bold text-gray-900">
+                Loyalty Overview
+              </h2>
+
               {/* Tier Benefits */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Your {pointsData?.tier || 'Bronze'} Benefits</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                  Your {pointsData?.tier || 'Bronze'} Benefits
+                </h3>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {tierInfo.benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <Award className="w-4 h-4 text-primary-600" />
+                    <div
+                      key={index}
+                      className="flex items-center space-x-3 rounded-lg bg-gray-50 p-3"
+                    >
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100">
+                        <Award className="h-4 w-4 text-primary-600" />
                       </div>
                       <span className="text-sm text-gray-700">{benefit}</span>
                     </div>
@@ -296,22 +321,29 @@ export default function LoyaltyPage() {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-blue-900">{pointsData?.totalTransactions || 0}</div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="rounded-lg bg-blue-50 p-4 text-center">
+                  <TrendingUp className="mx-auto mb-2 h-8 w-8 text-blue-600" />
+                  <div className="text-2xl font-bold text-blue-900">
+                    {pointsData?.totalTransactions || 0}
+                  </div>
                   <p className="text-sm text-blue-700">Total Transactions</p>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                <div className="rounded-lg bg-green-50 p-4 text-center">
+                  <Calendar className="mx-auto mb-2 h-8 w-8 text-green-600" />
                   <div className="text-lg font-bold text-green-900">
-                    {formatDate(pointsData?.enrollmentDate || new Date().toISOString(), { month: 'short', year: 'numeric' })}
+                    {formatDate(
+                      pointsData?.enrollmentDate || new Date().toISOString(),
+                      { month: 'short', year: 'numeric' }
+                    )}
                   </div>
                   <p className="text-sm text-green-700">Member Since</p>
                 </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <Crown className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                  <div className="text-lg font-bold text-purple-900">{pointsData?.tier || 'Bronze'}</div>
+                <div className="rounded-lg bg-purple-50 p-4 text-center">
+                  <Crown className="mx-auto mb-2 h-8 w-8 text-purple-600" />
+                  <div className="text-lg font-bold text-purple-900">
+                    {pointsData?.tier || 'Bronze'}
+                  </div>
                   <p className="text-sm text-purple-700">Current Tier</p>
                 </div>
               </div>
@@ -321,39 +353,50 @@ export default function LoyaltyPage() {
           {/* Rewards Tab */}
           {activeTab === 'rewards' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Available Rewards</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Available Rewards
+                </h2>
                 <div className="relative">
-                  <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search rewards..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRewards.map((reward) => (
-                  <div key={reward.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {filteredRewards.map(reward => (
+                  <div
+                    key={reward.id}
+                    className="rounded-xl border border-gray-200 bg-gray-50 p-6 transition-shadow hover:shadow-lg"
+                  >
+                    <div className="mb-4 flex items-center justify-between">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
                         {reward.reward_type === 'discount' ? (
-                          <Percent className="w-6 h-6 text-primary-600" />
+                          <Percent className="h-6 w-6 text-primary-600" />
                         ) : (
-                          <Gift className="w-6 h-6 text-primary-600" />
+                          <Gift className="h-6 w-6 text-primary-600" />
                         )}
                       </div>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-primary-600">{reward.points_required}</div>
+                        <div className="text-2xl font-bold text-primary-600">
+                          {reward.points_required}
+                        </div>
                         <div className="text-sm text-gray-600">points</div>
                       </div>
                     </div>
 
-                    <h3 className="font-semibold text-gray-900 mb-2">{reward.reward_name}</h3>
-                    <p className="text-sm text-gray-600 mb-4">{reward.description}</p>
+                    <h3 className="mb-2 font-semibold text-gray-900">
+                      {reward.reward_name}
+                    </h3>
+                    <p className="mb-4 text-sm text-gray-600">
+                      {reward.description}
+                    </p>
 
                     {reward.reward_type === 'discount' && (
                       <div className="mb-4">
@@ -382,10 +425,10 @@ export default function LoyaltyPage() {
                         }}
                         disabled={!reward.isAvailable}
                         className={cn(
-                          "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                          'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
                           reward.isAvailable
-                            ? "bg-primary-600 text-white hover:bg-primary-700"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            ? 'bg-primary-600 text-white hover:bg-primary-700'
+                            : 'cursor-not-allowed bg-gray-300 text-gray-500'
                         )}
                       >
                         {reward.isAvailable ? 'Redeem' : 'Unavailable'}
@@ -396,10 +439,12 @@ export default function LoyaltyPage() {
               </div>
 
               {filteredRewards.length === 0 && (
-                <div className="text-center py-12">
-                  <Gift className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-12 text-center">
+                  <Gift className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">No rewards found</p>
-                  <p className="text-sm text-gray-400">Try adjusting your search terms</p>
+                  <p className="text-sm text-gray-400">
+                    Try adjusting your search terms
+                  </p>
                 </div>
               )}
             </div>
@@ -408,26 +453,39 @@ export default function LoyaltyPage() {
           {/* History Tab */}
           {activeTab === 'history' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Points History</h2>
-              
+              <h2 className="text-2xl font-bold text-gray-900">
+                Points History
+              </h2>
+
               <div className="space-y-4">
-                {pointsData?.history?.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                {pointsData?.history?.map(entry => (
+                  <div
+                    key={entry.id}
+                    className="flex items-center justify-between rounded-lg bg-gray-50 p-4"
+                  >
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                        <ShoppingBag className="w-5 h-5 text-primary-600" />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100">
+                        <ShoppingBag className="h-5 w-5 text-primary-600" />
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{entry.description}</p>
-                        <p className="text-sm text-gray-600">{formatDate(entry.created_at)}</p>
+                        <p className="font-medium text-gray-900">
+                          {entry.description}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {formatDate(entry.created_at)}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
                       {entry.points_earned > 0 && (
-                        <div className="text-green-600 font-medium">+{entry.points_earned}</div>
+                        <div className="font-medium text-green-600">
+                          +{entry.points_earned}
+                        </div>
                       )}
                       {entry.points_redeemed > 0 && (
-                        <div className="text-red-600 font-medium">-{entry.points_redeemed}</div>
+                        <div className="font-medium text-red-600">
+                          -{entry.points_redeemed}
+                        </div>
                       )}
                       <div className="text-xs text-gray-500">
                         {formatCurrency(parseFloat(entry.total))}
@@ -438,10 +496,12 @@ export default function LoyaltyPage() {
               </div>
 
               {pointsData?.history?.length === 0 && (
-                <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <div className="py-12 text-center">
+                  <Calendar className="mx-auto mb-4 h-16 w-16 text-gray-300" />
                   <p className="text-gray-500">No points history yet</p>
-                  <p className="text-sm text-gray-400">Your points activity will appear here</p>
+                  <p className="text-sm text-gray-400">
+                    Your points activity will appear here
+                  </p>
                 </div>
               )}
             </div>
@@ -450,24 +510,31 @@ export default function LoyaltyPage() {
           {/* Referrals Tab */}
           {activeTab === 'referrals' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Referral Program</h2>
-              
-              <div className="bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl p-6 text-white">
+              <h2 className="text-2xl font-bold text-gray-900">
+                Referral Program
+              </h2>
+
+              <div className="rounded-xl bg-gradient-to-r from-primary-500 to-secondary-500 p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-bold mb-2">Earn Points for Referrals</h3>
-                    <p className="text-primary-100 mb-4">
-                      Share your referral code with friends and earn 500 points for each successful referral!
+                    <h3 className="mb-2 text-xl font-bold">
+                      Earn Points for Referrals
+                    </h3>
+                    <p className="mb-4 text-primary-100">
+                      Share your referral code with friends and earn 500 points
+                      for each successful referral!
                     </p>
                     <div className="flex items-center space-x-4">
-                      <div className="bg-white/20 rounded-lg px-4 py-2">
-                        <span className="font-mono text-lg">LOY{user.id?.toString().padStart(3, '0')}</span>
+                      <div className="rounded-lg bg-white/20 px-4 py-2">
+                        <span className="font-mono text-lg">
+                          LOY{user.id?.toString().padStart(3, '0')}
+                        </span>
                       </div>
                       <button
                         onClick={copyReferralCode}
-                        className="flex items-center space-x-2 bg-white text-primary-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="flex items-center space-x-2 rounded-lg bg-white px-4 py-2 text-primary-600 transition-colors hover:bg-gray-100"
                       >
-                        <Copy className="w-4 h-4" />
+                        <Copy className="h-4 w-4" />
                         <span>Copy Code</span>
                       </button>
                     </div>
@@ -479,37 +546,55 @@ export default function LoyaltyPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">How it Works</h3>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="rounded-xl bg-gray-50 p-6">
+                  <h3 className="mb-4 font-semibold text-gray-900">
+                    How it Works
+                  </h3>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-600">1</span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100">
+                        <span className="text-sm font-bold text-primary-600">
+                          1
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-700">Share your referral code</span>
+                      <span className="text-sm text-gray-700">
+                        Share your referral code
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-600">2</span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100">
+                        <span className="text-sm font-bold text-primary-600">
+                          2
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-700">Friend signs up using your code</span>
+                      <span className="text-sm text-gray-700">
+                        Friend signs up using your code
+                      </span>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-600">3</span>
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100">
+                        <span className="text-sm font-bold text-primary-600">
+                          3
+                        </span>
                       </div>
-                      <span className="text-sm text-gray-700">Both of you earn 500 points!</span>
+                      <span className="text-sm text-gray-700">
+                        Both of you earn 500 points!
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-xl p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4">Your Referrals</h3>
-                  <div className="text-center py-8">
-                    <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <div className="rounded-xl bg-gray-50 p-6">
+                  <h3 className="mb-4 font-semibold text-gray-900">
+                    Your Referrals
+                  </h3>
+                  <div className="py-8 text-center">
+                    <Users className="mx-auto mb-4 h-12 w-12 text-gray-300" />
                     <p className="text-gray-500">No referrals yet</p>
-                    <p className="text-sm text-gray-400">Start sharing your code to earn points!</p>
+                    <p className="text-sm text-gray-400">
+                      Start sharing your code to earn points!
+                    </p>
                   </div>
                 </div>
               </div>
@@ -520,29 +605,33 @@ export default function LoyaltyPage() {
 
       {/* Redeem Modal */}
       {showRedeemModal && selectedReward && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6">
+            <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-900">Redeem Reward</h3>
               <button
                 onClick={() => setShowRedeemModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900">{selectedReward.reward_name}</h4>
-                <p className="text-sm text-gray-600">{selectedReward.description}</p>
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h4 className="font-semibold text-gray-900">
+                  {selectedReward.reward_name}
+                </h4>
+                <p className="text-sm text-gray-600">
+                  {selectedReward.description}
+                </p>
                 <div className="mt-2 text-lg font-bold text-primary-600">
                   {selectedReward.points_required} points
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Quantity
                 </label>
                 <input
@@ -550,37 +639,49 @@ export default function LoyaltyPage() {
                   min="1"
                   max="10"
                   value={redeemQuantity}
-                  onChange={(e) => setRedeemQuantity(parseInt(e.target.value) || 1)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  onChange={e =>
+                    setRedeemQuantity(parseInt(e.target.value) || 1)
+                  }
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
-              <div className="bg-blue-50 rounded-lg p-4">
+              <div className="rounded-lg bg-blue-50 p-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Total Points:</span>
-                  <span className="font-semibold">{selectedReward.points_required * redeemQuantity}</span>
+                  <span className="font-semibold">
+                    {selectedReward.points_required * redeemQuantity}
+                  </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Your Balance:</span>
-                  <span className="font-semibold">{pointsData?.currentBalance}</span>
+                  <span className="font-semibold">
+                    {pointsData?.currentBalance}
+                  </span>
                 </div>
               </div>
 
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowRedeemModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleRedeem}
-                  disabled={isRedeeming || (pointsData?.currentBalance || 0) < (selectedReward.points_required * redeemQuantity)}
+                  disabled={
+                    isRedeeming ||
+                    (pointsData?.currentBalance || 0) <
+                      selectedReward.points_required * redeemQuantity
+                  }
                   className={cn(
-                    "flex-1 px-4 py-2 rounded-lg text-white transition-colors",
-                    isRedeeming || (pointsData?.currentBalance || 0) < (selectedReward.points_required * redeemQuantity)
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-primary-600 hover:bg-primary-700"
+                    'flex-1 rounded-lg px-4 py-2 text-white transition-colors',
+                    isRedeeming ||
+                      (pointsData?.currentBalance || 0) <
+                        selectedReward.points_required * redeemQuantity
+                      ? 'cursor-not-allowed bg-gray-300'
+                      : 'bg-primary-600 hover:bg-primary-700'
                   )}
                 >
                   {isRedeeming ? 'Redeeming...' : 'Confirm Redemption'}
@@ -594,27 +695,29 @@ export default function LoyaltyPage() {
       {/* Toast Notifications */}
       {toast && (
         <div className="fixed bottom-4 right-4 z-50">
-          <div className={cn(
-            "flex items-center space-x-3 px-6 py-4 rounded-lg shadow-lg max-w-sm",
-            toast.type === 'success' 
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
-          )}>
+          <div
+            className={cn(
+              'flex max-w-sm items-center space-x-3 rounded-lg px-6 py-4 shadow-lg',
+              toast.type === 'success'
+                ? 'border border-green-200 bg-green-50 text-green-800'
+                : 'border border-red-200 bg-red-50 text-red-800'
+            )}
+          >
             {toast.type === 'success' ? (
-              <Check className="w-5 h-5 text-green-600" />
+              <Check className="h-5 w-5 text-green-600" />
             ) : (
-              <AlertCircle className="w-5 h-5 text-red-600" />
+              <AlertCircle className="h-5 w-5 text-red-600" />
             )}
             <span className="text-sm font-medium">{toast.message}</span>
             <button
               onClick={() => setToast(null)}
               className="text-gray-400 hover:text-gray-600"
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
       )}
-      </div>
+    </div>
   );
 }

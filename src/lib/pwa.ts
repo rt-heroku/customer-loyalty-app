@@ -24,7 +24,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return null;
     }
-    
+
     if (!('serviceWorker' in navigator)) {
       console.log('Service Worker not supported');
       return null;
@@ -39,7 +39,10 @@ export class PWAManager {
         const newWorker = this.registration!.installing;
         if (newWorker) {
           newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (
+              newWorker.state === 'installed' &&
+              navigator.serviceWorker.controller
+            ) {
               this.showUpdatePrompt();
             }
           });
@@ -58,7 +61,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return false;
     }
-    
+
     if (!('Notification' in window)) {
       console.log('Notifications not supported');
       return false;
@@ -81,7 +84,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return null;
     }
-    
+
     if (!this.registration) {
       console.error('Service Worker not registered');
       return null;
@@ -90,7 +93,9 @@ export class PWAManager {
     try {
       const subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '') as any
+        applicationServerKey: this.urlBase64ToUint8Array(
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
+        ) as any,
       });
 
       console.log('Push subscription:', subscription);
@@ -106,7 +111,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     if (!this.registration || Notification.permission !== 'granted') {
       return;
     }
@@ -114,7 +119,7 @@ export class PWAManager {
     this.registration.showNotification(title, {
       icon: '/icons/icon-192x192.png',
       badge: '/icons/badge-72x72.png',
-      ...options
+      ...options,
     });
   }
 
@@ -123,7 +128,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return false;
     }
-    
+
     if (!this.registration || !('sync' in this.registration)) {
       console.log('Background Sync not supported');
       return false;
@@ -144,7 +149,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     if (!this.registration || !this.registration.active) {
       return;
     }
@@ -152,7 +157,7 @@ export class PWAManager {
     this.registration.active.postMessage({
       type: 'CACHE_DATA',
       key,
-      data
+      data,
     });
   }
 
@@ -161,22 +166,25 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return null;
     }
-    
+
     if (!this.registration || !this.registration.active) {
       return null;
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const channel = new MessageChannel();
-      
-      channel.port1.onmessage = (event) => {
+
+      channel.port1.onmessage = event => {
         resolve(event.data.data);
       };
 
-      this.registration!.active!.postMessage({
-        type: 'GET_CACHED_DATA',
-        key
-      }, [channel.port2]);
+      this.registration!.active!.postMessage(
+        {
+          type: 'GET_CACHED_DATA',
+          key,
+        },
+        [channel.port2]
+      );
     });
   }
 
@@ -190,7 +198,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return false;
     }
-    
+
     if (!this.registration || !this.registration.waiting) {
       return false;
     }
@@ -209,7 +217,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     if (this.isOnline) {
       // Submit normally if online
       try {
@@ -224,34 +232,36 @@ export class PWAManager {
         if (response.ok) {
           this.showNotification('Success', {
             body: 'Your request has been submitted successfully',
-            tag: 'form-submission'
+            tag: 'form-submission',
           });
         }
       } catch (error) {
         console.error('Form submission failed:', error);
         this.showNotification('Error', {
           body: 'Failed to submit request. Will retry when online.',
-          tag: 'form-submission-error'
+          tag: 'form-submission-error',
         });
       }
     } else {
       // Store for later submission if offline
       await this.storeOfflineRequest(url, data);
       this.showNotification('Offline Mode', {
-        body: 'Request saved. Will submit when you\'re back online.',
-        tag: 'offline-request'
+        body: "Request saved. Will submit when you're back online.",
+        tag: 'offline-request',
       });
     }
   }
 
   // Store offline request
   private async storeOfflineRequest(url: string, data: any): Promise<void> {
-    const offlineRequests = JSON.parse(localStorage.getItem('offlineRequests') || '[]');
+    const offlineRequests = JSON.parse(
+      localStorage.getItem('offlineRequests') || '[]'
+    );
     offlineRequests.push({
       id: Date.now(),
       url,
       data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     localStorage.setItem('offlineRequests', JSON.stringify(offlineRequests));
   }
@@ -261,10 +271,12 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     if (!this.isOnline) return;
 
-    const offlineRequests = JSON.parse(localStorage.getItem('offlineRequests') || '[]');
+    const offlineRequests = JSON.parse(
+      localStorage.getItem('offlineRequests') || '[]'
+    );
     if (offlineRequests.length === 0) return;
 
     console.log('Processing offline requests:', offlineRequests.length);
@@ -281,12 +293,17 @@ export class PWAManager {
 
         if (response.ok) {
           // Remove successful request
-          const updatedRequests = offlineRequests.filter((r: any) => r.id !== request.id);
-          localStorage.setItem('offlineRequests', JSON.stringify(updatedRequests));
-          
+          const updatedRequests = offlineRequests.filter(
+            (r: any) => r.id !== request.id
+          );
+          localStorage.setItem(
+            'offlineRequests',
+            JSON.stringify(updatedRequests)
+          );
+
           this.showNotification('Offline Request Processed', {
             body: 'Your offline request has been submitted successfully',
-            tag: 'offline-request-processed'
+            tag: 'offline-request-processed',
           });
         }
       } catch (error) {
@@ -301,16 +318,16 @@ export class PWAManager {
       this.isOnline = true;
       this.processOfflineRequests();
       this.showNotification('Back Online', {
-        body: 'You\'re back online. Processing offline requests...',
-        tag: 'back-online'
+        body: "You're back online. Processing offline requests...",
+        tag: 'back-online',
       });
     });
 
     window.addEventListener('offline', () => {
       this.isOnline = false;
       this.showNotification('Offline Mode', {
-        body: 'You\'re offline. Some features may be limited.',
-        tag: 'offline-mode'
+        body: "You're offline. Some features may be limited.",
+        tag: 'offline-mode',
       });
     });
   }
@@ -324,7 +341,7 @@ export class PWAManager {
 
   // Convert VAPID key
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
       .replace(/_/g, '/');
@@ -343,7 +360,7 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return 'not-supported';
     }
-    
+
     if (!('standalone' in window.navigator)) {
       return 'not-supported';
     }
@@ -356,12 +373,12 @@ export class PWAManager {
     if (typeof window === 'undefined') {
       return;
     }
-    
+
     if ('vibrate' in navigator) {
       const patterns = {
         light: [10],
         medium: [20, 10, 20],
-        heavy: [50, 25, 50, 25, 50]
+        heavy: [50, 25, 50, 25, 50],
       };
       navigator.vibrate(patterns[pattern]);
     }
@@ -370,5 +387,3 @@ export class PWAManager {
 
 // Export singleton instance
 export const pwaManager = PWAManager.getInstance();
-
-

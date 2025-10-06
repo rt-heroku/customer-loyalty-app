@@ -2,16 +2,16 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Star, 
-  Gift, 
-  TrendingUp, 
-  Clock, 
-  MapPin, 
+import {
+  Star,
+  Gift,
+  TrendingUp,
+  Clock,
+  MapPin,
   Bell,
   ChevronRight,
   Plus,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { pwaManager } from '@/lib/pwa';
@@ -24,7 +24,11 @@ interface MobileDashboardProps {
   recentActivity: any[];
 }
 
-export default function MobileDashboard({ stats, recentTransactions, recentActivity }: MobileDashboardProps) {
+export default function MobileDashboard({
+  stats,
+  recentTransactions,
+  recentActivity,
+}: MobileDashboardProps) {
   const { user } = useAuth();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
@@ -42,10 +46,10 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
   const handleRefresh = async () => {
     setIsRefreshing(true);
     pwaManager.hapticFeedback('medium');
-    
+
     // Simulate refresh delay
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     // Reload data here
     window.location.reload();
     setIsRefreshing(false);
@@ -73,7 +77,7 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
         pwaManager.hapticFeedback('medium');
         // Navigate to scan page
       },
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'notifications',
@@ -83,7 +87,7 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
         pwaManager.hapticFeedback('medium');
         // Navigate to notifications
       },
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
     },
     {
       id: 'stores',
@@ -93,12 +97,12 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
         pwaManager.hapticFeedback('medium');
         // Navigate to stores
       },
-      color: 'bg-green-500'
-    }
+      color: 'bg-green-500',
+    },
   ];
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-gray-50 pb-20 md:hidden"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
@@ -116,20 +120,20 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
               <h1 className="text-2xl font-bold text-gray-900">
                 Welcome back, {user?.firstName || 'Member'}!
               </h1>
-              <p className="text-gray-600 text-sm">
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
+              <p className="text-sm text-gray-600">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </p>
             </div>
-            
+
             <motion.button
               onClick={handleRefresh}
               animate={{ rotate: isRefreshing ? 360 : 0 }}
               transition={{ duration: 1, repeat: isRefreshing ? Infinity : 0 }}
-              className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              className="rounded-full bg-gray-100 p-2 transition-colors hover:bg-gray-200"
               style={{ touchAction: 'manipulation' }}
             >
               <RefreshCw size={20} className="text-gray-600" />
@@ -139,36 +143,40 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
       </motion.div>
 
       {/* Main Content */}
-      <div className="px-4 space-y-4">
+      <div className="space-y-4 px-4">
         {/* Loyalty Status Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg"
+          className="rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 p-6 text-white shadow-lg"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold">Loyalty Status</h2>
-              <p className="text-blue-100 text-sm">{user?.tier || 'Bronze'} Member</p>
+              <p className="text-sm text-blue-100">
+                {user?.tier || 'Bronze'} Member
+              </p>
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold">{user?.points || 0}</div>
-              <div className="text-blue-100 text-sm">Points</div>
+              <div className="text-sm text-blue-100">Points</div>
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="mb-4">
-            <div className="flex justify-between text-sm mb-2">
+            <div className="mb-2 flex justify-between text-sm">
               <span>Current Tier</span>
               <span>{tierInfo.pointsToNext} to next tier</span>
             </div>
-            <div className="w-full bg-blue-400 bg-opacity-30 rounded-full h-3">
+            <div className="h-3 w-full rounded-full bg-blue-400 bg-opacity-30">
               <motion.div
-                className="bg-white h-3 rounded-full"
+                className="h-3 rounded-full bg-white"
                 initial={{ width: 0 }}
-                animate={{ width: `${Math.min(((user?.points || 0) / (tierInfo.pointsToNext + (user?.points || 0))) * 100, 100)}%` }}
+                animate={{
+                  width: `${Math.min(((user?.points || 0) / (tierInfo.pointsToNext + (user?.points || 0))) * 100, 100)}%`,
+                }}
                 transition={{ duration: 1, delay: 0.5 }}
               />
             </div>
@@ -176,10 +184,10 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
 
           {/* Quick Actions */}
           <div className="flex space-x-3">
-            <button className="flex-1 bg-white bg-opacity-20 rounded-xl py-2 px-4 text-sm font-medium hover:bg-opacity-30 transition-all">
+            <button className="flex-1 rounded-xl bg-white bg-opacity-20 px-4 py-2 text-sm font-medium transition-all hover:bg-opacity-30">
               View Rewards
             </button>
-            <button className="flex-1 bg-white bg-opacity-20 rounded-xl py-2 px-4 text-sm font-medium hover:bg-opacity-30 transition-all">
+            <button className="flex-1 rounded-xl bg-white bg-opacity-20 px-4 py-2 text-sm font-medium transition-all hover:bg-opacity-30">
               Earn More
             </button>
           </div>
@@ -192,30 +200,30 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
           transition={{ delay: 0.2 }}
           className="grid grid-cols-2 gap-4"
         >
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-xl">
+              <div className="rounded-xl bg-green-100 p-2">
                 <TrendingUp size={20} className="text-green-600" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-900">
                   ${stats?.totalSpent || 0}
                 </div>
-                <div className="text-gray-600 text-sm">Total Spent</div>
+                <div className="text-sm text-gray-600">Total Spent</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 shadow-sm">
+          <div className="rounded-2xl bg-white p-4 shadow-sm">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-xl">
+              <div className="rounded-xl bg-blue-100 p-2">
                 <Star size={20} className="text-blue-600" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-gray-900">
                   {stats?.visitCount || 0}
                 </div>
-                <div className="text-gray-600 text-sm">Store Visits</div>
+                <div className="text-sm text-gray-600">Store Visits</div>
               </div>
             </div>
           </div>
@@ -226,18 +234,22 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-sm overflow-hidden"
+          className="overflow-hidden rounded-2xl bg-white shadow-sm"
         >
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
-              <button 
+              <h3 className="text-lg font-semibold text-gray-900">
+                Recent Transactions
+              </h3>
+              <button
                 onClick={() => toggleCard('transactions')}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="rounded-full p-2 transition-colors hover:bg-gray-100"
                 style={{ touchAction: 'manipulation' }}
               >
                 <motion.div
-                  animate={{ rotate: expandedCards.has('transactions') ? 90 : 0 }}
+                  animate={{
+                    rotate: expandedCards.has('transactions') ? 90 : 0,
+                  }}
                   transition={{ duration: 0.2 }}
                 >
                   <ChevronRight size={20} className="text-gray-600" />
@@ -255,17 +267,17 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   {recentTransactions.slice(0, 3).map((transaction, index) => (
                     <motion.div
                       key={transaction.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
+                      className="flex items-center justify-between rounded-xl bg-gray-50 p-3"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                           <Clock size={16} className="text-blue-600" />
                         </div>
                         <div>
@@ -298,14 +310,16 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl shadow-sm overflow-hidden"
+          className="overflow-hidden rounded-2xl bg-white shadow-sm"
         >
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-              <button 
+              <h3 className="text-lg font-semibold text-gray-900">
+                Recent Activity
+              </h3>
+              <button
                 onClick={() => toggleCard('activity')}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="rounded-full p-2 transition-colors hover:bg-gray-100"
                 style={{ touchAction: 'manipulation' }}
               >
                 <motion.div
@@ -327,16 +341,16 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="p-4 space-y-3">
+                <div className="space-y-3 p-4">
                   {recentActivity.slice(0, 3).map((activity, index) => (
                     <motion.div
                       key={activity.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl"
+                      className="flex items-center space-x-3 rounded-xl bg-gray-50 p-3"
                     >
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-100">
                         <Gift size={16} className="text-purple-600" />
                       </div>
                       <div className="flex-1">
@@ -371,7 +385,7 @@ export default function MobileDashboard({ stats, recentTransactions, recentActiv
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={action.action}
-                  className={`${action.color} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white transform hover:scale-110 transition-transform`}
+                  className={`${action.color} flex h-14 w-14 transform items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110`}
                   style={{ touchAction: 'manipulation' }}
                 >
                   <action.icon size={24} />

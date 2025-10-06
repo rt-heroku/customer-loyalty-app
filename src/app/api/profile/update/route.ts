@@ -26,7 +26,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const validation = updateProfileSchema.safeParse(body);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
@@ -35,7 +35,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const { firstName, lastName, email, phone, address } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Check if email is already taken by another user
     if (email !== user.email) {
@@ -122,7 +123,6 @@ export async function PUT(request: NextRequest) {
       success: true,
       message: 'Profile updated successfully',
     });
-
   } catch (error) {
     console.error('Profile update error:', error);
     return NextResponse.json(
@@ -131,4 +131,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

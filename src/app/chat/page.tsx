@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useChat } from '@/contexts/ChatContext';
-import { 
-  MessageCircle, 
-  Send, 
-  Paperclip, 
-  Download, 
+import {
+  MessageCircle,
+  Send,
+  Paperclip,
+  Download,
   Trash2,
   History,
-  Plus
+  Plus,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ChatMessage from '@/components/chat/ChatMessage';
@@ -18,14 +18,9 @@ import FileUploadModal from '@/components/chat/FileUploadModal';
 import { ChatSession } from '@/types/chat';
 
 export default function ChatPage() {
-  const { 
-    chatState, 
-    sendMessage, 
-    clearChat, 
-    loadChatSettings,
-    isChatEnabled 
-  } = useChat();
-  
+  const { chatState, sendMessage, clearChat, loadChatSettings, isChatEnabled } =
+    useChat();
+
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [showFileUpload, setShowFileUpload] = useState(false);
@@ -53,9 +48,9 @@ export default function ChatPage() {
       const response = await fetch('/api/chat/sessions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'New Chat' })
+        body: JSON.stringify({ title: 'New Chat' }),
       });
-      
+
       const data = await response.json();
       if (data.sessionId) {
         await loadSessions();
@@ -73,7 +68,7 @@ export default function ChatPage() {
     try {
       const response = await fetch(`/api/chat/sessions/${sessionId}`);
       const data = await response.json();
-      
+
       if (data.session) {
         // Update the current session in context
         // This would need to be implemented in the ChatContext
@@ -105,14 +100,16 @@ export default function ChatPage() {
 
   const exportChat = () => {
     if (!chatState.messages.length) return;
-    
+
     const chatData = {
       session: chatState.currentSession,
       messages: chatState.messages,
-      exportedAt: new Date().toISOString()
+      exportedAt: new Date().toISOString(),
     };
-    
-    const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+
+    const blob = new Blob([JSON.stringify(chatData, null, 2)], {
+      type: 'application/json',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -123,11 +120,15 @@ export default function ChatPage() {
 
   if (!isChatEnabled) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Chat Unavailable</h2>
-          <p className="text-gray-600">Chat functionality is currently disabled.</p>
+          <MessageCircle className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+          <h2 className="mb-2 text-2xl font-bold text-gray-900">
+            Chat Unavailable
+          </h2>
+          <p className="text-gray-600">
+            Chat functionality is currently disabled.
+          </p>
         </div>
       </div>
     );
@@ -135,43 +136,47 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto p-4">
+      <div className="mx-auto max-w-6xl p-4">
         {/* Header */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+        <div className="mb-6 rounded-2xl border border-gray-200 bg-white shadow-sm">
           <div className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">AI Assistant</h1>
-                <p className="text-gray-600 mt-1">Get help with your loyalty program and account</p>
+                <h1 className="text-3xl font-bold text-gray-900">
+                  AI Assistant
+                </h1>
+                <p className="mt-1 text-gray-600">
+                  Get help with your loyalty program and account
+                </p>
               </div>
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setShowSessions(!showSessions)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-gray-400 transition-colors hover:text-gray-600"
                   title="Chat History"
                 >
-                  <History className="w-5 h-5" />
+                  <History className="h-5 w-5" />
                 </button>
                 <button
                   onClick={exportChat}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-2 text-gray-400 transition-colors hover:text-gray-600"
                   title="Export Chat"
                 >
-                  <Download className="w-5 h-5" />
+                  <Download className="h-5 w-5" />
                 </button>
                 <button
                   onClick={clearChat}
-                  className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                  className="p-2 text-gray-400 transition-colors hover:text-red-500"
                   title="Clear Chat"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="h-5 w-5" />
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           {/* Chat Sessions Sidebar */}
           <AnimatePresence>
             {showSessions && (
@@ -181,27 +186,29 @@ export default function ChatPage() {
                 exit={{ opacity: 0, x: -20 }}
                 className="lg:col-span-1"
               >
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">Chat History</h3>
+                <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-semibold text-gray-900">
+                      Chat History
+                    </h3>
                     <button
                       onClick={createNewSession}
                       disabled={isLoading}
-                      className="p-1 text-primary-500 hover:text-primary-600 transition-colors"
+                      className="p-1 text-primary-500 transition-colors hover:text-primary-600"
                       title="New Chat"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="h-4 w-4" />
                     </button>
                   </div>
-                  
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {sessions.map((session) => (
+
+                  <div className="max-h-96 space-y-2 overflow-y-auto">
+                    {sessions.map(session => (
                       <button
                         key={session.id}
                         onClick={() => loadSessionMessages(session.id)}
-                        className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="w-full rounded-lg p-3 text-left transition-colors hover:bg-gray-50"
                       >
-                        <div className="font-medium text-sm text-gray-900 truncate">
+                        <div className="truncate text-sm font-medium text-gray-900">
                           {session.title || 'Untitled Chat'}
                         </div>
                         <div className="text-xs text-gray-500">
@@ -216,10 +223,12 @@ export default function ChatPage() {
           </AnimatePresence>
 
           {/* Main Chat Area */}
-          <div className={`${showSessions ? 'lg:col-span-3' : 'lg:col-span-4'}`}>
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 h-[600px] flex flex-col">
+          <div
+            className={`${showSessions ? 'lg:col-span-3' : 'lg:col-span-4'}`}
+          >
+            <div className="flex h-[600px] flex-col rounded-2xl border border-gray-200 bg-white shadow-sm">
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              <div className="flex-1 space-y-4 overflow-y-auto p-6">
                 <AnimatePresence>
                   {chatState.messages.map((message, index) => (
                     <motion.div
@@ -232,46 +241,51 @@ export default function ChatPage() {
                     </motion.div>
                   ))}
                 </AnimatePresence>
-                
+
                 {chatState.typingIndicator && (
                   <TypingIndicator indicator={chatState.typingIndicator} />
                 )}
-                
+
                 {chatState.messages.length === 0 && (
-                  <div className="text-center py-12">
-                    <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Start a Conversation</h3>
-                    <p className="text-gray-600">Ask me anything about your loyalty program, account, or get help with any questions you have.</p>
+                  <div className="py-12 text-center">
+                    <MessageCircle className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                      Start a Conversation
+                    </h3>
+                    <p className="text-gray-600">
+                      Ask me anything about your loyalty program, account, or
+                      get help with any questions you have.
+                    </p>
                   </div>
                 )}
               </div>
 
               {/* Input Area */}
-              <div className="p-6 border-t border-gray-200">
+              <div className="border-t border-gray-200 p-6">
                 <div className="flex items-end space-x-3">
-                  <div className="flex-1 relative">
+                  <div className="relative flex-1">
                     <textarea
                       value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
+                      onChange={e => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type your message..."
-                      className="w-full p-4 border border-gray-300 rounded-xl resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full resize-none rounded-xl border border-gray-300 p-4 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                       rows={1}
                       style={{ minHeight: '56px', maxHeight: '120px' }}
                     />
                     <button
                       onClick={() => setShowFileUpload(true)}
-                      className="absolute right-3 bottom-3 p-2 text-gray-400 hover:text-primary-500 transition-colors"
+                      className="absolute bottom-3 right-3 p-2 text-gray-400 transition-colors hover:text-primary-500"
                     >
-                      <Paperclip className="w-5 h-5" />
+                      <Paperclip className="h-5 w-5" />
                     </button>
                   </div>
                   <button
                     onClick={handleSendMessage}
                     disabled={!inputValue.trim() || chatState.isSending}
-                    className="p-4 bg-primary-500 text-white rounded-xl hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="rounded-xl bg-primary-500 p-4 text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <Send className="w-5 h-5" />
+                    <Send className="h-5 w-5" />
                   </button>
                 </div>
               </div>

@@ -6,9 +6,14 @@ import { AuthenticatedUser } from '@/lib/auth';
 interface AuthContextType {
   user: AuthenticatedUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  register: (userData: RegisterData) => Promise<{ success: boolean; error?: string; redirectTo?: string }>;
+  register: (
+    userData: RegisterData
+  ) => Promise<{ success: boolean; error?: string; redirectTo?: string }>;
   refreshUser: () => Promise<void>;
 }
 
@@ -105,10 +110,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         // Handle user already exists case with redirect
         if (data.redirectTo) {
-          return { 
-            success: false, 
+          return {
+            success: false,
             error: data.message || data.error || 'Registration failed',
-            redirectTo: data.redirectTo
+            redirectTo: data.redirectTo,
           };
         }
         return { success: false, error: data.error || 'Registration failed' };

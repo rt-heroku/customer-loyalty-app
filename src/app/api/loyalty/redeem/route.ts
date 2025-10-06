@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const validation = redeemSchema.safeParse(body);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { rewardId, quantity } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Get customer data
     const customerResult = await query(
@@ -35,7 +36,10 @@ export async function POST(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customer = customerResult.rows[0];
@@ -50,14 +54,23 @@ export async function POST(request: NextRequest) {
     );
 
     if (rewardResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Reward not found or not available' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Reward not found or not available' },
+        { status: 404 }
+      );
     }
 
     const reward = rewardResult.rows[0];
 
     // Check if reward is available
-    if (reward.max_redemptions && reward.current_redemptions >= reward.max_redemptions) {
-      return NextResponse.json({ error: 'Reward is no longer available' }, { status: 400 });
+    if (
+      reward.max_redemptions &&
+      reward.current_redemptions >= reward.max_redemptions
+    ) {
+      return NextResponse.json(
+        { error: 'Reward is no longer available' },
+        { status: 400 }
+      );
     }
 
     // Calculate total points needed
@@ -65,11 +78,14 @@ export async function POST(request: NextRequest) {
 
     // Check if customer has enough points
     if (customer.points < totalPointsNeeded) {
-      return NextResponse.json({ 
-        error: 'Insufficient points',
-        required: totalPointsNeeded,
-        available: customer.points
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Insufficient points',
+          required: totalPointsNeeded,
+          available: customer.points,
+        },
+        { status: 400 }
+      );
     }
 
     // Calculate reward value
@@ -111,7 +127,12 @@ export async function POST(request: NextRequest) {
       await query(
         `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
          VALUES ($1, $2, $3, $4)`,
-        [user.id, 'points_redemption', `Redeemed ${quantity}x ${reward.reward_name} for ${totalPointsNeeded} points`, clientIp]
+        [
+          user.id,
+          'points_redemption',
+          `Redeemed ${quantity}x ${reward.reward_name} for ${totalPointsNeeded} points`,
+          clientIp,
+        ]
       );
 
       await query('COMMIT');
@@ -122,14 +143,12 @@ export async function POST(request: NextRequest) {
         redemptionId: customerRewardResult.rows[0].id,
         pointsSpent: totalPointsNeeded,
         rewardValue,
-        newBalance: customer.points - totalPointsNeeded
+        newBalance: customer.points - totalPointsNeeded,
       });
-
     } catch (error) {
       await query('ROLLBACK');
       throw error;
     }
-
   } catch (error) {
     console.error('Redemption error:', error);
     return NextResponse.json(
@@ -138,4 +157,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

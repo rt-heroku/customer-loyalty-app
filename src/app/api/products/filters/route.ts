@@ -108,37 +108,46 @@ export async function GET(_request: NextRequest) {
       categories: categoriesResult.rows.map((row: any) => ({
         value: row.category,
         label: row.category,
-        count: parseInt(row.product_count)
+        count: parseInt(row.product_count),
       })),
       brands: brandsResult.rows.map((row: any) => ({
         value: row.brand,
         label: row.brand,
-        count: parseInt(row.product_count)
+        count: parseInt(row.product_count),
       })),
       priceRange: {
-        min: priceRangeResult.rows[0]?.min_price ? parseFloat(priceRangeResult.rows[0].min_price) : 0,
-        max: priceRangeResult.rows[0]?.max_price ? parseFloat(priceRangeResult.rows[0].max_price) : 1000
+        min: priceRangeResult.rows[0]?.min_price
+          ? parseFloat(priceRangeResult.rows[0].min_price)
+          : 0,
+        max: priceRangeResult.rows[0]?.max_price
+          ? parseFloat(priceRangeResult.rows[0].max_price)
+          : 1000,
       },
       stockStatus: stockStatusResult.rows.map((row: any) => ({
         value: row.stock_status,
-        label: row.stock_status.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-        count: parseInt(row.product_count)
+        label: row.stock_status
+          .replace('_', ' ')
+          .replace(/\b\w/g, (l: string) => l.toUpperCase()),
+        count: parseInt(row.product_count),
       })),
       ratings: ratingResult.rows.map((row: any) => ({
-        value: row.rating_range === 'Any' ? 0 : parseFloat(row.rating_range.replace('+', '')),
+        value:
+          row.rating_range === 'Any'
+            ? 0
+            : parseFloat(row.rating_range.replace('+', '')),
         label: row.rating_range,
-        count: parseInt(row.product_count)
+        count: parseInt(row.product_count),
       })),
       tags: tagsResult.rows.map((row: any) => ({
         value: row.tag,
         label: row.tag,
-        count: parseInt(row.product_count)
+        count: parseInt(row.product_count),
       })),
       features: {
         onSale: parseInt(featureCountsResult.rows[0]?.on_sale_count || '0'),
         new: parseInt(featureCountsResult.rows[0]?.new_count || '0'),
-        featured: parseInt(featureCountsResult.rows[0]?.featured_count || '0')
-      }
+        featured: parseInt(featureCountsResult.rows[0]?.featured_count || '0'),
+      },
     };
 
     return NextResponse.json(filters);

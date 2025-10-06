@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { 
-  X, 
-  Upload, 
-  FileText, 
-  Image as ImageIcon, 
-  Video, 
+import {
+  X,
+  Upload,
+  FileText,
+  Image as ImageIcon,
+  Video,
   Music,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -24,7 +24,11 @@ interface FileWithPreview extends File {
   error?: string;
 }
 
-export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploadModalProps) {
+export default function FileUploadModal({
+  isOpen,
+  onClose,
+  onUpload,
+}: FileUploadModalProps) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,17 +36,20 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
   const maxFileSize = 10 * 1024 * 1024; // 10MB
   const allowedTypes = [
     'image/jpeg',
-    'image/png', 
+    'image/png',
     'image/gif',
     'application/pdf',
-    'text/plain'
+    'text/plain',
   ];
 
   const getFileIcon = (file: File) => {
-    if (file.type.startsWith('image/')) return <ImageIcon className="w-8 h-8 text-blue-500" />;
-    if (file.type.startsWith('video/')) return <Video className="w-8 h-8 text-purple-500" />;
-    if (file.type.startsWith('audio/')) return <Music className="w-8 h-8 text-green-500" />;
-    return <FileText className="w-8 h-8 text-gray-500" />;
+    if (file.type.startsWith('image/'))
+      return <ImageIcon className="h-8 w-8 text-blue-500" />;
+    if (file.type.startsWith('video/'))
+      return <Video className="h-8 w-8 text-purple-500" />;
+    if (file.type.startsWith('audio/'))
+      return <Music className="h-8 w-8 text-green-500" />;
+    return <FileText className="h-8 w-8 text-gray-500" />;
   };
 
   const formatFileSize = (bytes: number) => {
@@ -70,7 +77,7 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
     fileArray.forEach(file => {
       const error = validateFile(file);
       const fileWithPreview: FileWithPreview = file;
-      
+
       if (error) {
         fileWithPreview.error = error;
       } else {
@@ -79,7 +86,7 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
           fileWithPreview.preview = URL.createObjectURL(file);
         }
       }
-      
+
       validFiles.push(fileWithPreview);
     });
 
@@ -90,12 +97,12 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
     setFiles(prev => {
       const newFiles = [...prev];
       const file = newFiles[index];
-      
+
       // Clean up preview URL
       if (file?.preview) {
         URL.revokeObjectURL(file.preview);
       }
-      
+
       newFiles.splice(index, 1);
       return newFiles;
     });
@@ -115,7 +122,7 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFiles(e.dataTransfer.files);
     }
@@ -155,24 +162,26 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
         onClick={handleClose}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[80vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          className="max-h-[80vh] w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
+          onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Upload Files</h3>
+          <div className="flex items-center justify-between border-b border-gray-200 p-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Upload Files
+            </h3>
             <button
               onClick={handleClose}
-              className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+              className="rounded-lg p-1 transition-colors hover:bg-gray-100"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="h-5 w-5 text-gray-500" />
             </button>
           </div>
 
@@ -181,10 +190,11 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
             {/* Drop Zone */}
             <div
               className={`
-                border-2 border-dashed rounded-lg p-6 text-center transition-colors
-                ${dragActive 
-                  ? 'border-primary-500 bg-primary-50' 
-                  : 'border-gray-300 hover:border-gray-400'
+                rounded-lg border-2 border-dashed p-6 text-center transition-colors
+                ${
+                  dragActive
+                    ? 'border-primary-500 bg-primary-50'
+                    : 'border-gray-300 hover:border-gray-400'
                 }
               `}
               onDragEnter={handleDrag}
@@ -192,12 +202,12 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
               onDragOver={handleDrag}
               onDrop={handleDrop}
             >
-              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600 mb-2">
+              <Upload className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+              <p className="mb-2 text-gray-600">
                 Drag and drop files here, or{' '}
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-primary-500 hover:text-primary-600 font-medium"
+                  className="font-medium text-primary-500 hover:text-primary-600"
                 >
                   browse
                 </button>
@@ -217,48 +227,48 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
 
             {/* File List */}
             {files.length > 0 && (
-              <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+              <div className="mt-4 max-h-48 space-y-2 overflow-y-auto">
                 {files.map((file, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center space-x-3 rounded-lg bg-gray-50 p-3"
                   >
                     {file.preview ? (
                       <img
                         src={file.preview}
                         alt={file.name}
-                        className="w-10 h-10 object-cover rounded"
+                        className="h-10 w-10 rounded object-cover"
                       />
                     ) : (
                       getFileIcon(file)
                     )}
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-gray-900">
                         {file.name}
                       </p>
                       <p className="text-xs text-gray-500">
                         {formatFileSize(file.size)}
                       </p>
                       {file.error && (
-                        <p className="text-xs text-red-500 flex items-center mt-1">
-                          <AlertCircle className="w-3 h-3 mr-1" />
+                        <p className="mt-1 flex items-center text-xs text-red-500">
+                          <AlertCircle className="mr-1 h-3 w-3" />
                           {file.error}
                         </p>
                       )}
                     </div>
-                    
+
                     {!file.error && (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <CheckCircle className="h-5 w-5 text-green-500" />
                     )}
-                    
+
                     <button
                       onClick={() => removeFile(index)}
-                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      className="rounded p-1 transition-colors hover:bg-gray-200"
                     >
-                      <X className="w-4 h-4 text-gray-500" />
+                      <X className="h-4 w-4 text-gray-500" />
                     </button>
                   </motion.div>
                 ))}
@@ -267,19 +277,20 @@ export default function FileUploadModal({ isOpen, onClose, onUpload }: FileUploa
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end space-x-3 p-4 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-end space-x-3 border-t border-gray-200 bg-gray-50 p-4">
             <button
               onClick={handleClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="px-4 py-2 text-gray-600 transition-colors hover:text-gray-800"
             >
               Cancel
             </button>
             <button
               onClick={handleUpload}
               disabled={files.filter(f => !f.error).length === 0}
-              className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="rounded-lg bg-primary-500 px-4 py-2 text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Upload {files.filter(f => !f.error).length} file{files.filter(f => !f.error).length !== 1 ? 's' : ''}
+              Upload {files.filter(f => !f.error).length} file
+              {files.filter(f => !f.error).length !== 1 ? 's' : ''}
             </button>
           </div>
         </motion.div>

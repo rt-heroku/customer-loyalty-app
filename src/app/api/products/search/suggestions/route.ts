@@ -36,14 +36,18 @@ export async function GET(request: NextRequest) {
       LIMIT $3
     `;
 
-    const result = await query(suggestionsQuery, [`%${searchQuery}%`, `[${searchQuery}]`, limit]);
+    const result = await query(suggestionsQuery, [
+      `%${searchQuery}%`,
+      `[${searchQuery}]`,
+      limit,
+    ]);
 
     // Transform suggestions
     const suggestions = result.rows.map((row: any) => ({
       text: row.name,
       type: 'product',
       category: row.category,
-      brand: row.brand
+      brand: row.brand,
     }));
 
     // Get trending searches (most viewed products in last 30 days)
@@ -67,7 +71,7 @@ export async function GET(request: NextRequest) {
         text: row.name,
         type: 'trending',
         category: row.category,
-        viewCount: parseInt(row.view_count)
+        viewCount: parseInt(row.view_count),
       }));
     } catch (error) {
       // Product views table might not exist yet, ignore
@@ -90,13 +94,13 @@ export async function GET(request: NextRequest) {
     const popularCategories = categoriesResult.rows.map((row: any) => ({
       text: row.category,
       type: 'category',
-      productCount: parseInt(row.product_count)
+      productCount: parseInt(row.product_count),
     }));
 
     return NextResponse.json({
       suggestions,
       trendingSearches,
-      popularCategories
+      popularCategories,
     });
   } catch (error) {
     console.error('Error fetching search suggestions:', error);

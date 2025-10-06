@@ -23,7 +23,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customer = customerResult.rows[0];
@@ -51,8 +54,10 @@ export async function GET(request: NextRequest) {
     );
 
     const recentTotal = parseFloat(recentSpendingResult.rows[0].recent_total);
-    const previousTotal = parseFloat(previousSpendingResult.rows[0].previous_total);
-    
+    const previousTotal = parseFloat(
+      previousSpendingResult.rows[0].previous_total
+    );
+
     let spendingTrend = 0;
     if (previousTotal > 0) {
       spendingTrend = ((recentTotal - previousTotal) / previousTotal) * 100;
@@ -81,9 +86,8 @@ export async function GET(request: NextRequest) {
       favoriteProducts,
       spendingTrend: Math.round(spendingTrend * 100) / 100, // Round to 2 decimal places
       tier: customer.customer_tier,
-      points: customer.points
+      points: customer.points,
     });
-
   } catch (error) {
     console.error('Error fetching customer stats:', error);
     return NextResponse.json(
@@ -92,4 +96,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

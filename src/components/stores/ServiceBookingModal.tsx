@@ -11,7 +11,11 @@ interface ServiceBookingModalProps {
   onClose: () => void;
 }
 
-export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceBookingModalProps) {
+export default function ServiceBookingModal({
+  store,
+  isOpen,
+  onClose,
+}: ServiceBookingModalProps) {
   const { user } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -77,14 +81,14 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedService || !selectedDate || !selectedTime || !user) {
       return;
     }
 
     try {
       setLoading(true);
-      
+
       const appointment: Partial<Appointment> = {
         storeId: store.id,
         serviceId: selectedService.id,
@@ -93,7 +97,7 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
         estimatedDuration: selectedService.duration,
         totalCost: selectedService.price,
         status: 'scheduled',
-        paymentStatus: 'pending'
+        paymentStatus: 'pending',
       };
 
       if (notes) {
@@ -127,56 +131,66 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Book a Service</h2>
-            <p className="text-gray-600 mt-1">{store.name}</p>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Book a Service
+            </h2>
+            <p className="mt-1 text-gray-600">{store.name}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-600"
           >
-            <X className="w-6 h-6" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6">
           {!user ? (
-            <div className="text-center py-8">
-              <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sign in to book services</h3>
-              <p className="text-gray-600 mb-4">Please sign in to your account to schedule appointments.</p>
+            <div className="py-8 text-center">
+              <User className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900">
+                Sign in to book services
+              </h3>
+              <p className="mb-4 text-gray-600">
+                Please sign in to your account to schedule appointments.
+              </p>
               <button
                 onClick={onClose}
-                className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                className="rounded-lg bg-primary-600 px-6 py-2 text-white transition-colors hover:bg-primary-700"
               >
                 Sign In
               </button>
             </div>
           ) : bookingSuccess ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Calendar className="w-8 h-8 text-green-600" />
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <Calendar className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Appointment Booked!</h3>
-              <p className="text-gray-600">Your appointment has been successfully scheduled.</p>
+              <h3 className="mb-2 text-lg font-medium text-gray-900">
+                Appointment Booked!
+              </h3>
+              <p className="text-gray-600">
+                Your appointment has been successfully scheduled.
+              </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Service Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="mb-3 block text-sm font-medium text-gray-700">
                   Select Service
                 </label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {services.map((service) => (
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  {services.map(service => (
                     <div
                       key={service.id}
-                      className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      className={`cursor-pointer rounded-lg border-2 p-4 transition-all ${
                         selectedService?.id === service.id
                           ? 'border-primary-500 bg-primary-50'
                           : 'border-gray-200 hover:border-gray-300'
@@ -185,22 +199,26 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{service.name}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{service.description}</p>
-                          <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                          <h4 className="font-medium text-gray-900">
+                            {service.name}
+                          </h4>
+                          <p className="mt-1 text-sm text-gray-600">
+                            {service.description}
+                          </p>
+                          <div className="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                             <span className="flex items-center">
-                              <Clock className="w-4 h-4 mr-1" />
+                              <Clock className="mr-1 h-4 w-4" />
                               {service.duration} min
                             </span>
                             <span className="flex items-center">
-                              <DollarSign className="w-4 h-4 mr-1" />
-                              ${service.price}
+                              <DollarSign className="mr-1 h-4 w-4" />$
+                              {service.price}
                             </span>
                           </div>
                         </div>
                         {selectedService?.id === service.id && (
-                          <div className="w-5 h-5 bg-primary-500 rounded-full flex items-center justify-center">
-                            <span className="text-white text-xs">✓</span>
+                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-500">
+                            <span className="text-xs text-white">✓</span>
                           </div>
                         )}
                       </div>
@@ -210,35 +228,35 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
               </div>
 
               {/* Date and Time Selection */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Select Date
                   </label>
                   <input
                     type="date"
                     value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
+                    onChange={e => setSelectedDate(e.target.value)}
                     min={getMinDate()}
                     max={getMaxDate()}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Select Time
                   </label>
                   <select
                     value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    onChange={e => setSelectedTime(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     required
                     disabled={!selectedDate}
                   >
                     <option value="">Choose a time</option>
-                    {getAvailableTimes().map((time) => (
+                    {getAvailableTimes().map(time => (
                       <option key={time} value={time}>
                         {time}
                       </option>
@@ -249,30 +267,36 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Additional Notes
                 </label>
                 <textarea
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  onChange={e => setNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                   placeholder="Any special requirements or notes for your appointment..."
                 />
               </div>
 
               {/* Appointment Summary */}
               {selectedService && selectedDate && selectedTime && (
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-3">Appointment Summary</h4>
+                <div className="rounded-lg bg-gray-50 p-4">
+                  <h4 className="mb-3 font-medium text-gray-900">
+                    Appointment Summary
+                  </h4>
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
                       <span>Service:</span>
-                      <span className="font-medium">{selectedService.name}</span>
+                      <span className="font-medium">
+                        {selectedService.name}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Date:</span>
-                      <span className="font-medium">{new Date(selectedDate).toLocaleDateString()}</span>
+                      <span className="font-medium">
+                        {new Date(selectedDate).toLocaleDateString()}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Time:</span>
@@ -280,11 +304,13 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
                     </div>
                     <div className="flex justify-between">
                       <span>Duration:</span>
-                      <span className="font-medium">{selectedService.duration} minutes</span>
+                      <span className="font-medium">
+                        {selectedService.duration} minutes
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Total Cost:</span>
-                      <span className="font-medium text-lg text-primary-600">
+                      <span className="text-lg font-medium text-primary-600">
                         ${selectedService.price}
                       </span>
                     </div>
@@ -297,14 +323,19 @@ export default function ServiceBookingModal({ store, isOpen, onClose }: ServiceB
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="flex-1 rounded-lg bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={!selectedService || !selectedDate || !selectedTime || loading}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  disabled={
+                    !selectedService ||
+                    !selectedDate ||
+                    !selectedTime ||
+                    loading
+                  }
+                  className="flex-1 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   {loading ? 'Booking...' : 'Book Appointment'}
                 </button>

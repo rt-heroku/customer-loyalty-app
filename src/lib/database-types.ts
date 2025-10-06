@@ -38,7 +38,12 @@ export interface Customer {
   state?: string;
   zip_code?: string;
   marketing_consent: boolean;
-  member_status: 'Active' | 'Inactive' | 'Under Fraud Investigation' | 'Merged' | 'Fraudulent Member';
+  member_status:
+    | 'Active'
+    | 'Inactive'
+    | 'Under Fraud Investigation'
+    | 'Merged'
+    | 'Fraudulent Member';
   enrollment_date: string;
   member_type: 'Individual' | 'Corporate';
   sf_id?: string;
@@ -197,7 +202,12 @@ export interface LoyaltyTier {
 export interface LoyaltyReward {
   id: number;
   reward_name: string;
-  reward_type: 'discount' | 'free_item' | 'free_shipping' | 'birthday' | 'anniversary';
+  reward_type:
+    | 'discount'
+    | 'free_item'
+    | 'free_shipping'
+    | 'birthday'
+    | 'anniversary';
   points_required: number;
   discount_percentage?: Decimal;
   discount_amount?: Decimal;
@@ -453,8 +463,6 @@ export interface LocationInventory {
   updated_at: Timestamp;
 }
 
-
-
 // ============================================================================
 // ACTIVITY LOG TYPES
 // ============================================================================
@@ -494,7 +502,13 @@ export interface SystemSetting {
   setting_value?: string;
   setting_type: 'text' | 'number' | 'boolean' | 'json';
   description?: string;
-  category: 'general' | 'pos' | 'loyalty' | 'inventory' | 'email' | 'integration';
+  category:
+    | 'general'
+    | 'pos'
+    | 'loyalty'
+    | 'inventory'
+    | 'email'
+    | 'integration';
   is_encrypted: boolean;
   is_active: boolean;
   created_at: Timestamp;
@@ -595,7 +609,13 @@ export interface Appointment {
   serviceId: string;
   date: string;
   time: string;
-  status: 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
+  status:
+    | 'scheduled'
+    | 'confirmed'
+    | 'in_progress'
+    | 'completed'
+    | 'cancelled'
+    | 'no_show';
   notes?: string;
   estimatedDuration: number;
   actualDuration?: number;
@@ -614,7 +634,13 @@ export interface WorkOrder {
   serviceId?: string;
   type: 'repair' | 'maintenance' | 'installation' | 'consultation' | 'other';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'submitted' | 'assigned' | 'in_progress' | 'waiting_parts' | 'completed' | 'cancelled';
+  status:
+    | 'submitted'
+    | 'assigned'
+    | 'in_progress'
+    | 'waiting_parts'
+    | 'completed'
+    | 'cancelled';
   title: string;
   description: string;
   customerNotes?: string;
@@ -714,9 +740,19 @@ export const CustomerSchema = z.object({
   points: z.number().default(0),
   total_spent: z.string().default('0.00'),
   visit_count: z.number().default(0),
-  member_status: z.enum(['Active', 'Inactive', 'Under Fraud Investigation', 'Merged', 'Fraudulent Member']).default('Active'),
+  member_status: z
+    .enum([
+      'Active',
+      'Inactive',
+      'Under Fraud Investigation',
+      'Merged',
+      'Fraudulent Member',
+    ])
+    .default('Active'),
   member_type: z.enum(['Individual', 'Corporate']).default('Individual'),
-  customer_tier: z.enum(['Bronze', 'Silver', 'Gold', 'Platinum']).default('Bronze'),
+  customer_tier: z
+    .enum(['Bronze', 'Silver', 'Gold', 'Platinum'])
+    .default('Bronze'),
 });
 
 // Transaction Schema

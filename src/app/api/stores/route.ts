@@ -60,17 +60,19 @@ export async function GET(request: NextRequest) {
 
     // Add amenity filter
     if (amenities && amenities.length > 0) {
-      const amenityConditions = amenities.map((_, index) => {
-        if (index === 0) {
-          return `s.parking_available = $${paramIndex}`;
-        } else if (index === 1) {
-          return `s.wheelchair_accessible = $${paramIndex}`;
-        } else if (index === 2) {
-          return `s.wifi_available = $${paramIndex}`;
-        }
-        return '';
-      }).filter(Boolean);
-      
+      const amenityConditions = amenities
+        .map((_, index) => {
+          if (index === 0) {
+            return `s.parking_available = $${paramIndex}`;
+          } else if (index === 1) {
+            return `s.wheelchair_accessible = $${paramIndex}`;
+          } else if (index === 2) {
+            return `s.wifi_available = $${paramIndex}`;
+          }
+          return '';
+        })
+        .filter(Boolean);
+
       if (amenityConditions.length > 0) {
         sql += ` AND (${amenityConditions.join(' OR ')})`;
         params.push(...amenities.map(a => a === 'true'));
@@ -151,7 +153,7 @@ export async function GET(request: NextRequest) {
         thursday: { open: '09:00', close: '17:00', isClosed: false },
         friday: { open: '09:00', close: '17:00', isClosed: false },
         saturday: { open: '10:00', close: '16:00', isClosed: false },
-        sunday: { open: '10:00', close: '16:00', isClosed: false }
+        sunday: { open: '10:00', close: '16:00', isClosed: false },
       },
       services: ['Repair', 'Maintenance', 'Installation', 'Consultation'],
       amenities: [
@@ -159,10 +161,10 @@ export async function GET(request: NextRequest) {
         row.wheelchairAccessible ? 'Wheelchair Accessible' : null,
         row.wifiAvailable ? 'WiFi' : null,
         'Restroom',
-        'Waiting Area'
+        'Waiting Area',
       ].filter(Boolean),
       isOpen: true, // This would need to be calculated based on current time and hours
-      images: ['/api/stores/default-store-image.jpg'] // Placeholder
+      images: ['/api/stores/default-store-image.jpg'], // Placeholder
     }));
 
     return NextResponse.json({ stores });

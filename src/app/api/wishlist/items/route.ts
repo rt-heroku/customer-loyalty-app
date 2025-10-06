@@ -6,18 +6,12 @@ export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('token')?.value;
     if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await verifyToken(token);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { wishlistId, productId, notes } = await request.json();
@@ -35,7 +29,7 @@ export async function POST(request: NextRequest) {
       WHERE id = $1 AND user_id = $2
     `;
     const wishlistResult = await query(wishlistQuery, [wishlistId, user.id]);
-    
+
     if (wishlistResult.rows.length === 0) {
       return NextResponse.json(
         { error: 'Wishlist not found or access denied' },
@@ -49,7 +43,7 @@ export async function POST(request: NextRequest) {
       WHERE wishlist_id = $1 AND product_id = $2
     `;
     const existingResult = await query(existingQuery, [wishlistId, productId]);
-    
+
     if (existingResult.rows.length > 0) {
       return NextResponse.json(
         { error: 'Product already exists in wishlist' },
@@ -63,21 +57,24 @@ export async function POST(request: NextRequest) {
       VALUES ($1, $2, $3, NOW())
       RETURNING id, added_at
     `;
-    
-    const result = await query(addQuery, [wishlistId, productId, notes || null]);
-    
+
+    const result = await query(addQuery, [
+      wishlistId,
+      productId,
+      notes || null,
+    ]);
+
     // Update wishlist updated_at timestamp
-    await query(
-      'UPDATE wishlists SET updated_at = NOW() WHERE id = $1',
-      [wishlistId]
-    );
+    await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
+      wishlistId,
+    ]);
 
     return NextResponse.json({
       id: result.rows[0].id,
       wishlistId,
       productId,
       notes: notes || null,
-      addedAt: result.rows[0].added_at
+      addedAt: result.rows[0].added_at,
     });
   } catch (error) {
     console.error('Error adding product to wishlist:', error);
@@ -92,18 +89,12 @@ export async function DELETE(request: NextRequest) {
   try {
     const token = request.cookies.get('token')?.value;
     if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await verifyToken(token);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -123,7 +114,7 @@ export async function DELETE(request: NextRequest) {
       WHERE id = $1 AND user_id = $2
     `;
     const wishlistResult = await query(wishlistQuery, [wishlistId, user.id]);
-    
+
     if (wishlistResult.rows.length === 0) {
       return NextResponse.json(
         { error: 'Wishlist not found or access denied' },
@@ -136,14 +127,13 @@ export async function DELETE(request: NextRequest) {
       DELETE FROM wishlist_items 
       WHERE wishlist_id = $1 AND product_id = $2
     `;
-    
+
     await query(deleteQuery, [wishlistId, productId]);
-    
+
     // Update wishlist updated_at timestamp
-    await query(
-      'UPDATE wishlists SET updated_at = NOW() WHERE id = $1',
-      [wishlistId]
-    );
+    await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
+      wishlistId,
+    ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {

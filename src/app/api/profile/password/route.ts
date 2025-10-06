@@ -4,14 +4,16 @@ import { getUserFromRequest } from '@/lib/auth';
 import { query } from '@/lib/db';
 import { z } from 'zod';
 
-const passwordUpdateSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const passwordUpdateSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export async function PUT(request: NextRequest) {
   try {
@@ -22,7 +24,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const validation = passwordUpdateSchema.safeParse(body);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
@@ -31,7 +33,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const { currentPassword, newPassword } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Get current password hash
     const userResult = await query(
@@ -46,9 +49,15 @@ export async function PUT(request: NextRequest) {
     const currentPasswordHash = userResult.rows[0].password_hash;
 
     // Verify current password
-    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, currentPasswordHash);
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      currentPasswordHash
+    );
     if (!isCurrentPasswordValid) {
-      return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Current password is incorrect' },
+        { status: 400 }
+      );
     }
 
     // Hash new password
@@ -74,7 +83,6 @@ export async function PUT(request: NextRequest) {
       success: true,
       message: 'Password updated successfully',
     });
-
   } catch (error) {
     console.error('Password update error:', error);
     return NextResponse.json(
@@ -83,4 +91,3 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-

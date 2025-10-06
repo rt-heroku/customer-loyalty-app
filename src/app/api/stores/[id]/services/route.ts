@@ -48,7 +48,7 @@ export async function GET(
       requirements: row.requirements ? row.requirements.split(',') : [],
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
-      images: ['/api/services/default-service-image.jpg'] // Placeholder
+      images: ['/api/services/default-service-image.jpg'], // Placeholder
     }));
 
     return NextResponse.json({ services });

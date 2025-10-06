@@ -1,15 +1,15 @@
 'use client';
 
-import { 
-  Check, 
-  CheckCheck, 
-  Clock, 
-  AlertCircle, 
+import {
+  Check,
+  CheckCheck,
+  Clock,
+  AlertCircle,
   Eye,
   FileText,
   Image as ImageIcon,
   Video,
-  Music
+  Music,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ChatMessage as ChatMessageType } from '@/types/chat';
@@ -20,29 +20,28 @@ interface ChatMessageProps {
 }
 
 export default function ChatMessage({ message }: ChatMessageProps) {
-
   const getStatusIcon = () => {
     switch (message.status) {
       case 'sending':
-        return <Clock className="w-3 h-3 text-gray-400" />;
+        return <Clock className="h-3 w-3 text-gray-400" />;
       case 'sent':
-        return <Check className="w-3 h-3 text-gray-400" />;
+        return <Check className="h-3 w-3 text-gray-400" />;
       case 'delivered':
-        return <CheckCheck className="w-3 h-3 text-gray-400" />;
+        return <CheckCheck className="h-3 w-3 text-gray-400" />;
       case 'read':
-        return <CheckCheck className="w-3 h-3 text-blue-500" />;
+        return <CheckCheck className="h-3 w-3 text-blue-500" />;
       case 'failed':
-        return <AlertCircle className="w-3 h-3 text-red-500" />;
+        return <AlertCircle className="h-3 w-3 text-red-500" />;
       default:
         return null;
     }
   };
 
   const getFileIcon = (mimeType: string) => {
-    if (mimeType.startsWith('image/')) return <ImageIcon className="w-4 h-4" />;
-    if (mimeType.startsWith('video/')) return <Video className="w-4 h-4" />;
-    if (mimeType.startsWith('audio/')) return <Music className="w-4 h-4" />;
-    return <FileText className="w-4 h-4" />;
+    if (mimeType.startsWith('image/')) return <ImageIcon className="h-4 w-4" />;
+    if (mimeType.startsWith('video/')) return <Video className="h-4 w-4" />;
+    if (mimeType.startsWith('audio/')) return <Music className="h-4 w-4" />;
+    return <FileText className="h-4 w-4" />;
   };
 
   const formatFileSize = (bytes: number) => {
@@ -57,9 +56,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+
     if (diffInHours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     } else {
       return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
     }
@@ -72,7 +74,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         animate={{ opacity: 1, scale: 1 }}
         className="flex justify-center"
       >
-        <div className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+        <div className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600">
           {message.content}
         </div>
       </motion.div>
@@ -84,22 +86,20 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "flex",
-        message.isFromUser ? "justify-end" : "justify-start"
+        'flex',
+        message.isFromUser ? 'justify-end' : 'justify-start'
       )}
     >
       <div
         className={cn(
-          "max-w-[80%] rounded-2xl px-4 py-2",
+          'max-w-[80%] rounded-2xl px-4 py-2',
           message.isFromUser
-            ? "bg-primary-500 text-white rounded-br-md"
-            : "bg-gray-100 text-gray-900 rounded-bl-md"
+            ? 'rounded-br-md bg-primary-500 text-white'
+            : 'rounded-bl-md bg-gray-100 text-gray-900'
         )}
       >
         {/* Message Content */}
-        <div className="whitespace-pre-wrap break-words">
-          {message.content}
-        </div>
+        <div className="whitespace-pre-wrap break-words">{message.content}</div>
 
         {/* Attachments */}
         {message.attachments && message.attachments.length > 0 && (
@@ -111,15 +111,15 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  "flex items-center space-x-2 p-2 rounded-lg border",
+                  'flex items-center space-x-2 rounded-lg border p-2',
                   message.isFromUser
-                    ? "bg-primary-400 border-primary-300"
-                    : "bg-white border-gray-200"
+                    ? 'border-primary-300 bg-primary-400'
+                    : 'border-gray-200 bg-white'
                 )}
               >
                 {getFileIcon(attachment.mimeType)}
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium truncate">
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium">
                     {attachment.fileName}
                   </div>
                   <div className="text-xs opacity-75">
@@ -128,9 +128,9 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 </div>
                 <button
                   onClick={() => window.open(attachment.filePath, '_blank')}
-                  className="p-1 hover:bg-black/10 rounded transition-colors"
+                  className="rounded p-1 transition-colors hover:bg-black/10"
                 >
-                  <Eye className="w-4 h-4" />
+                  <Eye className="h-4 w-4" />
                 </button>
               </motion.div>
             ))}
@@ -140,40 +140,40 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         {/* Message Footer */}
         <div
           className={cn(
-            "flex items-center justify-between mt-1 text-xs",
-            message.isFromUser ? "text-primary-100" : "text-gray-500"
+            'mt-1 flex items-center justify-between text-xs',
+            message.isFromUser ? 'text-primary-100' : 'text-gray-500'
           )}
         >
           <span>{formatTimestamp(message.timestamp)}</span>
-          <div className="flex items-center space-x-1">
-            {getStatusIcon()}
-          </div>
+          <div className="flex items-center space-x-1">{getStatusIcon()}</div>
         </div>
 
         {/* Suggested Actions */}
         {message.metadata?.suggestedActions && (
           <div className="mt-2 space-y-1">
-            {message.metadata.suggestedActions.map((action: any, index: number) => (
-              <motion.button
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                onClick={() => {
-                  if (action.action === 'redirect' && action.url) {
-                    window.location.href = action.url;
-                  }
-                }}
-                className={cn(
-                  "block w-full text-left px-3 py-2 rounded-lg text-sm transition-colors",
-                  message.isFromUser
-                    ? "bg-primary-400 hover:bg-primary-300 text-white"
-                    : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200"
-                )}
-              >
-                {action.label}
-              </motion.button>
-            ))}
+            {message.metadata.suggestedActions.map(
+              (action: any, index: number) => (
+                <motion.button
+                  key={index}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  onClick={() => {
+                    if (action.action === 'redirect' && action.url) {
+                      window.location.href = action.url;
+                    }
+                  }}
+                  className={cn(
+                    'block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors',
+                    message.isFromUser
+                      ? 'bg-primary-400 text-white hover:bg-primary-300'
+                      : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                  )}
+                >
+                  {action.label}
+                </motion.button>
+              )
+            )}
           </div>
         )}
       </div>

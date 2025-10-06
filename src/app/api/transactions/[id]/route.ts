@@ -14,7 +14,10 @@ export async function GET(
 
     const transactionId = parseInt(params.id);
     if (isNaN(transactionId)) {
-      return NextResponse.json({ error: 'Invalid transaction ID' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid transaction ID' },
+        { status: 400 }
+      );
     }
 
     // Get customer ID
@@ -24,7 +27,10 @@ export async function GET(
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customerId = customerResult.rows[0].id;
@@ -38,7 +44,10 @@ export async function GET(
     );
 
     if (transactionResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Transaction not found' },
+        { status: 404 }
+      );
     }
 
     const transaction = transactionResult.rows[0];
@@ -55,10 +64,9 @@ export async function GET(
     return NextResponse.json({
       transaction: {
         ...transaction,
-        items: itemsResult.rows
-      }
+        items: itemsResult.rows,
+      },
     });
-
   } catch (error) {
     console.error('Error fetching transaction details:', error);
     return NextResponse.json(
@@ -67,5 +75,3 @@ export async function GET(
     );
   }
 }
-
-

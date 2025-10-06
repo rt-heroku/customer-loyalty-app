@@ -26,7 +26,9 @@ export async function GET(request: NextRequest) {
     let paramIndex = 1;
 
     if (search) {
-      whereConditions.push(`(p.name ILIKE $${paramIndex} OR p.description ILIKE $${paramIndex} OR p.tags @> $${paramIndex + 1})`);
+      whereConditions.push(
+        `(p.name ILIKE $${paramIndex} OR p.description ILIKE $${paramIndex} OR p.tags @> $${paramIndex + 1})`
+      );
       queryParams.push(`%${search}%`, `[${search}]`);
       paramIndex += 2;
     }
@@ -75,7 +77,10 @@ export async function GET(request: NextRequest) {
       whereConditions.push(`p.is_new = true`);
     }
 
-    const whereClause = whereConditions.length > 0 ? `WHERE ${whereConditions.join(' AND ')}` : '';
+    const whereClause =
+      whereConditions.length > 0
+        ? `WHERE ${whereConditions.join(' AND ')}`
+        : '';
 
     // Build ORDER BY clause
     let orderByClause = 'ORDER BY ';
@@ -136,7 +141,7 @@ export async function GET(request: NextRequest) {
       ${orderByClause}
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
     `;
-    
+
     queryParams.push(limit, offset);
     const productsResult = await query(productsQuery, queryParams);
 
@@ -146,7 +151,9 @@ export async function GET(request: NextRequest) {
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
-      originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
+      originalPrice: row.original_price
+        ? parseFloat(row.original_price)
+        : undefined,
       currency: row.currency || 'USD',
       images: [], // Will be populated separately
       category: row.category,
@@ -161,11 +168,13 @@ export async function GET(request: NextRequest) {
       specifications: row.specifications || {},
       variants: [], // Will be populated separately
       isOnSale: row.is_on_sale || false,
-      salePercentage: row.sale_percentage ? parseFloat(row.sale_percentage) : undefined,
+      salePercentage: row.sale_percentage
+        ? parseFloat(row.sale_percentage)
+        : undefined,
       isNew: row.is_new || false,
       isFeatured: row.is_featured || false,
       createdAt: row.created_at,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
     }));
 
     // Get images for products
@@ -187,7 +196,7 @@ export async function GET(request: NextRequest) {
         url: img.url,
         alt: img.alt || product.name,
         isPrimary: img.isPrimary || false,
-        thumbnailUrl: img.thumbnailUrl || img.url
+        thumbnailUrl: img.thumbnailUrl || img.url,
       }));
     }
 
@@ -196,7 +205,7 @@ export async function GET(request: NextRequest) {
       total,
       page,
       limit,
-      hasMore: page * limit < total
+      hasMore: page * limit < total,
     };
 
     return NextResponse.json(result);

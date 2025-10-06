@@ -53,23 +53,24 @@ export async function GET(request: NextRequest) {
     );
 
     const rewards = rewardsResult.rows.map(reward => {
-      const isAvailable = reward.max_redemptions === null || 
-                         reward.current_redemptions < reward.max_redemptions;
-      
+      const isAvailable =
+        reward.max_redemptions === null ||
+        reward.current_redemptions < reward.max_redemptions;
+
       return {
         ...reward,
         isAvailable,
-        remainingRedemptions: reward.max_redemptions ? 
-          reward.max_redemptions - reward.current_redemptions : null
+        remainingRedemptions: reward.max_redemptions
+          ? reward.max_redemptions - reward.current_redemptions
+          : null,
       };
     });
 
     return NextResponse.json({
       rewards,
       redeemedRewards: redeemedRewardsResult.rows,
-      customerTier
+      customerTier,
     });
-
   } catch (error) {
     console.error('Error fetching rewards:', error);
     return NextResponse.json(
@@ -78,4 +79,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

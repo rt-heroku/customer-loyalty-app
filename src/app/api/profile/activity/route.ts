@@ -37,9 +37,8 @@ export async function GET(request: NextRequest) {
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     });
-
   } catch (error) {
     console.error('Error fetching activity logs:', error);
     return NextResponse.json(
@@ -48,4 +47,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

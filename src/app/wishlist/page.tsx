@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { Wishlist } from '@/types/product';
-import { Heart, Share2, Trash2, ShoppingCart, Eye, Users, Lock } from 'lucide-react';
+import {
+  Heart,
+  Share2,
+  Trash2,
+  ShoppingCart,
+  Eye,
+  Users,
+  Lock,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn, formatCurrency } from '@/lib/utils';
 
@@ -85,26 +93,37 @@ export default function WishlistPage() {
 
   const removeFromWishlist = async (wishlistId: string, productId: string) => {
     try {
-      const response = await fetch(`/api/wishlist/${wishlistId}/items/${productId}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `/api/wishlist/${wishlistId}/items/${productId}`,
+        {
+          method: 'DELETE',
+        }
+      );
 
       if (response.ok) {
-        setWishlists(prev => prev.map(w => {
-          if (w.id === wishlistId) {
-            return {
-              ...w,
-              items: w.items.filter(item => item.productId !== productId)
-            };
-          }
-          return w;
-        }));
+        setWishlists(prev =>
+          prev.map(w => {
+            if (w.id === wishlistId) {
+              return {
+                ...w,
+                items: w.items.filter(item => item.productId !== productId),
+              };
+            }
+            return w;
+          })
+        );
 
         if (activeWishlist?.id === wishlistId) {
-          setActiveWishlist(prev => prev ? {
-            ...prev,
-            items: prev.items.filter(item => item.productId !== productId)
-          } : null);
+          setActiveWishlist(prev =>
+            prev
+              ? {
+                  ...prev,
+                  items: prev.items.filter(
+                    item => item.productId !== productId
+                  ),
+                }
+              : null
+          );
         }
       }
     } catch (error) {
@@ -112,7 +131,10 @@ export default function WishlistPage() {
     }
   };
 
-  const toggleWishlistPrivacy = async (wishlistId: string, isPublic: boolean) => {
+  const toggleWishlistPrivacy = async (
+    wishlistId: string,
+    isPublic: boolean
+  ) => {
     try {
       const response = await fetch(`/api/wishlist/${wishlistId}`, {
         method: 'PATCH',
@@ -121,15 +143,17 @@ export default function WishlistPage() {
       });
 
       if (response.ok) {
-        setWishlists(prev => prev.map(w => {
-          if (w.id === wishlistId) {
-            return { ...w, isPublic };
-          }
-          return w;
-        }));
+        setWishlists(prev =>
+          prev.map(w => {
+            if (w.id === wishlistId) {
+              return { ...w, isPublic };
+            }
+            return w;
+          })
+        );
 
         if (activeWishlist?.id === wishlistId) {
-          setActiveWishlist(prev => prev ? { ...prev, isPublic } : null);
+          setActiveWishlist(prev => (prev ? { ...prev, isPublic } : null));
         }
       }
     } catch (error) {
@@ -146,7 +170,7 @@ export default function WishlistPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: shareEmail,
-          message: shareMessage
+          message: shareMessage,
         }),
       });
 
@@ -193,9 +217,9 @@ export default function WishlistPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
           <p className="text-gray-600">Loading your wishlists...</p>
         </div>
       </div>
@@ -204,393 +228,464 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Wishlists</h1>
-                <p className="mt-2 text-gray-600">
-                  Save and organize products you love
-                </p>
-              </div>
-              
-              <div className="mt-4 sm:mt-0 flex items-center space-x-3">
-                <button
-                  onClick={() => setShowShareModal(true)}
-                  disabled={!activeWishlist}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Share2 className="w-4 h-4 mr-2" />
-                  Share
-                </button>
-                
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  New Wishlist
-                </button>
-              </div>
+      {/* Header */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Wishlists</h1>
+              <p className="mt-2 text-gray-600">
+                Save and organize products you love
+              </p>
+            </div>
+
+            <div className="mt-4 flex items-center space-x-3 sm:mt-0">
+              <button
+                onClick={() => setShowShareModal(true)}
+                disabled={!activeWishlist}
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </button>
+
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700"
+              >
+                <Heart className="mr-2 h-4 w-4" />
+                New Wishlist
+              </button>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Wishlists Sidebar */}
-            <div className="lg:w-80">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Wishlists</h3>
-                
-                {wishlists.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Heart className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 mb-4">No wishlists yet</p>
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6 lg:flex-row">
+          {/* Wishlists Sidebar */}
+          <div className="lg:w-80">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">
+                Wishlists
+              </h3>
+
+              {wishlists.length === 0 ? (
+                <div className="py-8 text-center">
+                  <Heart className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                  <p className="mb-4 text-gray-500">No wishlists yet</p>
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="inline-flex items-center rounded-md border border-transparent bg-primary-50 px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-100"
+                  >
+                    Create your first wishlist
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {wishlists.map(wishlist => (
                     <button
-                      onClick={() => setShowCreateModal(true)}
-                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-primary-600 bg-primary-50 hover:bg-primary-100"
+                      key={wishlist.id}
+                      onClick={() => setActiveWishlist(wishlist)}
+                      className={cn(
+                        'flex w-full items-center justify-between rounded-lg p-3 text-left transition-colors hover:bg-gray-50',
+                        activeWishlist?.id === wishlist.id &&
+                          'border border-primary-200 bg-primary-50'
+                      )}
                     >
-                      Create your first wishlist
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {wishlists.map((wishlist) => (
-                      <button
-                        key={wishlist.id}
-                        onClick={() => setActiveWishlist(wishlist)}
-                        className={cn(
-                          "w-full flex items-center justify-between p-3 rounded-lg text-left hover:bg-gray-50 transition-colors",
-                          activeWishlist?.id === wishlist.id && "bg-primary-50 border border-primary-200"
-                        )}
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center">
-                            <Heart className={cn(
-                              "w-4 h-4 mr-2",
-                              activeWishlist?.id === wishlist.id ? "text-primary-600 fill-current" : "text-gray-400"
-                            )} />
-                            <span className={cn(
-                              "font-medium truncate",
-                              activeWishlist?.id === wishlist.id ? "text-primary-900" : "text-gray-900"
-                            )}>
-                              {wishlist.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center mt-1">
-                            {wishlist.isPublic ? (
-                              <Users className="w-3 h-3 text-green-500 mr-1" />
-                            ) : (
-                              <Lock className="w-3 h-3 text-gray-500 mr-1" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center">
+                          <Heart
+                            className={cn(
+                              'mr-2 h-4 w-4',
+                              activeWishlist?.id === wishlist.id
+                                ? 'fill-current text-primary-600'
+                                : 'text-gray-400'
                             )}
-                            <span className="text-xs text-gray-500">
-                              {wishlist.items.length} items
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center space-x-1">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleWishlistPrivacy(wishlist.id, !wishlist.isPublic);
-                            }}
-                            className="p-1 text-gray-400 hover:text-gray-600"
-                            title={wishlist.isPublic ? 'Make private' : 'Make public'}
+                          />
+                          <span
+                            className={cn(
+                              'truncate font-medium',
+                              activeWishlist?.id === wishlist.id
+                                ? 'text-primary-900'
+                                : 'text-gray-900'
+                            )}
                           >
-                            {wishlist.isPublic ? <Users className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                          </button>
-                          
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteWishlist(wishlist.id);
-                            }}
-                            className="p-1 text-gray-400 hover:text-red-600"
-                            title="Delete wishlist"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
+                            {wishlist.name}
+                          </span>
                         </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-1">
-              {activeWishlist ? (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                  {/* Wishlist Header */}
-                  <div className="p-6 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-2xl font-bold text-gray-900">{activeWishlist.name}</h2>
-                        <div className="flex items-center mt-2">
-                          {activeWishlist.isPublic ? (
-                            <Users className="w-4 h-4 text-green-500 mr-2" />
+                        <div className="mt-1 flex items-center">
+                          {wishlist.isPublic ? (
+                            <Users className="mr-1 h-3 w-3 text-green-500" />
                           ) : (
-                            <Lock className="w-4 h-4 text-gray-500 mr-2" />
+                            <Lock className="mr-1 h-3 w-3 text-gray-500" />
                           )}
-                          <span className="text-sm text-gray-500">
-                            {activeWishlist.isPublic ? 'Public' : 'Private'} • {activeWishlist.items.length} items
+                          <span className="text-xs text-gray-500">
+                            {wishlist.items.length} items
                           </span>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-3">
+
+                      <div className="flex items-center space-x-1">
                         <button
-                          onClick={() => setShowShareModal(true)}
-                          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                          onClick={e => {
+                            e.stopPropagation();
+                            toggleWishlistPrivacy(
+                              wishlist.id,
+                              !wishlist.isPublic
+                            );
+                          }}
+                          className="p-1 text-gray-400 hover:text-gray-600"
+                          title={
+                            wishlist.isPublic ? 'Make private' : 'Make public'
+                          }
                         >
-                          <Share2 className="w-4 h-4 mr-2" />
-                          Share
-                        </button>
-                        
-                        <button
-                          onClick={() => toggleWishlistPrivacy(activeWishlist.id, !activeWishlist.isPublic)}
-                          className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                          {activeWishlist.isPublic ? (
-                            <>
-                              <Lock className="w-4 h-4 mr-2" />
-                              Make Private
-                            </>
+                          {wishlist.isPublic ? (
+                            <Users className="h-3 w-3" />
                           ) : (
-                            <>
-                              <Users className="w-4 h-4 mr-2" />
-                              Make Public
-                            </>
+                            <Lock className="h-3 w-3" />
                           )}
                         </button>
+
+                        <button
+                          onClick={e => {
+                            e.stopPropagation();
+                            deleteWishlist(wishlist.id);
+                          }}
+                          className="p-1 text-gray-400 hover:text-red-600"
+                          title="Delete wishlist"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </button>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Wishlist Items */}
-                  {activeWishlist.items.length > 0 ? (
-                    <div className="p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {activeWishlist.items.map((item) => (
-                          <div
-                            key={item.id}
-                            className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-                          >
-                            {/* Product Image */}
-                            <div className="relative aspect-square bg-gray-100">
-                              {item.product.images[0] ? (
-                                <img
-                                  src={item.product.images[0].url}
-                                  alt={item.product.images[0].alt}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                </div>
-                              )}
-
-                              {/* Stock Status Badge */}
-                              <div className="absolute top-2 left-2">
-                                <span className={cn(
-                                  "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                                  getStockStatusColor(item.product.stockStatus)
-                                )}>
-                                  {getStockStatusText(item.product.stockStatus)}
-                                </span>
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button
-                                  onClick={() => removeFromWishlist(activeWishlist.id, item.productId)}
-                                  className="p-2 bg-white rounded-full shadow-sm border border-gray-200 text-red-500 hover:bg-red-50"
-                                  title="Remove from wishlist"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* Product Info */}
-                            <div className="p-4">
-                              <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
-                                {item.product.name}
-                              </h3>
-                              
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="text-lg font-semibold text-gray-900">
-                                  {formatCurrency(item.product.price, item.product.currency)}
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                  {item.product.brand}
-                                </span>
-                              </div>
-
-                              {/* Action Buttons */}
-                              <div className="flex space-x-2">
-                                <button
-                                  disabled={item.product.stockStatus === 'out_of_stock'}
-                                  className={cn(
-                                    "flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                                    item.product.stockStatus === 'out_of_stock'
-                                      ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                      : "bg-primary-600 text-white hover:bg-primary-700"
-                                  )}
-                                >
-                                  <ShoppingCart className="w-4 h-4 mr-2" />
-                                  {item.product.stockStatus === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
-                                </button>
-                                
-                                <a
-                                  href={`/products/${item.product.id}`}
-                                  className="inline-flex items-center justify-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                                >
-                                  <Eye className="w-4 h-4" />
-                                </a>
-                              </div>
-
-                              {/* Added Date */}
-                              <div className="mt-3 text-xs text-gray-500">
-                                Added {new Date(item.addedAt).toLocaleDateString()}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-12 text-center">
-                      <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">This wishlist is empty</h3>
-                      <p className="text-gray-500 mb-6">
-                        Start adding products to your wishlist while browsing
-                      </p>
-                      <a
-                        href="/products"
-                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-                      >
-                        Browse Products
-                      </a>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-                  <Heart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No wishlist selected</h3>
-                  <p className="text-gray-500 mb-6">
-                        Select a wishlist from the sidebar or create a new one to get started
-                      </p>
-                  <button
-                    onClick={() => setShowCreateModal(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-                  >
-                    Create Wishlist
-                  </button>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>
           </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            {activeWishlist ? (
+              <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
+                {/* Wishlist Header */}
+                <div className="border-b border-gray-200 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        {activeWishlist.name}
+                      </h2>
+                      <div className="mt-2 flex items-center">
+                        {activeWishlist.isPublic ? (
+                          <Users className="mr-2 h-4 w-4 text-green-500" />
+                        ) : (
+                          <Lock className="mr-2 h-4 w-4 text-gray-500" />
+                        )}
+                        <span className="text-sm text-gray-500">
+                          {activeWishlist.isPublic ? 'Public' : 'Private'} •{' '}
+                          {activeWishlist.items.length} items
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => setShowShareModal(true)}
+                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                      >
+                        <Share2 className="mr-2 h-4 w-4" />
+                        Share
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          toggleWishlistPrivacy(
+                            activeWishlist.id,
+                            !activeWishlist.isPublic
+                          )
+                        }
+                        className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                      >
+                        {activeWishlist.isPublic ? (
+                          <>
+                            <Lock className="mr-2 h-4 w-4" />
+                            Make Private
+                          </>
+                        ) : (
+                          <>
+                            <Users className="mr-2 h-4 w-4" />
+                            Make Public
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Wishlist Items */}
+                {activeWishlist.items.length > 0 ? (
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                      {activeWishlist.items.map(item => (
+                        <div
+                          key={item.id}
+                          className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md"
+                        >
+                          {/* Product Image */}
+                          <div className="relative aspect-square bg-gray-100">
+                            {item.product.images[0] ? (
+                              <img
+                                src={item.product.images[0].url}
+                                alt={item.product.images[0].alt}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center text-gray-400">
+                                <svg
+                                  className="h-16 w-16"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+
+                            {/* Stock Status Badge */}
+                            <div className="absolute left-2 top-2">
+                              <span
+                                className={cn(
+                                  'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+                                  getStockStatusColor(item.product.stockStatus)
+                                )}
+                              >
+                                {getStockStatusText(item.product.stockStatus)}
+                              </span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
+                              <button
+                                onClick={() =>
+                                  removeFromWishlist(
+                                    activeWishlist.id,
+                                    item.productId
+                                  )
+                                }
+                                className="rounded-full border border-gray-200 bg-white p-2 text-red-500 shadow-sm hover:bg-red-50"
+                                title="Remove from wishlist"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Product Info */}
+                          <div className="p-4">
+                            <h3 className="mb-2 line-clamp-2 font-medium text-gray-900">
+                              {item.product.name}
+                            </h3>
+
+                            <div className="mb-3 flex items-center justify-between">
+                              <span className="text-lg font-semibold text-gray-900">
+                                {formatCurrency(
+                                  item.product.price,
+                                  item.product.currency
+                                )}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {item.product.brand}
+                              </span>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="flex space-x-2">
+                              <button
+                                disabled={
+                                  item.product.stockStatus === 'out_of_stock'
+                                }
+                                className={cn(
+                                  'flex flex-1 items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                                  item.product.stockStatus === 'out_of_stock'
+                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                    : 'bg-primary-600 text-white hover:bg-primary-700'
+                                )}
+                              >
+                                <ShoppingCart className="mr-2 h-4 w-4" />
+                                {item.product.stockStatus === 'out_of_stock'
+                                  ? 'Out of Stock'
+                                  : 'Add to Cart'}
+                              </button>
+
+                              <a
+                                href={`/products/${item.product.id}`}
+                                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </a>
+                            </div>
+
+                            {/* Added Date */}
+                            <div className="mt-3 text-xs text-gray-500">
+                              Added{' '}
+                              {new Date(item.addedAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-12 text-center">
+                    <Heart className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                    <h3 className="mb-2 text-lg font-medium text-gray-900">
+                      This wishlist is empty
+                    </h3>
+                    <p className="mb-6 text-gray-500">
+                      Start adding products to your wishlist while browsing
+                    </p>
+                    <a
+                      href="/products"
+                      className="inline-flex items-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700"
+                    >
+                      Browse Products
+                    </a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-gray-200 bg-white p-12 text-center shadow-sm">
+                <Heart className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                <h3 className="mb-2 text-lg font-medium text-gray-900">
+                  No wishlist selected
+                </h3>
+                <p className="mb-6 text-gray-500">
+                  Select a wishlist from the sidebar or create a new one to get
+                  started
+                </p>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="inline-flex items-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700"
+                >
+                  Create Wishlist
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-
-        {/* Create Wishlist Modal */}
-        {showCreateModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Wishlist</h3>
-              
-              <div className="mb-4">
-                <label htmlFor="wishlist-name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Wishlist Name
-                </label>
-                <input
-                  type="text"
-                  id="wishlist-name"
-                  value={newWishlistName}
-                  onChange={(e) => setNewWishlistName(e.target.value)}
-                  placeholder="Enter wishlist name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={createWishlist}
-                  disabled={!newWishlistName.trim()}
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Create
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Share Wishlist Modal */}
-        {showShareModal && activeWishlist && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Wishlist</h3>
-              
-              <div className="mb-4">
-                <label htmlFor="share-email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="share-email"
-                  value={shareEmail}
-                  onChange={(e) => setShareEmail(e.target.value)}
-                  placeholder="Enter email address"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label htmlFor="share-message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Message (Optional)
-                </label>
-                <textarea
-                  id="share-message"
-                  value={shareMessage}
-                  onChange={(e) => setShareMessage(e.target.value)}
-                  placeholder="Add a personal message"
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowShareModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={shareWishlist}
-                  disabled={!shareEmail.trim()}
-                  className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Share
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Create Wishlist Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Create New Wishlist
+            </h3>
+
+            <div className="mb-4">
+              <label
+                htmlFor="wishlist-name"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Wishlist Name
+              </label>
+              <input
+                type="text"
+                id="wishlist-name"
+                value={newWishlistName}
+                onChange={e => setNewWishlistName(e.target.value)}
+                placeholder="Enter wishlist name"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createWishlist}
+                disabled={!newWishlistName.trim()}
+                className="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Wishlist Modal */}
+      {showShareModal && activeWishlist && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-900">
+              Share Wishlist
+            </h3>
+
+            <div className="mb-4">
+              <label
+                htmlFor="share-email"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Email Address
+              </label>
+              <input
+                type="email"
+                id="share-email"
+                value={shareEmail}
+                onChange={e => setShareEmail(e.target.value)}
+                placeholder="Enter email address"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label
+                htmlFor="share-message"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
+                Message (Optional)
+              </label>
+              <textarea
+                id="share-message"
+                value={shareMessage}
+                onChange={e => setShareMessage(e.target.value)}
+                placeholder="Add a personal message"
+                rows={3}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-primary-500"
+              />
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={shareWishlist}
+                disabled={!shareEmail.trim()}
+                className="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Share
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

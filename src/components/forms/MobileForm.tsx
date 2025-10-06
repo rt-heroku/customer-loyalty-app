@@ -2,23 +2,32 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Eye, 
-  EyeOff, 
-  Check, 
-  X, 
+import {
+  Eye,
+  EyeOff,
+  Check,
+  X,
   AlertCircle,
   Phone,
   Mail,
   User,
-  Lock
+  Lock,
 } from 'lucide-react';
 import { pwaManager } from '@/lib/pwa';
 
 interface FormField {
   id: string;
   label: string;
-  type: 'text' | 'email' | 'password' | 'tel' | 'date' | 'time' | 'select' | 'textarea' | 'number';
+  type:
+    | 'text'
+    | 'email'
+    | 'password'
+    | 'tel'
+    | 'date'
+    | 'time'
+    | 'select'
+    | 'textarea'
+    | 'number';
   placeholder?: string;
   required?: boolean;
   validation?: {
@@ -42,22 +51,24 @@ interface MobileFormProps {
   className?: string;
 }
 
-export default function MobileForm({ 
-  fields, 
-  onSubmit, 
-  submitLabel = 'Submit', 
+export default function MobileForm({
+  fields,
+  onSubmit,
+  submitLabel = 'Submit',
   loading = false,
   initialData = {},
-  className = ''
+  className = '',
 }: MobileFormProps) {
   const [formData, setFormData] = useState<Record<string, any>>(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  
+
   const formRef = useRef<HTMLFormElement>(null);
-  const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>>({});
+  const inputRefs = useRef<
+    Record<string, HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  >({});
 
   // Initialize form data
   useEffect(() => {
@@ -71,15 +82,15 @@ export default function MobileForm({
   // Handle input change
   const handleInputChange = (fieldId: string, value: any) => {
     setFormData(prev => ({ ...prev, [fieldId]: value }));
-    
+
     // Clear error when user starts typing
     if (errors[fieldId]) {
       setErrors(prev => ({ ...prev, [fieldId]: '' }));
     }
-    
+
     // Mark field as touched
     setTouched(prev => new Set(prev).add(fieldId));
-    
+
     // Provide haptic feedback
     pwaManager.hapticFeedback('light');
   };
@@ -117,11 +128,17 @@ export default function MobileForm({
     }
 
     // Length validation
-    if (field.validation?.minLength && value.length < field.validation.minLength) {
+    if (
+      field.validation?.minLength &&
+      value.length < field.validation.minLength
+    ) {
       return `${field.label} must be at least ${field.validation.minLength} characters`;
     }
 
-    if (field.validation?.maxLength && value.length > field.validation.maxLength) {
+    if (
+      field.validation?.maxLength &&
+      value.length > field.validation.maxLength
+    ) {
       return `${field.label} must be no more than ${field.validation.maxLength} characters`;
     }
 
@@ -131,10 +148,16 @@ export default function MobileForm({
       if (isNaN(numValue)) {
         return `${field.label} must be a valid number`;
       }
-      if (field.validation?.min !== undefined && numValue < field.validation.min) {
+      if (
+        field.validation?.min !== undefined &&
+        numValue < field.validation.min
+      ) {
         return `${field.label} must be at least ${field.validation.min}`;
       }
-      if (field.validation?.max !== undefined && numValue > field.validation.max) {
+      if (
+        field.validation?.max !== undefined &&
+        numValue > field.validation.max
+      ) {
         return `${field.label} must be no more than ${field.validation.max}`;
       }
     }
@@ -168,7 +191,7 @@ export default function MobileForm({
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       pwaManager.hapticFeedback('heavy');
       return;
@@ -185,8 +208,12 @@ export default function MobileForm({
   };
 
   // Handle field navigation
-  const handleFieldNavigation = (currentIndex: number, direction: 'next' | 'prev') => {
-    const nextIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+  const handleFieldNavigation = (
+    currentIndex: number,
+    direction: 'next' | 'prev'
+  ) => {
+    const nextIndex =
+      direction === 'next' ? currentIndex + 1 : currentIndex - 1;
     if (nextIndex >= 0 && nextIndex < fields.length) {
       const nextField = fields[nextIndex];
       if (nextField) {
@@ -210,11 +237,12 @@ export default function MobileForm({
     const baseInputClasses = `
       w-full px-4 py-4 text-base bg-white border-2 rounded-2xl transition-all duration-200
       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
-      ${showError 
-        ? 'border-red-500 focus:border-red-500' 
-        : isFocused 
-          ? 'border-blue-500' 
-          : 'border-gray-200'
+      ${
+        showError
+          ? 'border-red-500 focus:border-red-500'
+          : isFocused
+            ? 'border-blue-500'
+            : 'border-gray-200'
       }
       ${field.type === 'textarea' ? 'resize-none' : ''}
     `;
@@ -224,16 +252,22 @@ export default function MobileForm({
       ref: (el: any) => {
         if (el) inputRefs.current[field.id] = el;
       },
-      type: field.type === 'password' && showPassword[field.id] ? 'text' : field.type,
+      type:
+        field.type === 'password' && showPassword[field.id]
+          ? 'text'
+          : field.type,
       placeholder: field.placeholder,
       value: formData[field.id] || '',
-      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => 
-        handleInputChange(field.id, e.target.value),
+      onChange: (
+        e: React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+      ) => handleInputChange(field.id, e.target.value),
       onBlur: () => handleInputBlur(field.id),
       onFocus: () => handleInputFocus(field.id),
       required: field.required,
       className: baseInputClasses,
-      style: { touchAction: 'manipulation' }
+      style: { touchAction: 'manipulation' },
     };
 
     return (
@@ -245,19 +279,19 @@ export default function MobileForm({
         className="space-y-2"
       >
         {/* Label */}
-        <label 
-          htmlFor={field.id} 
-          className="block text-sm font-medium text-gray-700 ml-1"
+        <label
+          htmlFor={field.id}
+          className="ml-1 block text-sm font-medium text-gray-700"
         >
           {field.label}
-          {field.required && <span className="text-red-500 ml-1">*</span>}
+          {field.required && <span className="ml-1 text-red-500">*</span>}
         </label>
 
         {/* Input Container */}
         <div className="relative">
           {/* Icon */}
           {Icon && (
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 transform text-gray-400">
               <Icon size={20} />
             </div>
           )}
@@ -289,10 +323,14 @@ export default function MobileForm({
             <button
               type="button"
               onClick={() => togglePasswordVisibility(field.id)}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 transform text-gray-400 hover:text-gray-600"
               style={{ touchAction: 'manipulation' }}
             >
-              {showPassword[field.id] ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword[field.id] ? (
+                <EyeOff size={20} />
+              ) : (
+                <Eye size={20} />
+              )}
             </button>
           )}
 
@@ -303,7 +341,7 @@ export default function MobileForm({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-red-500"
+                className="absolute right-4 top-1/2 -translate-y-1/2 transform text-red-500"
               >
                 <X size={20} />
               </motion.div>
@@ -313,7 +351,7 @@ export default function MobileForm({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0 }}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-green-500"
+                className="absolute right-4 top-1/2 -translate-y-1/2 transform text-green-500"
               >
                 <Check size={20} />
               </motion.div>
@@ -328,7 +366,7 @@ export default function MobileForm({
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="flex items-center space-x-2 text-red-600 text-sm ml-1"
+              className="ml-1 flex items-center space-x-2 text-sm text-red-600"
             >
               <AlertCircle size={16} />
               <span>{errors[field.id]}</span>
@@ -342,7 +380,7 @@ export default function MobileForm({
             <button
               type="button"
               onClick={() => handleFieldNavigation(index, 'prev')}
-              className="text-sm text-gray-500 hover:text-gray-700 flex items-center space-x-1"
+              className="flex items-center space-x-1 text-sm text-gray-500 hover:text-gray-700"
               style={{ touchAction: 'manipulation' }}
             >
               <span>← Previous</span>
@@ -352,7 +390,7 @@ export default function MobileForm({
             <button
               type="button"
               onClick={() => handleFieldNavigation(index, 'next')}
-              className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1 ml-auto"
+              className="ml-auto flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-700"
               style={{ touchAction: 'manipulation' }}
             >
               <span>Next →</span>
@@ -380,11 +418,12 @@ export default function MobileForm({
         type="submit"
         disabled={loading}
         className={`
-          w-full py-4 px-6 text-lg font-semibold text-white rounded-2xl
-          transition-all duration-200 transform
-          ${loading 
-            ? 'bg-gray-400 cursor-not-allowed' 
-            : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
+          w-full transform rounded-2xl px-6 py-4 text-lg font-semibold
+          text-white transition-all duration-200
+          ${
+            loading
+              ? 'cursor-not-allowed bg-gray-400'
+              : 'bg-blue-600 hover:bg-blue-700 active:scale-95'
           }
           focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50
         `}
@@ -394,7 +433,7 @@ export default function MobileForm({
       >
         {loading ? (
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             <span>Submitting...</span>
           </div>
         ) : (
@@ -409,7 +448,7 @@ export default function MobileForm({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-red-50 border border-red-200 rounded-2xl p-4"
+            className="rounded-2xl border border-red-200 bg-red-50 p-4"
           >
             <div className="flex items-center space-x-2 text-red-600">
               <AlertCircle size={20} />
@@ -432,9 +471,9 @@ export const commonFields = {
     required: true,
     validation: {
       minLength: 2,
-      maxLength: 50
+      maxLength: 50,
     },
-    icon: User
+    icon: User,
   },
   email: {
     id: 'email',
@@ -443,9 +482,9 @@ export const commonFields = {
     placeholder: 'Enter your email address',
     required: true,
     validation: {
-      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     },
-    icon: Mail
+    icon: Mail,
   },
   phone: {
     id: 'phone',
@@ -454,9 +493,9 @@ export const commonFields = {
     placeholder: 'Enter your phone number',
     required: false,
     validation: {
-      pattern: /^[\+]?[1-9][\d]{0,15}$/
+      pattern: /^[\+]?[1-9][\d]{0,15}$/,
     },
-    icon: Phone
+    icon: Phone,
   },
   password: {
     id: 'password',
@@ -467,12 +506,15 @@ export const commonFields = {
     validation: {
       minLength: 8,
       custom: (value: string) => {
-        if (!/(?=.*[a-z])/.test(value)) return 'Password must contain at least one lowercase letter';
-        if (!/(?=.*[A-Z])/.test(value)) return 'Password must contain at least one uppercase letter';
-        if (!/(?=.*\d)/.test(value)) return 'Password must contain at least one number';
+        if (!/(?=.*[a-z])/.test(value))
+          return 'Password must contain at least one lowercase letter';
+        if (!/(?=.*[A-Z])/.test(value))
+          return 'Password must contain at least one uppercase letter';
+        if (!/(?=.*\d)/.test(value))
+          return 'Password must contain at least one number';
         return null;
-      }
+      },
     },
-    icon: Lock
-  }
+    icon: Lock,
+  },
 };

@@ -2,7 +2,6 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  shortDescription: string;
   price: number;
   originalPrice: number | undefined;
   currency: string;
@@ -65,10 +64,12 @@ export interface Wishlist {
 export interface ProductFilter {
   category?: string | undefined;
   brand?: string | undefined;
-  priceRange?: {
-    min: number;
-    max: number;
-  } | undefined;
+  priceRange?:
+    | {
+        min: number;
+        max: number;
+      }
+    | undefined;
   stockStatus?: string[] | undefined;
   rating?: number | undefined;
   tags?: string[] | undefined;

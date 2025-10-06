@@ -4,16 +4,19 @@ import { z } from 'zod';
 // Environment variable validation
 const envSchema = z.object({
   DATABASE_URL: z.string().url().optional(),
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
 });
 
 const env = envSchema.parse(process.env);
 
 // Database configuration
 const dbConfig = {
-  connectionString: env.DATABASE_URL || 'postgresql://localhost:5432/loyalty_db',
+  connectionString:
+    env.DATABASE_URL || 'postgresql://localhost:5432/loyalty_db',
   /*ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,*/
-  ssl:  { rejectUnauthorized: false },
+  ssl: { rejectUnauthorized: false },
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
   connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
@@ -27,15 +30,15 @@ let pool: Pool | null = null;
 function initializePool(): Pool {
   if (!pool) {
     pool = new Pool(dbConfig);
-    
+
     // Handle pool errors
-    pool.on('error', (err) => {
+    pool.on('error', err => {
       console.error('Unexpected error on idle client', err);
       process.exit(-1);
     });
 
     // Test connection on startup
-    pool.query('SELECT NOW()', (err) => {
+    pool.query('SELECT NOW()', err => {
       if (err) {
         console.error('Database connection failed:', err);
       } else {
@@ -58,23 +61,27 @@ export async function query(
   retries: number = 3
 ): Promise<QueryResult> {
   const pool = getPool();
-  
+
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const result = await pool.query(text, params);
       return result;
     } catch (error) {
       console.error(`Database query attempt ${attempt} failed:`, error);
-      
+
       if (attempt === retries) {
-        throw new Error(`Database query failed after ${retries} attempts: ${error}`);
+        throw new Error(
+          `Database query failed after ${retries} attempts: ${error}`
+        );
       }
-      
+
       // Wait before retrying (exponential backoff)
-      await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      await new Promise(resolve =>
+        setTimeout(resolve, Math.pow(2, attempt) * 1000)
+      );
     }
   }
-  
+
   throw new Error('Database query failed');
 }
 
@@ -84,7 +91,7 @@ export async function transaction<T>(
 ): Promise<T> {
   const pool = getPool();
   const client = await pool.connect();
-  
+
   try {
     await client.query('BEGIN');
     const result = await callback(client);
@@ -99,8 +106,10 @@ export async function transaction<T>(
 }
 
 // Execute multiple queries in a transaction
-export async function executeTransaction(queries: Array<{ text: string; params?: any[] }>): Promise<void> {
-  await transaction(async (client) => {
+export async function executeTransaction(
+  queries: Array<{ text: string; params?: any[] }>
+): Promise<void> {
+  await transaction(async client => {
     for (const query of queries) {
       await client.query(query.text, query.params);
     }

@@ -11,7 +11,12 @@ interface StoreMapProps {
   onStoreSelect: (store: StoreLocation) => void;
 }
 
-export default function StoreMap({ stores, userLocation, selectedStore, onStoreSelect }: StoreMapProps) {
+export default function StoreMap({
+  stores,
+  userLocation,
+  selectedStore,
+  onStoreSelect,
+}: StoreMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -41,14 +46,16 @@ export default function StoreMap({ stores, userLocation, selectedStore, onStoreS
     if (userLocation) {
       return { lat: userLocation.latitude, lng: userLocation.longitude };
     }
-    
+
     if (stores.length > 0) {
-      const avgLat = stores.reduce((sum, store) => sum + store.latitude, 0) / stores.length;
-      const avgLng = stores.reduce((sum, store) => sum + store.longitude, 0) / stores.length;
+      const avgLat =
+        stores.reduce((sum, store) => sum + store.latitude, 0) / stores.length;
+      const avgLng =
+        stores.reduce((sum, store) => sum + store.longitude, 0) / stores.length;
       return { lat: avgLat, lng: avgLng };
     }
-    
-    return { lat: 40.7128, lng: -74.0060 }; // Default to NYC
+
+    return { lat: 40.7128, lng: -74.006 }; // Default to NYC
   };
 
   const center = getMapCenter();
@@ -56,138 +63,148 @@ export default function StoreMap({ stores, userLocation, selectedStore, onStoreS
   return (
     <div className="relative">
       {/* Map Container */}
-      <div 
+      <div
         ref={mapRef}
-        className="w-full h-96 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg relative overflow-hidden"
+        className="relative h-96 w-full overflow-hidden rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100"
         style={{
           backgroundImage: `
             radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
             radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
             radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%)
-          `
+          `,
         }}
       >
         {/* User Location Marker */}
         {userLocation && (
-          <div 
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 z-20"
+          <div
+            className="absolute z-20 -translate-x-1/2 -translate-y-1/2 transform"
             style={{
               left: '50%',
-              top: '50%'
+              top: '50%',
             }}
           >
-            <div className="w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
+            <div className="flex h-6 w-6 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-lg">
+              <div className="h-2 w-2 rounded-full bg-white"></div>
             </div>
-            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 transform whitespace-nowrap rounded bg-blue-600 px-2 py-1 text-xs text-white">
               You are here
             </div>
           </div>
         )}
 
         {/* Store Markers */}
-        {stores.map((store) => {
+        {stores.map(store => {
           const isSelected = selectedStore?.id === store.id;
           const distance = store.distance;
-          
+
           // Calculate position based on store coordinates relative to center
           const latDiff = store.latitude - center.lat;
           const lngDiff = store.longitude - center.lng;
-          
+
           // Convert to pixel positions (simplified)
-          const x = 50 + (lngDiff * 1000) % 80; // Keep within bounds
-          const y = 50 + (latDiff * 1000) % 80;
-          
+          const x = 50 + ((lngDiff * 1000) % 80); // Keep within bounds
+          const y = 50 + ((latDiff * 1000) % 80);
+
           return (
             <div
               key={store.id}
-              className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer transition-all duration-200 z-10 ${
+              className={`absolute z-10 -translate-x-1/2 -translate-y-1/2 transform cursor-pointer transition-all duration-200 ${
                 isSelected ? 'z-30' : ''
               }`}
               style={{
                 left: `${x}%`,
-                top: `${y}%`
+                top: `${y}%`,
               }}
               onClick={() => onStoreSelect(store)}
             >
               {/* Store Marker */}
-              <div className={`w-8 h-8 rounded-full border-4 shadow-lg flex items-center justify-center transition-all duration-200 ${
-                isSelected
-                  ? 'bg-primary-600 border-white scale-125'
-                  : 'bg-white border-primary-600 hover:scale-110'
-              }`}>
-                <MapPin className={`w-4 h-4 ${
-                  isSelected ? 'text-white' : 'text-primary-600'
-                }`} />
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full border-4 shadow-lg transition-all duration-200 ${
+                  isSelected
+                    ? 'scale-125 border-white bg-primary-600'
+                    : 'border-primary-600 bg-white hover:scale-110'
+                }`}
+              >
+                <MapPin
+                  className={`h-4 w-4 ${
+                    isSelected ? 'text-white' : 'text-primary-600'
+                  }`}
+                />
               </div>
-              
+
               {/* Store Info Popup */}
               {isSelected && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-40">
+                <div className="absolute bottom-full left-1/2 z-40 mb-2 w-64 -translate-x-1/2 transform rounded-lg border border-gray-200 bg-white p-4 shadow-xl">
                   <div className="flex items-start space-x-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-sm mb-1">
+                      <h3 className="mb-1 text-sm font-semibold text-gray-900">
                         {store.name}
                       </h3>
-                      
+
                       <div className="space-y-1 text-xs text-gray-600">
                         <div className="flex items-center">
-                          <MapPin className="w-3 h-3 mr-1" />
+                          <MapPin className="mr-1 h-3 w-3" />
                           <span>{store.address}</span>
                         </div>
-                        
+
                         {distance && (
                           <div className="flex items-center">
-                            <Navigation className="w-3 h-3 mr-1" />
+                            <Navigation className="mr-1 h-3 w-3" />
                             <span>{distance.toFixed(1)} km away</span>
                           </div>
                         )}
-                        
+
                         <div className="flex items-center">
-                          <Star className="w-3 h-3 mr-1 text-yellow-400" />
-                          <span>{store.rating} ({store.reviewCount} reviews)</span>
+                          <Star className="mr-1 h-3 w-3 text-yellow-400" />
+                          <span>
+                            {store.rating} ({store.reviewCount} reviews)
+                          </span>
                         </div>
-                        
+
                         <div className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          <span className={store.isOpen ? 'text-green-600' : 'text-red-600'}>
+                          <Clock className="mr-1 h-3 w-3" />
+                          <span
+                            className={
+                              store.isOpen ? 'text-green-600' : 'text-red-600'
+                            }
+                          >
                             {store.isOpen ? 'Open' : 'Closed'}
                           </span>
                         </div>
                       </div>
-                      
+
                       {/* Quick Actions */}
-                      <div className="flex space-x-2 mt-3">
+                      <div className="mt-3 flex space-x-2">
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             window.location.href = `tel:${store.phone}`;
                           }}
-                          className="flex-1 bg-primary-600 text-white text-xs px-2 py-1 rounded hover:bg-primary-700 transition-colors"
+                          className="flex-1 rounded bg-primary-600 px-2 py-1 text-xs text-white transition-colors hover:bg-primary-700"
                         >
-                          <Phone className="w-3 h-3 inline mr-1" />
+                          <Phone className="mr-1 inline h-3 w-3" />
                           Call
                         </button>
-                        
+
                         <button
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             window.open(
                               `https://www.google.com/maps/dir/?api=1&destination=${store.latitude},${store.longitude}`,
                               '_blank'
                             );
                           }}
-                          className="flex-1 bg-gray-600 text-white text-xs px-2 py-1 rounded hover:bg-gray-700 transition-colors"
+                          className="flex-1 rounded bg-gray-600 px-2 py-1 text-xs text-white transition-colors hover:bg-gray-700"
                         >
-                          <Navigation className="w-3 h-3 inline mr-1" />
+                          <Navigation className="mr-1 inline h-3 w-3" />
                           Directions
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Close button */}
                     <button
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         onStoreSelect(store);
                       }}
@@ -203,53 +220,53 @@ export default function StoreMap({ stores, userLocation, selectedStore, onStoreS
         })}
 
         {/* Map Controls */}
-        <div className="absolute top-4 right-4 space-y-2">
+        <div className="absolute right-4 top-4 space-y-2">
           <button
             onClick={() => {
               if (userLocation) {
                 // Center map on user location
               }
             }}
-            className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-md transition-colors hover:bg-gray-50"
             title="Center on my location"
           >
-            <Navigation className="w-5 h-5 text-gray-600" />
+            <Navigation className="h-5 w-5 text-gray-600" />
           </button>
-          
+
           <button
             onClick={() => {
               // Zoom in
             }}
-            className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-md transition-colors hover:bg-gray-50"
             title="Zoom in"
           >
-            <span className="text-gray-600 font-bold text-lg">+</span>
+            <span className="text-lg font-bold text-gray-600">+</span>
           </button>
-          
+
           <button
             onClick={() => {
               // Zoom out
             }}
-            className="w-10 h-10 bg-white rounded-lg shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-md transition-colors hover:bg-gray-50"
             title="Zoom out"
           >
-            <span className="text-gray-600 font-bold text-lg">−</span>
+            <span className="text-lg font-bold text-gray-600">−</span>
           </button>
         </div>
 
         {/* Map Legend */}
-        <div className="absolute bottom-4 left-4 bg-white rounded-lg shadow-md p-3 text-xs">
+        <div className="absolute bottom-4 left-4 rounded-lg bg-white p-3 text-xs shadow-md">
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
+              <div className="h-4 w-4 rounded-full border-2 border-white bg-blue-600"></div>
               <span>Your location</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-white rounded-full border-2 border-primary-600"></div>
+              <div className="h-4 w-4 rounded-full border-2 border-primary-600 bg-white"></div>
               <span>Store</span>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-primary-600 rounded-full border-2 border-white"></div>
+              <div className="h-4 w-4 rounded-full border-2 border-white bg-primary-600"></div>
               <span>Selected store</span>
             </div>
           </div>
@@ -258,27 +275,30 @@ export default function StoreMap({ stores, userLocation, selectedStore, onStoreS
 
       {/* Map Loading State */}
       {!mapLoaded && (
-        <div className="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-100">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-2"></div>
-            <p className="text-gray-600 text-sm">Loading map...</p>
+            <div className="mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-primary-600"></div>
+            <p className="text-sm text-gray-600">Loading map...</p>
           </div>
         </div>
       )}
 
       {/* Map Integration Notice */}
-      <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div className="flex items-start space-x-3">
           <div className="flex-shrink-0">
-            <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-xs font-bold">i</span>
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600">
+              <span className="text-xs font-bold text-white">i</span>
             </div>
           </div>
           <div className="flex-1">
-            <h4 className="text-sm font-medium text-blue-900">Map Integration</h4>
-            <p className="text-sm text-blue-700 mt-1">
-              This is a simplified map view. For production use, integrate with Google Maps or Mapbox API 
-              for full interactive mapping capabilities, real-time traffic, and turn-by-turn navigation.
+            <h4 className="text-sm font-medium text-blue-900">
+              Map Integration
+            </h4>
+            <p className="mt-1 text-sm text-blue-700">
+              This is a simplified map view. For production use, integrate with
+              Google Maps or Mapbox API for full interactive mapping
+              capabilities, real-time traffic, and turn-by-turn navigation.
             </p>
           </div>
         </div>

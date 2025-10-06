@@ -2,15 +2,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { 
-  Heart, 
-  Share2, 
-  Star, 
+import {
+  Heart,
+  Share2,
+  Star,
   Eye,
   ChevronLeft,
   ChevronRight,
   Plus,
-  Minus
+  Minus,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { pwaManager } from '@/lib/pwa';
@@ -25,13 +25,13 @@ interface MobileProductCardProps {
   showQuickActions?: boolean;
 }
 
-export default function MobileProductCard({ 
-  product, 
-  onWishlistToggle, 
-  onQuickView, 
+export default function MobileProductCard({
+  product,
+  onWishlistToggle,
+  onQuickView,
   onAddToCart,
   isWishlisted = false,
-  showQuickActions = false
+  showQuickActions = false,
 }: MobileProductCardProps) {
   const { user } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -39,13 +39,15 @@ export default function MobileProductCard({
   const [showImageGallery, setShowImageGallery] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  
   const cardRef = useRef<HTMLDivElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Handle image swipe
   const handleImageSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'left' && currentImageIndex < (product.images?.length || 1) - 1) {
+    if (
+      direction === 'left' &&
+      currentImageIndex < (product.images?.length || 1) - 1
+    ) {
       setCurrentImageIndex(prev => prev + 1);
     } else if (direction === 'right' && currentImageIndex > 0) {
       setCurrentImageIndex(prev => prev - 1);
@@ -70,7 +72,7 @@ export default function MobileProductCard({
     }
 
     pwaManager.hapticFeedback('light');
-    
+
     try {
       if (onWishlistToggle) {
         onWishlistToggle(product.id);
@@ -127,11 +129,11 @@ export default function MobileProductCard({
   useEffect(() => {
     if (product.images && product.images.length > 1 && !isExpanded) {
       const interval = setInterval(() => {
-        setCurrentImageIndex(prev => 
+        setCurrentImageIndex(prev =>
           prev === product.images.length - 1 ? 0 : prev + 1
         );
       }, 3000);
-      
+
       return () => clearInterval(interval);
     }
     return undefined;
@@ -142,7 +144,7 @@ export default function MobileProductCard({
       {/* Main Product Card */}
       <motion.div
         ref={cardRef}
-        className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100"
+        className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -4 }}
@@ -153,7 +155,7 @@ export default function MobileProductCard({
         <div className="relative">
           <motion.div
             ref={imageContainerRef}
-            className="relative h-48 bg-gray-100 overflow-hidden"
+            className="relative h-48 overflow-hidden bg-gray-100"
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.1}
@@ -164,9 +166,12 @@ export default function MobileProductCard({
             <AnimatePresence mode="wait">
               <motion.img
                 key={currentImageIndex}
-                src={product.images?.[currentImageIndex]?.url || '/images/placeholder.png'}
+                src={
+                  product.images?.[currentImageIndex]?.url ||
+                  '/images/placeholder.png'
+                }
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -178,12 +183,14 @@ export default function MobileProductCard({
 
             {/* Image Navigation Dots */}
             {product.images && product.images.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 transform space-x-2">
                 {product.images.map((_, index) => (
                   <motion.div
                     key={index}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? 'bg-white' : 'bg-white bg-opacity-50'
+                    className={`h-2 w-2 rounded-full ${
+                      index === currentImageIndex
+                        ? 'bg-white'
+                        : 'bg-white bg-opacity-50'
                     }`}
                     initial={false}
                     animate={{ scale: index === currentImageIndex ? 1.2 : 1 }}
@@ -200,24 +207,28 @@ export default function MobileProductCard({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute top-3 right-3 flex flex-col space-y-2"
+                  className="absolute right-3 top-3 flex flex-col space-y-2"
                 >
                   <motion.button
                     onClick={handleWishlistToggle}
-                    className="w-10 h-10 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-lg"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white bg-opacity-90 shadow-lg"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     style={{ touchAction: 'manipulation' }}
                   >
-                    <Heart 
-                      size={18} 
-                      className={isWishlisted ? 'text-red-500 fill-current' : 'text-gray-600'} 
+                    <Heart
+                      size={18}
+                      className={
+                        isWishlisted
+                          ? 'fill-current text-red-500'
+                          : 'text-gray-600'
+                      }
                     />
                   </motion.button>
-                  
+
                   <motion.button
                     onClick={handleQuickView}
-                    className="w-10 h-10 bg-white bg-opacity-90 rounded-full flex items-center justify-center shadow-lg"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white bg-opacity-90 shadow-lg"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     style={{ touchAction: 'manipulation' }}
@@ -233,7 +244,7 @@ export default function MobileProductCard({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
+                className="absolute left-3 top-3 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white"
               >
                 SALE
               </motion.div>
@@ -241,7 +252,7 @@ export default function MobileProductCard({
 
             {/* Stock Status */}
             {product.stockQuantity === 0 && (
-              <div className="absolute top-3 left-3 bg-gray-800 text-white text-xs font-bold px-2 py-1 rounded-full">
+              <div className="absolute left-3 top-3 rounded-full bg-gray-800 px-2 py-1 text-xs font-bold text-white">
                 OUT OF STOCK
               </div>
             )}
@@ -252,17 +263,17 @@ export default function MobileProductCard({
             <>
               <motion.button
                 onClick={() => handleImageSwipe('right')}
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center shadow-lg"
+                className="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white bg-opacity-80 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 style={{ touchAction: 'manipulation' }}
               >
                 <ChevronLeft size={16} className="text-gray-600" />
               </motion.button>
-              
+
               <motion.button
                 onClick={() => handleImageSwipe('left')}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white bg-opacity-80 rounded-full flex items-center justify-center shadow-lg"
+                className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 transform items-center justify-center rounded-full bg-white bg-opacity-80 shadow-lg"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 style={{ touchAction: 'manipulation' }}
@@ -277,14 +288,14 @@ export default function MobileProductCard({
         <div className="p-4">
           {/* Product Info */}
           <div className="mb-3">
-            <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-1">
+            <h3 className="mb-1 line-clamp-2 text-sm font-semibold text-gray-900">
               {product.name}
             </h3>
-            
-            <div className="flex items-center space-x-2 mb-2">
+
+            <div className="mb-2 flex items-center space-x-2">
               <div className="flex items-center">
-                <Star size={14} className="text-yellow-400 fill-current" />
-                <span className="text-xs text-gray-600 ml-1">
+                <Star size={14} className="fill-current text-yellow-400" />
+                <span className="ml-1 text-xs text-gray-600">
                   {product.rating || 0}
                 </span>
               </div>
@@ -299,13 +310,14 @@ export default function MobileProductCard({
               <span className="text-lg font-bold text-gray-900">
                 ${product.price}
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-sm text-gray-500 line-through">
-                  ${product.originalPrice}
-                </span>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <span className="text-sm text-gray-500 line-through">
+                    ${product.originalPrice}
+                  </span>
+                )}
               {product.salePercentage && (
-                <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">
+                <span className="rounded-full bg-red-100 px-2 py-1 text-xs text-red-600">
                   -{product.salePercentage}%
                 </span>
               )}
@@ -316,7 +328,7 @@ export default function MobileProductCard({
           <div className="flex space-x-2">
             <motion.button
               onClick={handleAddToCart}
-              className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-medium text-sm"
+              className="flex-1 rounded-xl bg-blue-600 px-4 py-3 text-sm font-medium text-white"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               disabled={product.stockQuantity === 0}
@@ -324,22 +336,19 @@ export default function MobileProductCard({
             >
               {product.stockQuantity === 0 ? 'Out of Stock' : 'Add to Cart'}
             </motion.button>
-            
+
             <motion.button
               onClick={handleWishlistToggle}
-              className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                isWishlisted 
-                  ? 'bg-red-100 text-red-600' 
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
+                isWishlisted
+                  ? 'bg-red-100 text-red-600'
                   : 'bg-gray-100 text-gray-600'
               }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               style={{ touchAction: 'manipulation' }}
             >
-              <Heart 
-                size={18} 
-                className={isWishlisted ? 'fill-current' : ''} 
-              />
+              <Heart size={18} className={isWishlisted ? 'fill-current' : ''} />
             </motion.button>
           </div>
 
@@ -349,23 +358,25 @@ export default function MobileProductCard({
             animate={{ height: isExpanded ? 'auto' : 0 }}
             className="overflow-hidden"
           >
-            <div className="pt-3 space-y-3">
+            <div className="space-y-3 pt-3">
               {/* Quantity Selector */}
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">Quantity:</span>
                 <div className="flex items-center space-x-2">
                   <motion.button
                     onClick={() => handleQuantityChange(-1)}
-                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100"
                     whileTap={{ scale: 0.9 }}
                     style={{ touchAction: 'manipulation' }}
                   >
                     <Minus size={14} />
                   </motion.button>
-                  <span className="w-8 text-center font-medium">{quantity}</span>
+                  <span className="w-8 text-center font-medium">
+                    {quantity}
+                  </span>
                   <motion.button
                     onClick={() => handleQuantityChange(1)}
-                    className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100"
                     whileTap={{ scale: 0.9 }}
                     style={{ touchAction: 'manipulation' }}
                   >
@@ -378,21 +389,21 @@ export default function MobileProductCard({
               <div className="flex space-x-2">
                 <motion.button
                   onClick={handleShare}
-                  className="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-xl text-sm font-medium"
+                  className="flex-1 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600"
                   whileTap={{ scale: 0.95 }}
                   style={{ touchAction: 'manipulation' }}
                 >
-                  <Share2 size={16} className="inline mr-2" />
+                  <Share2 size={16} className="mr-2 inline" />
                   Share
                 </motion.button>
-                
+
                 <motion.button
                   onClick={handleQuickView}
-                  className="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-xl text-sm font-medium"
+                  className="flex-1 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-600"
                   whileTap={{ scale: 0.95 }}
                   style={{ touchAction: 'manipulation' }}
                 >
-                  <Eye size={16} className="inline mr-2" />
+                  <Eye size={16} className="mr-2 inline" />
                   Quick View
                 </motion.button>
               </div>
@@ -402,7 +413,7 @@ export default function MobileProductCard({
           {/* Expand/Collapse Button */}
           <motion.button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full mt-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            className="mt-3 w-full py-2 text-sm text-gray-500 transition-colors hover:text-gray-700"
             whileTap={{ scale: 0.98 }}
             style={{ touchAction: 'manipulation' }}
           >
@@ -418,14 +429,14 @@ export default function MobileProductCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
             onClick={() => setShowImageGallery(false)}
           >
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative flex h-full w-full items-center justify-center">
               {/* Close Button */}
               <button
                 onClick={() => setShowImageGallery(false)}
-                className="absolute top-4 right-4 z-10 w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white"
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white bg-opacity-20 text-white"
                 style={{ touchAction: 'manipulation' }}
               >
                 ×
@@ -434,9 +445,12 @@ export default function MobileProductCard({
               {/* Image */}
               <motion.img
                 key={currentImageIndex}
-                src={product.images?.[currentImageIndex]?.url || '/images/placeholder.png'}
+                src={
+                  product.images?.[currentImageIndex]?.url ||
+                  '/images/placeholder.png'
+                }
                 alt={product.name}
-                className="max-w-full max-h-full object-contain"
+                className="max-h-full max-w-full object-contain"
                 initial={{ scale: 0.8 }}
                 animate={{ scale: 1 }}
                 exit={{ scale: 0.8 }}
@@ -447,29 +461,29 @@ export default function MobileProductCard({
               {product.images && product.images.length > 1 && (
                 <>
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleImageSwipe('right');
                     }}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white"
+                    className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 transform items-center justify-center rounded-full bg-white bg-opacity-20 text-white"
                     style={{ touchAction: 'manipulation' }}
                   >
                     <ChevronLeft size={24} />
                   </button>
-                  
+
                   <button
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       handleImageSwipe('left');
                     }}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-white"
+                    className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 transform items-center justify-center rounded-full bg-white bg-opacity-20 text-white"
                     style={{ touchAction: 'manipulation' }}
                   >
                     <ChevronRight size={24} />
                   </button>
 
                   {/* Image Counter */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-black bg-opacity-50 px-3 py-1 text-sm text-white">
                     {currentImageIndex + 1} / {product.images.length}
                   </div>
                 </>

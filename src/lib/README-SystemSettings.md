@@ -17,10 +17,10 @@ The system settings functionality provides a centralized way to manage applicati
 ### Basic Functions
 
 ```typescript
-import { 
-  getSystemSetting, 
-  getSystemSettingWithDefault, 
-  setSystemSetting 
+import {
+  getSystemSetting,
+  getSystemSettingWithDefault,
+  setSystemSetting,
 } from '@/lib/system-settings';
 
 // Get a setting value (returns null if not found)
@@ -33,20 +33,20 @@ const value = await getSystemSettingWithDefault('my_setting', 'default_value');
 const success = await setSystemSetting('my_setting', 'my_value', {
   description: 'My custom setting',
   category: 'general',
-  user: 'admin'
+  user: 'admin',
 });
 ```
 
 ### Advanced Functions
 
 ```typescript
-import { 
+import {
   getSystemSettingsByCategory,
   getAllSystemSettings,
   deleteSystemSetting,
   systemSettingExists,
   getSystemSettingAsType,
-  setSystemSettingWithType
+  setSystemSettingWithType,
 } from '@/lib/system-settings';
 
 // Get all settings in a category
@@ -143,16 +143,19 @@ function SettingsComponent() {
 ## API Routes
 
 ### Get All Settings
+
 ```bash
 GET /api/system-settings
 ```
 
 ### Get Settings by Category
+
 ```bash
 GET /api/system-settings?category=chat
 ```
 
 ### Get Specific Setting
+
 ```bash
 GET /api/system-settings/my_setting
 GET /api/system-settings/my_setting?type=boolean
@@ -160,6 +163,7 @@ GET /api/system-settings/my_setting?default=default_value
 ```
 
 ### Create/Update Setting
+
 ```bash
 POST /api/system-settings
 Content-Type: application/json
@@ -174,6 +178,7 @@ Content-Type: application/json
 ```
 
 ### Update Specific Setting
+
 ```bash
 PUT /api/system-settings/my_setting
 Content-Type: application/json
@@ -186,6 +191,7 @@ Content-Type: application/json
 ```
 
 ### Delete Setting
+
 ```bash
 DELETE /api/system-settings/my_setting
 ```
@@ -200,10 +206,13 @@ import { SYSTEM_SETTING_KEYS } from '@/lib/system-settings';
 // Use predefined keys for type safety
 const companyName = await getSystemSetting(SYSTEM_SETTING_KEYS.COMPANY_NAME);
 const chatEnabled = await getSystemSetting(SYSTEM_SETTING_KEYS.CHAT_ENABLED);
-const pointsPerDollar = await getSystemSetting(SYSTEM_SETTING_KEYS.POINTS_PER_DOLLAR);
+const pointsPerDollar = await getSystemSetting(
+  SYSTEM_SETTING_KEYS.POINTS_PER_DOLLAR
+);
 ```
 
 Available keys:
+
 - `COMPANY_NAME`
 - `CURRENCY_SYMBOL`
 - `CURRENCY_CODE`
@@ -281,6 +290,7 @@ try {
 ## Examples
 
 ### Chat Settings Management
+
 ```typescript
 import { useChatSettings } from '@/contexts/SystemSettingsContext';
 
@@ -318,6 +328,7 @@ function ChatSettingsPanel() {
 ```
 
 ### Loyalty Points Configuration
+
 ```typescript
 import { useLoyaltySettings } from '@/contexts/SystemSettingsContext';
 

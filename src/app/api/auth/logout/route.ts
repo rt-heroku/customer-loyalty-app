@@ -5,13 +5,14 @@ import { query } from '@/lib/db';
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     if (token) {
       try {
         // Decode JWT to get user ID for logging
         const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
-        
+
         // Log logout activity (if user_activity_log table exists)
         try {
           await query(
@@ -21,11 +22,17 @@ export async function POST(request: NextRequest) {
           );
         } catch (logError) {
           // Don't fail logout if logging fails
-          console.log('Activity logging not available:', (logError as Error).message);
+          console.log(
+            'Activity logging not available:',
+            (logError as Error).message
+          );
         }
       } catch (jwtError) {
         // Invalid token, just continue with logout
-        console.log('Invalid token during logout:', (jwtError as Error).message);
+        console.log(
+          'Invalid token during logout:',
+          (jwtError as Error).message
+        );
       }
     }
 
@@ -44,7 +51,6 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-
   } catch (error) {
     console.error('Logout error:', error);
     return NextResponse.json(
@@ -53,4 +59,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

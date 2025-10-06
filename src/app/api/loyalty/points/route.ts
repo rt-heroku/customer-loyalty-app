@@ -23,7 +23,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customer = customerResult.rows[0];
@@ -81,10 +84,9 @@ export async function GET(request: NextRequest) {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     });
-
   } catch (error) {
     console.error('Error fetching points data:', error);
     return NextResponse.json(
@@ -93,4 +95,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

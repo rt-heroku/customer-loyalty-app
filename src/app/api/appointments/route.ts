@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       time,
       notes,
       estimatedDuration,
-      totalCost
+      totalCost,
     } = body;
 
     // Validate required fields
@@ -43,14 +43,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if the time slot is available
-    const availabilityCheck = await query(`
+    const availabilityCheck = await query(
+      `
       SELECT COUNT(*) as count
       FROM appointments
       WHERE store_id = $1 
         AND date = $2 
         AND time = $3 
         AND status NOT IN ('cancelled', 'no_show')
-    `, [storeId, date, time]);
+    `,
+      [storeId, date, time]
+    );
 
     if (parseInt(availabilityCheck.rows[0].count) > 0) {
       return NextResponse.json(
@@ -88,7 +91,7 @@ export async function POST(request: NextRequest) {
       notes || null,
       estimatedDuration,
       totalCost,
-      'pending'
+      'pending',
     ]);
 
     const appointmentId = result.rows[0].id;
@@ -96,9 +99,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       appointmentId,
-      message: 'Appointment scheduled successfully'
+      message: 'Appointment scheduled successfully',
     });
-
   } catch (error) {
     console.error('Error creating appointment:', error);
     return NextResponse.json(
@@ -111,7 +113,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -192,7 +194,9 @@ export async function GET(request: NextRequest) {
       status: row.status,
       notes: row.notes,
       estimatedDuration: parseInt(row.estimatedDuration),
-      actualDuration: row.actualDuration ? parseInt(row.actualDuration) : undefined,
+      actualDuration: row.actualDuration
+        ? parseInt(row.actualDuration)
+        : undefined,
       totalCost: parseFloat(row.totalCost),
       paymentStatus: row.paymentStatus,
       createdAt: row.createdAt,
@@ -208,7 +212,7 @@ export async function GET(request: NextRequest) {
         isAvailable: true,
         storeId: row.storeId,
         requiresAppointment: true,
-        images: []
+        images: [],
       },
       store: {
         id: row.storeId,
@@ -232,12 +236,11 @@ export async function GET(request: NextRequest) {
         images: [],
         description: '',
         createdAt: '',
-        updatedAt: ''
-      }
+        updatedAt: '',
+      },
     }));
 
     return NextResponse.json({ appointments });
-
   } catch (error) {
     console.error('Error fetching appointments:', error);
     return NextResponse.json(

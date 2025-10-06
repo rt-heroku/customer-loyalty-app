@@ -60,7 +60,12 @@ export async function GET(request: NextRequest) {
     await query(
       `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
        VALUES ($1, $2, $3, $4)`,
-      [user.id, 'data_export', 'User data exported', request.headers.get('x-forwarded-for') || request.ip || 'unknown']
+      [
+        user.id,
+        'data_export',
+        'User data exported',
+        request.headers.get('x-forwarded-for') || request.ip || 'unknown',
+      ]
     );
 
     return new NextResponse(JSON.stringify(exportData, null, 2), {
@@ -69,7 +74,6 @@ export async function GET(request: NextRequest) {
         'Content-Disposition': 'attachment; filename="loyalty-data.json"',
       },
     });
-
   } catch (error) {
     console.error('Data export error:', error);
     return NextResponse.json(
@@ -78,4 +82,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

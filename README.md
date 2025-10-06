@@ -5,6 +5,7 @@ A comprehensive customer-facing loyalty mobile/web application built with Next.j
 ## 🚀 Features
 
 ### Core Functionality
+
 - **Loyalty Program Management**: View points, tier status, and benefits
 - **Order Tracking**: Real-time order status and shipping information
 - **Rewards System**: Redeem points for discounts and exclusive offers
@@ -13,6 +14,7 @@ A comprehensive customer-facing loyalty mobile/web application built with Next.j
 - **Multi-Location Support**: Access loyalty programs across different store locations
 
 ### Technical Features
+
 - **Progressive Web App (PWA)**: Installable on mobile devices
 - **Offline Support**: Basic functionality when offline
 - **Real-time Updates**: Live data synchronization
@@ -36,7 +38,7 @@ A comprehensive customer-facing loyalty mobile/web application built with Next.j
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - PostgreSQL database
 - Heroku account (for deployment)
@@ -124,6 +126,7 @@ The application is built as a Progressive Web App with the following features:
 The application uses a comprehensive PostgreSQL schema that includes:
 
 ### Core Tables
+
 - `customers` - Customer information and loyalty data
 - `products` - Product catalog with enhanced metadata
 - `transactions` - Purchase history and points tracking
@@ -131,22 +134,26 @@ The application uses a comprehensive PostgreSQL schema that includes:
 - `users` - Authentication and user management
 
 ### Loyalty System
+
 - `loyalty_tiers` - Tier definitions and benefits
 - `loyalty_rewards` - Available rewards for redemption
 - `customer_rewards` - Individual customer reward redemptions
 - `customer_referrals` - Referral program tracking
 
 ### Order Management
+
 - `customer_addresses` - Shipping and billing addresses
 - `order_tracking` - Shipping and delivery tracking
 - `order_status_history` - Complete order timeline
 
 ### Customer Service
+
 - `chat_sessions` - Customer service chat management
 - `chat_messages` - Individual messages within sessions
 - `customer_service_tickets` - Support ticket system
 
 ### Additional Features
+
 - `customer_wishlists` - Product wishlist functionality
 - `product_reviews` - Customer reviews and ratings
 - `customer_notifications` - Notification system
@@ -157,39 +164,43 @@ The application uses a comprehensive PostgreSQL schema that includes:
 ### Heroku Deployment
 
 1. **Install Heroku CLI** (if not already installed):
+
    ```bash
    # macOS
    brew install heroku/brew/heroku
-   
+
    # Windows
    # Download from https://devcenter.heroku.com/articles/heroku-cli
    ```
 
 2. **Login to Heroku**:
+
    ```bash
    heroku login
    ```
 
 3. **Deploy using the deployment script**:
+
    ```bash
    ./deploy.sh
    ```
 
    Or manually:
+
    ```bash
    # Create Heroku app
    heroku create your-app-name
-   
+
    # Add PostgreSQL addon
    heroku addons:create heroku-postgresql:mini
-   
+
    # Set environment variables
    heroku config:set NODE_ENV=production
    heroku config:set JWT_SECRET=your-secret-key
-   
+
    # Deploy
    git push heroku main
-   
+
    # Run database migrations
    heroku pg:psql < loyalty-database-changes.sql
    ```
@@ -264,6 +275,7 @@ npm run db:seed          # Seed database with sample data
 ### Code Style
 
 The project uses:
+
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **TypeScript** for type safety
@@ -287,6 +299,7 @@ npm run test:coverage
 ### Tailwind CSS
 
 The project includes a custom Tailwind configuration with:
+
 - Custom color palette for loyalty tiers
 - Responsive design utilities
 - Custom animations and transitions
@@ -309,6 +322,7 @@ The project includes a custom Tailwind configuration with:
 ## 📊 Performance
 
 The application is optimized for:
+
 - **Fast Loading**: Code splitting and lazy loading
 - **Mobile Performance**: Optimized for mobile devices
 - **SEO**: Server-side rendering and meta tags
@@ -339,6 +353,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 For support and questions:
+
 - Create an issue in the repository
 - Contact the development team
 - Check the documentation in the `/docs` folder
@@ -346,6 +361,7 @@ For support and questions:
 ## 🔄 Updates
 
 Stay updated with the latest changes:
+
 - Follow the repository for updates
 - Check the changelog for version history
 - Subscribe to release notifications

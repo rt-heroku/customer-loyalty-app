@@ -7,18 +7,12 @@ export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('token')?.value;
     if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await verifyToken(token);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get recently viewed products
@@ -45,9 +39,9 @@ export async function GET(request: NextRequest) {
       ORDER BY pv.viewed_at DESC
       LIMIT 12
     `;
-    
+
     const recentResult = await query(recentQuery, [user.id]);
-    
+
     const recentlyViewed: RecentlyViewedProduct[] = await Promise.all(
       recentResult.rows.map(async (row: any) => {
         // Get product image
@@ -64,7 +58,7 @@ export async function GET(request: NextRequest) {
           LIMIT 1
         `;
         const imageResult = await query(imageQuery, [row.product_id]);
-        
+
         return {
           productId: row.product_id,
           viewedAt: row.viewed_at,
@@ -72,17 +66,25 @@ export async function GET(request: NextRequest) {
             id: row.product_id,
             name: row.name,
             description: row.description,
-            shortDescription: row.description.substring(0, 100),
             price: parseFloat(row.price),
-            originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
+            originalPrice: row.original_price
+              ? parseFloat(row.original_price)
+              : undefined,
             currency: row.currency || 'USD',
-            images: imageResult.rows.length > 0 ? [{
-              id: imageResult.rows[0].id,
-              url: imageResult.rows[0].url,
-              alt: imageResult.rows[0].alt || row.name,
-              isPrimary: imageResult.rows[0].isPrimary || false,
-              thumbnailUrl: imageResult.rows[0].thumbnailUrl || imageResult.rows[0].url
-            }] : [],
+            images:
+              imageResult.rows.length > 0
+                ? [
+                    {
+                      id: imageResult.rows[0].id,
+                      url: imageResult.rows[0].url,
+                      alt: imageResult.rows[0].alt || row.name,
+                      isPrimary: imageResult.rows[0].isPrimary || false,
+                      thumbnailUrl:
+                        imageResult.rows[0].thumbnailUrl ||
+                        imageResult.rows[0].url,
+                    },
+                  ]
+                : [],
             category: '',
             subcategory: undefined,
             brand: '',
@@ -95,12 +97,14 @@ export async function GET(request: NextRequest) {
             specifications: {},
             variants: [],
             isOnSale: row.is_on_sale || false,
-            salePercentage: row.sale_percentage ? parseFloat(row.sale_percentage) : undefined,
+            salePercentage: row.sale_percentage
+              ? parseFloat(row.sale_percentage)
+              : undefined,
             isNew: row.is_new || false,
             isFeatured: row.is_featured || false,
             createdAt: '',
-            updatedAt: ''
-          }
+            updatedAt: '',
+          },
         };
       })
     );
@@ -119,18 +123,12 @@ export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('token')?.value;
     if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await verifyToken(token);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { productId } = await request.json();
@@ -147,12 +145,9 @@ export async function POST(request: NextRequest) {
       SELECT id FROM products WHERE id = $1
     `;
     const productResult = await query(productQuery, [productId]);
-    
+
     if (productResult.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     // Insert or update product view
@@ -162,7 +157,7 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (user_id, product_id) 
       DO UPDATE SET viewed_at = NOW()
     `;
-    
+
     await query(upsertQuery, [user.id, productId]);
 
     return NextResponse.json({ success: true });

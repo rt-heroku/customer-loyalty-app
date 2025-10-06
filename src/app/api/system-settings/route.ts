@@ -7,7 +7,7 @@ import {
   getAllSystemSettings,
   deleteSystemSetting,
   getSystemSettingAsType,
-  setSystemSettingWithType
+  setSystemSettingWithType,
 } from '@/lib/system-settings';
 
 /**
@@ -29,7 +29,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const key = searchParams.get('key');
-    const type = searchParams.get('type') as 'string' | 'number' | 'boolean' | 'json' | null;
+    const type = searchParams.get('type') as
+      | 'string'
+      | 'number'
+      | 'boolean'
+      | 'json'
+      | null;
 
     // Get specific setting by key
     if (key) {
@@ -50,7 +55,7 @@ export async function GET(request: NextRequest) {
             defaultValue = {};
             break;
         }
-        
+
         const value = await getSystemSettingAsType(key, type, defaultValue);
         return NextResponse.json({ key, value, type });
       } else {
@@ -69,7 +74,6 @@ export async function GET(request: NextRequest) {
     // Get all settings
     const allSettings = await getAllSystemSettings();
     return NextResponse.json({ settings: allSettings });
-
   } catch (error) {
     console.error('Error fetching system settings:', error);
     return NextResponse.json(
@@ -101,7 +105,7 @@ export async function POST(request: NextRequest) {
       value,
       type = 'string',
       description,
-      category = 'general'
+      category = 'general',
     } = body;
 
     if (!key || value === undefined) {
@@ -117,7 +121,7 @@ export async function POST(request: NextRequest) {
       success = await setSystemSetting(key, String(value), {
         description,
         category: category as any,
-        user: user.email
+        user: user.email,
       });
     } else {
       success = await setSystemSettingWithType(
@@ -127,7 +131,7 @@ export async function POST(request: NextRequest) {
         {
           description,
           category: category as any,
-          user: user.email
+          user: user.email,
         }
       );
     }
@@ -137,7 +141,7 @@ export async function POST(request: NextRequest) {
         message: 'Setting created/updated successfully',
         key,
         value,
-        type
+        type,
       });
     } else {
       return NextResponse.json(
@@ -145,7 +149,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
   } catch (error) {
     console.error('Error creating/updating system setting:', error);
     return NextResponse.json(
@@ -183,13 +186,19 @@ export async function PUT(request: NextRequest) {
 
     const results = await Promise.allSettled(
       settings.map(async (setting: any) => {
-        const { key, value, type = 'string', description, category = 'general' } = setting;
-        
+        const {
+          key,
+          value,
+          type = 'string',
+          description,
+          category = 'general',
+        } = setting;
+
         if (type === 'string') {
           return await setSystemSetting(key, String(value), {
             description,
             category: category as any,
-            user: user.email
+            user: user.email,
           });
         } else {
           return await setSystemSettingWithType(
@@ -199,23 +208,24 @@ export async function PUT(request: NextRequest) {
             {
               description,
               category: category as any,
-              user: user.email
+              user: user.email,
             }
           );
         }
       })
     );
 
-    const successful = results.filter(result => result.status === 'fulfilled' && result.value).length;
+    const successful = results.filter(
+      result => result.status === 'fulfilled' && result.value
+    ).length;
     const failed = results.length - successful;
 
     return NextResponse.json({
       message: `Updated ${successful} settings successfully`,
       successful,
       failed,
-      total: results.length
+      total: results.length,
     });
-
   } catch (error) {
     console.error('Error updating system settings:', error);
     return NextResponse.json(
@@ -256,7 +266,7 @@ export async function DELETE(request: NextRequest) {
     if (success) {
       return NextResponse.json({
         message: 'Setting deleted successfully',
-        key
+        key,
       });
     } else {
       return NextResponse.json(
@@ -264,7 +274,6 @@ export async function DELETE(request: NextRequest) {
         { status: 404 }
       );
     }
-
   } catch (error) {
     console.error('Error deleting system setting:', error);
     return NextResponse.json(

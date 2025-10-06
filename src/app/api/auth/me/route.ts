@@ -7,19 +7,16 @@ export async function GET() {
   try {
     const cookieStore = cookies();
     const sessionToken = cookieStore.get('session_token')?.value;
-    
+
     if (!sessionToken) {
-      return NextResponse.json(
-        { error: 'Not authenticated' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
     // In a real application, you would:
     // 1. Verify the session token
     // 2. Get user data from database
     // 3. Return user information
-    
+
     // For now, return a mock user response
     const mockUser = {
       id: 1,
@@ -29,7 +26,7 @@ export async function GET() {
       name: 'John Doe',
       role: 'customer',
       tier: 'Gold',
-      isAuthenticated: true
+      isAuthenticated: true,
     };
 
     return NextResponse.json({ user: mockUser });

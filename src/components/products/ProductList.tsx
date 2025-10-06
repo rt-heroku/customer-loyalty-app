@@ -3,7 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Star, Eye, ShoppingCart, Share2, Clock, MapPin } from 'lucide-react';
+import {
+  Heart,
+  Star,
+  Eye,
+  ShoppingCart,
+  Share2,
+  Clock,
+  MapPin,
+} from 'lucide-react';
 import { Product } from '@/types/product';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn, formatCurrency } from '@/lib/utils';
@@ -21,7 +29,7 @@ export default function ProductList({ products }: ProductListProps) {
     if (!user) return;
 
     setLoadingStates(prev => new Set(prev).add(productId));
-    
+
     try {
       const isInWishlist = wishlistItems.has(productId);
       const response = await fetch('/api/wishlist/toggle', {
@@ -57,7 +65,7 @@ export default function ProductList({ products }: ProductListProps) {
       try {
         await navigator.share({
           title: product.name,
-          text: product.shortDescription,
+          text: product.description,
           url: `${window.location.origin}/products/${product.id}`,
         });
       } catch (error) {
@@ -107,19 +115,20 @@ export default function ProductList({ products }: ProductListProps) {
 
   return (
     <div className="space-y-4 p-6">
-      {products.map((product) => {
+      {products.map(product => {
         const isInWishlist = wishlistItems.has(product.id);
         const isLoading = loadingStates.has(product.id);
-        const primaryImage = product.images.find(img => img.isPrimary) || product.images[0];
+        const primaryImage =
+          product.images.find(img => img.isPrimary) || product.images[0];
 
         return (
           <div
             key={product.id}
-            className="group bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden"
+            className="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all duration-200 hover:shadow-md"
           >
             <div className="flex">
               {/* Product Image */}
-              <div className="w-48 h-48 bg-gray-100 overflow-hidden flex-shrink-0">
+              <div className="h-48 w-48 flex-shrink-0 overflow-hidden bg-gray-100">
                 {primaryImage ? (
                   <Link href={`/products/${product.id}`}>
                     <Image
@@ -127,13 +136,23 @@ export default function ProductList({ products }: ProductListProps) {
                       alt={primaryImage.alt}
                       width={192}
                       height={192}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                      className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
                     />
                   </Link>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <div className="flex h-full w-full items-center justify-center text-gray-400">
+                    <svg
+                      className="h-16 w-16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
                 )}
@@ -144,27 +163,29 @@ export default function ProductList({ products }: ProductListProps) {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     {/* Badges */}
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="mb-3 flex items-center gap-2">
                       {product.isNew && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
                           New
                         </span>
                       )}
                       {product.isOnSale && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                           {product.salePercentage}% OFF
                         </span>
                       )}
-                      <span className={cn(
-                        "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                        getStockStatusColor(product.stockStatus)
-                      )}>
+                      <span
+                        className={cn(
+                          'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
+                          getStockStatusColor(product.stockStatus)
+                        )}
+                      >
                         {getStockStatusText(product.stockStatus)}
                       </span>
                     </div>
 
                     {/* Category and Brand */}
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-2">
+                    <div className="mb-2 flex items-center gap-4 text-sm text-gray-500">
                       <span>{product.category}</span>
                       <span>•</span>
                       <span>{product.brand}</span>
@@ -174,44 +195,45 @@ export default function ProductList({ products }: ProductListProps) {
 
                     {/* Product Name */}
                     <Link href={`/products/${product.id}`}>
-                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200 mb-2">
+                      <h3 className="mb-2 text-xl font-semibold text-gray-900 transition-colors duration-200 group-hover:text-primary-600">
                         {product.name}
                       </h3>
                     </Link>
 
                     {/* Description */}
-                    <p className="text-gray-600 mb-4 line-clamp-2">
-                      {product.shortDescription}
+                    <p className="mb-4 line-clamp-2 text-gray-600">
+                      {product.description}
                     </p>
 
                     {/* Rating and Reviews */}
-                    <div className="flex items-center mb-4">
+                    <div className="mb-4 flex items-center">
                       <div className="flex items-center">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
                             className={cn(
-                              "w-4 h-4",
+                              'h-4 w-4',
                               i < Math.floor(product.rating)
-                                ? "text-yellow-400 fill-current"
-                                : "text-gray-300"
+                                ? 'fill-current text-yellow-400'
+                                : 'text-gray-300'
                             )}
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-500 ml-2">
-                        {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                      <span className="ml-2 text-sm text-gray-500">
+                        {product.rating.toFixed(1)} ({product.reviewCount}{' '}
+                        reviews)
                       </span>
                     </div>
 
                     {/* Tags */}
                     {product.tags.length > 0 && (
-                      <div className="flex items-center gap-2 mb-4">
+                      <div className="mb-4 flex items-center gap-2">
                         <span className="text-sm text-gray-500">Tags:</span>
-                        {product.tags.slice(0, 3).map((tag) => (
+                        {product.tags.slice(0, 3).map(tag => (
                           <span
                             key={tag}
-                            className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
+                            className="inline-flex items-center rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700"
                           >
                             {tag}
                           </span>
@@ -226,17 +248,21 @@ export default function ProductList({ products }: ProductListProps) {
                   </div>
 
                   {/* Price and Actions */}
-                  <div className="flex flex-col items-end space-y-4 ml-6">
+                  <div className="ml-6 flex flex-col items-end space-y-4">
                     {/* Price */}
                     <div className="text-right">
                       <div className="text-2xl font-bold text-gray-900">
                         {formatCurrency(product.price, product.currency)}
                       </div>
-                      {product.originalPrice && product.originalPrice > product.price && (
-                        <div className="text-sm text-gray-500 line-through">
-                          {formatCurrency(product.originalPrice, product.currency)}
-                        </div>
-                      )}
+                      {product.originalPrice &&
+                        product.originalPrice > product.price && (
+                          <div className="text-sm text-gray-500 line-through">
+                            {formatCurrency(
+                              product.originalPrice,
+                              product.currency
+                            )}
+                          </div>
+                        )}
                     </div>
 
                     {/* Action Buttons */}
@@ -245,24 +271,33 @@ export default function ProductList({ products }: ProductListProps) {
                         onClick={() => toggleWishlist(product.id)}
                         disabled={isLoading}
                         className={cn(
-                          "flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+                          'flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200',
                           isInWishlist
-                            ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100"
-                            : "bg-gray-50 text-gray-700 border border-gray-200 hover:bg-gray-100",
-                          isLoading && "opacity-50 cursor-not-allowed"
+                            ? 'border border-red-200 bg-red-50 text-red-600 hover:bg-red-100'
+                            : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100',
+                          isLoading && 'cursor-not-allowed opacity-50'
                         )}
-                        title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                        title={
+                          isInWishlist
+                            ? 'Remove from wishlist'
+                            : 'Add to wishlist'
+                        }
                       >
-                        <Heart className={cn("w-4 h-4 mr-2", isInWishlist && "fill-current")} />
+                        <Heart
+                          className={cn(
+                            'mr-2 h-4 w-4',
+                            isInWishlist && 'fill-current'
+                          )}
+                        />
                         {isInWishlist ? 'Saved' : 'Save'}
                       </button>
-                      
+
                       <button
                         onClick={() => shareProduct(product)}
-                        className="flex items-center justify-center px-4 py-2 bg-gray-50 text-gray-700 border border-gray-200 rounded-md text-sm font-medium hover:bg-gray-100 transition-colors duration-200"
+                        className="flex items-center justify-center rounded-md border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-100"
                         title="Share product"
                       >
-                        <Share2 className="w-4 h-4 mr-2" />
+                        <Share2 className="mr-2 h-4 w-4" />
                         Share
                       </button>
                     </div>
@@ -270,38 +305,44 @@ export default function ProductList({ products }: ProductListProps) {
                 </div>
 
                 {/* Bottom Section */}
-                <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                   <div className="flex items-center gap-6 text-sm text-gray-500">
                     <div className="flex items-center">
-                      <Clock className="w-4 h-4 mr-1" />
-                      <span>Added {new Date(product.createdAt).toLocaleDateString()}</span>
+                      <Clock className="mr-1 h-4 w-4" />
+                      <span>
+                        Added {new Date(product.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
                     <div className="flex items-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <span>Available in {product.stockQuantity} locations</span>
+                      <MapPin className="mr-1 h-4 w-4" />
+                      <span>
+                        Available in {product.stockQuantity} locations
+                      </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <Link
                       href={`/products/${product.id}`}
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
+                      className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-50"
                     >
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="mr-2 h-4 w-4" />
                       View Details
                     </Link>
-                    
+
                     <button
                       disabled={product.stockStatus === 'out_of_stock'}
                       className={cn(
-                        "inline-flex items-center px-6 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+                        'inline-flex items-center rounded-md px-6 py-2 text-sm font-medium transition-colors duration-200',
                         product.stockStatus === 'out_of_stock'
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-primary-600 text-white hover:bg-primary-700"
+                          ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                          : 'bg-primary-600 text-white hover:bg-primary-700'
                       )}
                     >
-                      <ShoppingCart className="w-4 h-4 mr-2" />
-                      {product.stockStatus === 'out_of_stock' ? 'Out of Stock' : 'Add to Cart'}
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      {product.stockStatus === 'out_of_stock'
+                        ? 'Out of Stock'
+                        : 'Add to Cart'}
                     </button>
                   </div>
                 </div>

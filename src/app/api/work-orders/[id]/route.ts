@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -23,7 +23,6 @@ export async function PATCH(
         { status: 401 }
       );
     }
-
 
     const userId = user.id;
     const body = await request.json();
@@ -42,10 +41,7 @@ export async function PATCH(
     }
 
     if (verifyResult.rows[0].user_id !== userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Update the work order
@@ -105,9 +101,8 @@ export async function PATCH(
 
     return NextResponse.json({
       success: true,
-      message: 'Work order updated successfully'
+      message: 'Work order updated successfully',
     });
-
   } catch (error) {
     console.error('Error updating work order:', error);
     return NextResponse.json(

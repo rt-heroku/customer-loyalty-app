@@ -11,11 +11,16 @@ interface WorkOrderModalProps {
   onClose: () => void;
 }
 
-export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModalProps) {
+export default function WorkOrderModal({
+  store,
+  isOpen,
+  onClose,
+}: WorkOrderModalProps) {
   const { user } = useAuth();
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [workOrderType, setWorkOrderType] = useState<WorkOrder['type']>('repair');
+  const [workOrderType, setWorkOrderType] =
+    useState<WorkOrder['type']>('repair');
   const [priority, setPriority] = useState<WorkOrder['priority']>('medium');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -66,21 +71,21 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title || !description || !user) {
       return;
     }
 
     try {
       setLoading(true);
-      
+
       const workOrder: Partial<WorkOrder> = {
         storeId: store.id,
         type: workOrderType,
         priority,
         title,
         description,
-        status: 'submitted'
+        status: 'submitted',
       };
 
       // Add optional fields only if they have values
@@ -124,56 +129,68 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Submit Work Order</h2>
-            <p className="text-gray-600 mt-1">{store.name}</p>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Submit Work Order
+            </h2>
+            <p className="mt-1 text-gray-600">{store.name}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-600"
           >
-            <X className="w-6 h-6" />
+            <X className="h-6 w-6" />
           </button>
         </div>
 
         {/* Content */}
         <div className="p-6">
           {!user ? (
-            <div className="text-center py-8">
-              <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sign in to submit work orders</h3>
-              <p className="text-gray-600 mb-4">Please sign in to your account to submit service requests.</p>
+            <div className="py-8 text-center">
+              <User className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+              <h3 className="mb-2 text-lg font-medium text-gray-900">
+                Sign in to submit work orders
+              </h3>
+              <p className="mb-4 text-gray-600">
+                Please sign in to your account to submit service requests.
+              </p>
               <button
                 onClick={onClose}
-                className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+                className="rounded-lg bg-primary-600 px-6 py-2 text-white transition-colors hover:bg-primary-700"
               >
                 Sign In
               </button>
             </div>
           ) : submissionSuccess ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Wrench className="w-8 h-8 text-green-600" />
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <Wrench className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Work Order Submitted!</h3>
-              <p className="text-gray-600">Your service request has been submitted successfully.</p>
+              <h3 className="mb-2 text-lg font-medium text-gray-900">
+                Work Order Submitted!
+              </h3>
+              <p className="text-gray-600">
+                Your service request has been submitted successfully.
+              </p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Work Order Type and Priority */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Work Order Type
                   </label>
                   <select
                     value={workOrderType}
-                    onChange={(e) => setWorkOrderType(e.target.value as WorkOrder['type'])}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    onChange={e =>
+                      setWorkOrderType(e.target.value as WorkOrder['type'])
+                    }
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="repair">Repair</option>
@@ -185,13 +202,15 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Priority Level
                   </label>
                   <select
                     value={priority}
-                    onChange={(e) => setPriority(e.target.value as WorkOrder['priority'])}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    onChange={e =>
+                      setPriority(e.target.value as WorkOrder['priority'])
+                    }
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="low">Low</option>
@@ -204,19 +223,19 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
 
               {/* Service Selection (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Related Service (Optional)
                 </label>
                 <select
                   value={selectedService?.id || ''}
-                  onChange={(e) => {
+                  onChange={e => {
                     const service = services.find(s => s.id === e.target.value);
                     setSelectedService(service || null);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                 >
                   <option value="">No specific service</option>
-                  {services.map((service) => (
+                  {services.map(service => (
                     <option key={service.id} value={service.id}>
                       {service.name} - ${service.price}
                     </option>
@@ -227,28 +246,28 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
               {/* Title and Description */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Work Order Title
                   </label>
                   <input
                     type="text"
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     placeholder="Brief description of the issue or request"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Detailed Description
                   </label>
                   <textarea
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={e => setDescription(e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                     placeholder="Please provide detailed information about the issue, symptoms, or requirements..."
                     required
                   />
@@ -257,31 +276,33 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
 
               {/* Customer Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Additional Notes
                 </label>
                 <textarea
                   value={customerNotes}
-                  onChange={(e) => setCustomerNotes(e.target.value)}
+                  onChange={e => setCustomerNotes(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                   placeholder="Any additional information, preferences, or special requirements..."
                 />
               </div>
 
               {/* Cost and Date Preferences */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Estimated Budget (Optional)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500">
+                      $
+                    </span>
                     <input
                       type="number"
                       value={estimatedCost}
-                      onChange={(e) => setEstimatedCost(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      onChange={e => setEstimatedCost(e.target.value)}
+                      className="w-full rounded-md border border-gray-300 py-2 pl-8 pr-3 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                       placeholder="0.00"
                       min="0"
                       step="0.01"
@@ -290,28 +311,28 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     Preferred Completion Date (Optional)
                   </label>
                   <input
                     type="date"
                     value={preferredDate}
-                    onChange={(e) => setPreferredDate(e.target.value)}
+                    onChange={e => setPreferredDate(e.target.value)}
                     min={getMinDate()}
                     max={getMaxDate()}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
               </div>
 
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Attach Images (Optional)
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-2">
+                <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center">
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+                  <p className="mb-2 text-sm text-gray-600">
                     Upload images to help describe the issue
                   </p>
                   <input
@@ -324,7 +345,7 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                   />
                   <label
                     htmlFor="image-upload"
-                    className="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors cursor-pointer"
+                    className="inline-flex cursor-pointer items-center rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
                   >
                     Choose Images
                   </label>
@@ -332,18 +353,18 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
 
                 {/* Image Preview */}
                 {images.length > 0 && (
-                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
                     {images.map((image, index) => (
-                      <div key={index} className="relative group">
+                      <div key={index} className="group relative">
                         <img
                           src={URL.createObjectURL(image)}
                           alt={`Upload ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-lg"
+                          className="h-24 w-full rounded-lg object-cover"
                         />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
                         >
                           ×
                         </button>
@@ -354,12 +375,16 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
               </div>
 
               {/* Work Order Summary */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-3">Work Order Summary</h4>
+              <div className="rounded-lg bg-gray-50 p-4">
+                <h4 className="mb-3 font-medium text-gray-900">
+                  Work Order Summary
+                </h4>
                 <div className="space-y-2 text-sm text-gray-600">
                   <div className="flex justify-between">
                     <span>Type:</span>
-                    <span className="font-medium capitalize">{workOrderType}</span>
+                    <span className="font-medium capitalize">
+                      {workOrderType}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Priority:</span>
@@ -368,7 +393,9 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                   {selectedService && (
                     <div className="flex justify-between">
                       <span>Service:</span>
-                      <span className="font-medium">{selectedService.name}</span>
+                      <span className="font-medium">
+                        {selectedService.name}
+                      </span>
                     </div>
                   )}
                   {estimatedCost && (
@@ -380,7 +407,9 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                   {preferredDate && (
                     <div className="flex justify-between">
                       <span>Preferred Date:</span>
-                      <span className="font-medium">{new Date(preferredDate).toLocaleDateString()}</span>
+                      <span className="font-medium">
+                        {new Date(preferredDate).toLocaleDateString()}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -391,14 +420,14 @@ export default function WorkOrderModal({ store, isOpen, onClose }: WorkOrderModa
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="flex-1 rounded-lg bg-gray-200 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!title || !description || loading}
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
                   {loading ? 'Submitting...' : 'Submit Work Order'}
                 </button>

@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
 
     const sessionId = result.rows[0].session_id;
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       sessionId,
-      message: 'Chat session created successfully' 
+      message: 'Chat session created successfully',
     });
   } catch (error) {
     console.error('Error creating chat session:', error);

@@ -43,9 +43,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
@@ -59,23 +59,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-              <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={() => setIsSidebarOpen(false)}
-        />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main content area */}
       <div className="lg:ml-80">
         {/* Top navigation */}
-        <TopNav 
+        <TopNav
           onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)}
           isMenuOpen={isSidebarOpen}
         />
 
         {/* Page content */}
-        <main className="min-h-[calc(100vh-4rem)]">
-          {children}
-        </main>
+        <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       </div>
     </div>
   );

@@ -72,7 +72,13 @@ export interface Appointment {
   serviceId: string;
   date: string;
   time: string;
-  status: 'scheduled' | 'confirmed' | 'in_progress' | 'completed' | 'cancelled' | 'no_show';
+  status:
+    | 'scheduled'
+    | 'confirmed'
+    | 'in_progress'
+    | 'completed'
+    | 'cancelled'
+    | 'no_show';
   notes?: string;
   estimatedDuration: number;
   actualDuration?: number;
@@ -91,7 +97,13 @@ export interface WorkOrder {
   serviceId?: string;
   type: 'repair' | 'maintenance' | 'installation' | 'consultation' | 'other';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  status: 'submitted' | 'assigned' | 'in_progress' | 'waiting_parts' | 'completed' | 'cancelled';
+  status:
+    | 'submitted'
+    | 'assigned'
+    | 'in_progress'
+    | 'waiting_parts'
+    | 'completed'
+    | 'cancelled';
   title: string;
   description: string;
   customerNotes?: string;

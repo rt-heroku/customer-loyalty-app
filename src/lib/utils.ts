@@ -12,9 +12,12 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Format currency values
  */
-export function formatCurrency(amount: number | string, currency: string = 'USD'): string {
+export function formatCurrency(
+  amount: number | string,
+  currency: string = 'USD'
+): string {
   const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-  
+
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,
@@ -34,16 +37,22 @@ export function formatNumber(num: number | string): string {
 /**
  * Format dates
  */
-export function formatDate(date: string | Date, options?: Intl.DateTimeFormatOptions): string {
+export function formatDate(
+  date: string | Date,
+  options?: Intl.DateTimeFormatOptions
+): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   const defaultOptions: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   };
-  
-  return new Intl.DateTimeFormat('en-US', { ...defaultOptions, ...options }).format(dateObj);
+
+  return new Intl.DateTimeFormat('en-US', {
+    ...defaultOptions,
+    ...options,
+  }).format(dateObj);
 }
 
 /**
@@ -53,36 +62,36 @@ export function formatRelativeTime(date: string | Date): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - dateObj.getTime()) / 1000);
-  
+
   if (diffInSeconds < 60) {
     return 'Just now';
   }
-  
+
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
     return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
     return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) {
     return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInWeeks = Math.floor(diffInDays / 7);
   if (diffInWeeks < 4) {
     return `${diffInWeeks} week${diffInWeeks > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInMonths = Math.floor(diffInDays / 30);
   if (diffInMonths < 12) {
     return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
   }
-  
+
   const diffInYears = Math.floor(diffInDays / 365);
   return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
 }
@@ -101,7 +110,8 @@ export function truncateText(text: string, maxLength: number): string {
  * Generate a random string
  */
 export function generateRandomString(length: number = 8): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -147,15 +157,15 @@ export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as unknown as T;
   }
-  
+
   if (obj instanceof Array) {
     return obj.map(item => deepClone(item)) as unknown as T;
   }
-  
+
   if (typeof obj === 'object') {
     const clonedObj = {} as T;
     for (const key in obj) {
@@ -165,7 +175,7 @@ export function deepClone<T>(obj: T): T {
     }
     return clonedObj;
   }
-  
+
   return obj;
 }
 
@@ -176,19 +186,19 @@ export function isEmpty(value: any): boolean {
   if (value === null || value === undefined) {
     return true;
   }
-  
+
   if (typeof value === 'string') {
     return value.trim().length === 0;
   }
-  
+
   if (Array.isArray(value)) {
     return value.length === 0;
   }
-  
+
   if (typeof value === 'object') {
     return Object.keys(value).length === 0;
   }
-  
+
   return false;
 }
 
@@ -197,7 +207,7 @@ export function isEmpty(value: any): boolean {
  */
 export function getInitials(name: string): string {
   if (!name) return '';
-  
+
   return name
     .split(' ')
     .map(word => word.charAt(0))
@@ -218,7 +228,8 @@ export function isValidEmail(email: string): boolean {
  * Validate phone number format (basic US format)
  */
 export function isValidPhone(phone: string): boolean {
-  const phoneRegex = /^\+?1?[-.\s]?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$/;
+  const phoneRegex =
+    /^\+?1?[-.\s]?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})$/;
   return phoneRegex.test(phone);
 }
 
@@ -250,7 +261,7 @@ export function generateColorFromString(str: string): string {
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
+
   const hue = hash % 360;
   return `hsl(${hue}, 70%, 50%)`;
 }
@@ -265,7 +276,7 @@ export function getLoyaltyTierColor(tier: string): string {
     gold: '#FFD700',
     platinum: '#E5E4E2',
   };
-  
+
   return tierColors[tier.toLowerCase()] || '#6B7280';
 }
 
@@ -286,18 +297,18 @@ export function calculatePointsToNextTier(
 ): number {
   const tiers = ['bronze', 'silver', 'gold', 'platinum'];
   const currentIndex = tiers.indexOf(currentTier.toLowerCase());
-  
+
   if (currentIndex === -1 || currentIndex === tiers.length - 1) {
     return 0; // Already at highest tier or invalid tier
   }
-  
+
   const nextTier = tiers[currentIndex + 1];
   if (!nextTier) {
     return 0; // No next tier available
   }
-  
+
   const nextTierRequirement = tierRequirements[nextTier] || 0;
-  
+
   return Math.max(0, nextTierRequirement - currentPoints);
 }
 
@@ -393,22 +404,22 @@ export async function retry<T>(
   baseDelay: number = 1000
 ): Promise<T> {
   let lastError: Error;
-  
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt === maxAttempts) {
         throw lastError;
       }
-      
+
       const delay = baseDelay * Math.pow(2, attempt - 1);
       await sleep(delay);
     }
   }
-  
+
   throw lastError!;
 }
 
@@ -423,8 +434,8 @@ export function getLoyaltyTierInfo(tier: string) {
         '1 point per $1 spent',
         'Birthday rewards',
         'Email support',
-        'Basic member discounts'
-      ]
+        'Basic member discounts',
+      ],
     },
     Silver: {
       nextTier: 'Gold',
@@ -436,8 +447,8 @@ export function getLoyaltyTierInfo(tier: string) {
         'Free shipping on orders over $50',
         'Priority customer support',
         'Exclusive member events',
-        'Double points on birthdays'
-      ]
+        'Double points on birthdays',
+      ],
     },
     Gold: {
       nextTier: 'Platinum',
@@ -450,8 +461,8 @@ export function getLoyaltyTierInfo(tier: string) {
         'VIP customer support',
         'Early access to sales',
         'Exclusive product launches',
-        'Quarterly member gifts'
-      ]
+        'Quarterly member gifts',
+      ],
     },
     Platinum: {
       nextTier: null,
@@ -465,9 +476,9 @@ export function getLoyaltyTierInfo(tier: string) {
         'Exclusive VIP events',
         'Personal shopping assistant',
         'Annual luxury gift',
-        'Lifetime member benefits'
-      ]
-    }
+        'Lifetime member benefits',
+      ],
+    },
   };
 
   return tierInfo[tier as keyof typeof tierInfo] || tierInfo.Bronze;

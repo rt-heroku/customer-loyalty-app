@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customerId = customerResult.rows[0].id;
@@ -43,7 +46,7 @@ export async function GET(request: NextRequest) {
       'Total Amount',
       'Points Earned',
       'Points Redeemed',
-      'Payment Method'
+      'Payment Method',
     ];
 
     const csvRows = transactionsResult.rows.map(row => [
@@ -52,19 +55,24 @@ export async function GET(request: NextRequest) {
       row.total,
       row.points_earned,
       row.points_redeemed,
-      row.payment_method
+      row.payment_method,
     ]);
 
     const csvContent = [
       csvHeaders.join(','),
-      ...csvRows.map(row => row.join(','))
+      ...csvRows.map(row => row.join(',')),
     ].join('\n');
 
     // Log the export
     await query(
       `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
        VALUES ($1, $2, $3, $4)`,
-      [user.id, 'data_export', 'Transactions exported to CSV', request.headers.get('x-forwarded-for') || request.ip || 'unknown']
+      [
+        user.id,
+        'data_export',
+        'Transactions exported to CSV',
+        request.headers.get('x-forwarded-for') || request.ip || 'unknown',
+      ]
     );
 
     return new NextResponse(csvContent, {
@@ -73,7 +81,6 @@ export async function GET(request: NextRequest) {
         'Content-Disposition': 'attachment; filename="transactions.csv"',
       },
     });
-
   } catch (error) {
     console.error('Error exporting transactions:', error);
     return NextResponse.json(
@@ -82,5 +89,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-

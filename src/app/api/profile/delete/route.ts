@@ -9,7 +9,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Log the account deletion request
     await query(
@@ -46,7 +47,6 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Account deleted successfully',
     });
-
   } catch (error) {
     console.error('Account deletion error:', error);
     return NextResponse.json(
@@ -55,4 +55,3 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-

@@ -1,13 +1,19 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { ChatState, ChatSettings } from '@/types/chat';
 
 interface ChatContextType {
   // State
   chatState: ChatState;
   chatSettings: ChatSettings | null;
-  
+
   // Actions
   openChat: () => void;
   closeChat: () => void;
@@ -16,7 +22,7 @@ interface ChatContextType {
   sendMessage: (content: string, attachments?: any[]) => Promise<void>;
   clearChat: () => Promise<void>;
   loadChatSettings: () => Promise<void>;
-  
+
   // Getters
   isChatEnabled: boolean;
   shouldShowFloatingButton: boolean;
@@ -38,7 +44,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
     isConnected: false,
     isSending: false,
     error: null,
-    unreadCount: 0
+    unreadCount: 0,
   });
 
   const [chatSettings, setChatSettings] = useState<ChatSettings | null>(null);
@@ -52,7 +58,7 @@ export function ChatProvider({ children }: ChatProviderProps) {
     try {
       const response = await fetch('/api/chat/settings');
       const data = await response.json();
-      
+
       if (data.settings) {
         setChatSettings(data.settings);
       }
@@ -62,33 +68,33 @@ export function ChatProvider({ children }: ChatProviderProps) {
   };
 
   const openChat = () => {
-    setChatState(prev => ({ 
-      ...prev, 
-      isOpen: true, 
+    setChatState(prev => ({
+      ...prev,
+      isOpen: true,
       isMinimized: false,
-      unreadCount: 0 
+      unreadCount: 0,
     }));
   };
 
   const closeChat = () => {
-    setChatState(prev => ({ 
-      ...prev, 
-      isOpen: false, 
-      isMinimized: false 
+    setChatState(prev => ({
+      ...prev,
+      isOpen: false,
+      isMinimized: false,
     }));
   };
 
   const minimizeChat = () => {
-    setChatState(prev => ({ 
-      ...prev, 
-      isMinimized: !prev.isMinimized 
+    setChatState(prev => ({
+      ...prev,
+      isMinimized: !prev.isMinimized,
     }));
   };
 
   const maximizeChat = () => {
-    setChatState(prev => ({ 
-      ...prev, 
-      isMinimized: false 
+    setChatState(prev => ({
+      ...prev,
+      isMinimized: false,
     }));
   };
 
@@ -105,28 +111,28 @@ export function ChatProvider({ children }: ChatProviderProps) {
         body: JSON.stringify({
           sessionId: chatState.currentSession.id,
           message: content,
-          attachments
-        })
+          attachments,
+        }),
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setChatState(prev => ({
           ...prev,
           messages: [...prev.messages, data.userMessage, data.aiMessage],
-          unreadCount: 0
+          unreadCount: 0,
         }));
       } else {
         setChatState(prev => ({
           ...prev,
-          error: data.error || 'Failed to send message'
+          error: data.error || 'Failed to send message',
         }));
       }
     } catch (error) {
       setChatState(prev => ({
         ...prev,
-        error: 'Network error. Please try again.'
+        error: 'Network error. Please try again.',
       }));
     } finally {
       setChatState(prev => ({ ...prev, isSending: false }));
@@ -135,16 +141,16 @@ export function ChatProvider({ children }: ChatProviderProps) {
 
   const clearChat = async () => {
     if (!chatState.currentSession) return;
-    
+
     try {
       await fetch(`/api/chat/sessions/${chatState.currentSession.id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
-      
+
       setChatState(prev => ({
         ...prev,
         messages: [],
-        currentSession: null
+        currentSession: null,
       }));
     } catch (error) {
       console.error('Error clearing chat:', error);
@@ -165,14 +171,10 @@ export function ChatProvider({ children }: ChatProviderProps) {
     clearChat,
     loadChatSettings,
     isChatEnabled,
-    shouldShowFloatingButton
+    shouldShowFloatingButton,
   };
 
-  return (
-    <ChatContext.Provider value={value}>
-      {children}
-    </ChatContext.Provider>
-  );
+  return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 }
 
 export function useChat() {

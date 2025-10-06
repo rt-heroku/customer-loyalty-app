@@ -6,21 +6,33 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Mail, Lock, User, Phone, Star, ArrowRight, Check } from 'lucide-react';
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  Star,
+  ArrowRight,
+  Check,
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-const registerSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  phone: z.string().optional(),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-  marketingConsent: z.boolean().default(false),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    email: z.string().email('Please enter a valid email address'),
+    phone: z.string().optional(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+    marketingConsent: z.boolean().default(false),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -46,7 +58,7 @@ export default function RegisterPage() {
   // Password strength indicator
   const getPasswordStrength = (password: string) => {
     if (!password) return { score: 0, label: '', color: '' };
-    
+
     let score = 0;
     if (password.length >= 8) score++;
     if (/[a-z]/.test(password)) score++;
@@ -55,12 +67,18 @@ export default function RegisterPage() {
     if (/[^A-Za-z0-9]/.test(password)) score++;
 
     const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-    const colors = ['text-red-500', 'text-orange-500', 'text-yellow-500', 'text-blue-500', 'text-green-500'];
-    
+    const colors = [
+      'text-red-500',
+      'text-orange-500',
+      'text-yellow-500',
+      'text-blue-500',
+      'text-green-500',
+    ];
+
     return {
       score: Math.min(score, 5),
       label: labels[Math.min(score - 1, 4)],
-      color: colors[Math.min(score - 1, 4)]
+      color: colors[Math.min(score - 1, 4)],
     };
   };
 
@@ -93,35 +111,42 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50 flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-loyalty-gold rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div className="animate-blob absolute -right-40 -top-40 h-80 w-80 rounded-full bg-primary-200 opacity-70 mix-blend-multiply blur-xl filter"></div>
+        <div className="animate-blob animation-delay-2000 absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-secondary-200 opacity-70 mix-blend-multiply blur-xl filter"></div>
+        <div className="animate-blob animation-delay-4000 absolute left-40 top-40 h-80 w-80 rounded-full bg-loyalty-gold opacity-70 mix-blend-multiply blur-xl filter"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-lg">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl shadow-lg mb-4">
-            <Star className="w-8 h-8 text-white" />
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg">
+            <Star className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Our Loyalty Program</h1>
-          <p className="text-gray-600">Create your account and start earning rewards</p>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
+            Join Our Loyalty Program
+          </h1>
+          <p className="text-gray-600">
+            Create your account and start earning rewards
+          </p>
         </div>
 
         {/* Registration Form */}
-        <div className="glass-card p-8 rounded-3xl shadow-2xl backdrop-blur-xl border border-white/20">
+        <div className="glass-card rounded-3xl border border-white/20 p-8 shadow-2xl backdrop-blur-xl">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="firstName"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
                   First Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
@@ -133,16 +158,21 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.firstName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.firstName.message}
+                  </p>
                 )}
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="lastName"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
                   Last Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
@@ -154,18 +184,23 @@ export default function RegisterPage() {
                   />
                 </div>
                 {errors.lastName && (
-                  <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.lastName.message}
+                  </p>
                 )}
               </div>
             </div>
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -177,17 +212,22 @@ export default function RegisterPage() {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             {/* Phone Field */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="phone"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Phone Number (Optional)
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Phone className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -202,11 +242,14 @@ export default function RegisterPage() {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -218,7 +261,7 @@ export default function RegisterPage() {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
@@ -231,35 +274,49 @@ export default function RegisterPage() {
               {password && (
                 <div className="mt-2">
                   <div className="flex items-center space-x-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
+                    <div className="h-2 flex-1 rounded-full bg-gray-200">
                       <div
                         className={`h-2 rounded-full transition-all duration-300 ${
-                          passwordStrength.score >= 4 ? 'bg-green-500' :
-                          passwordStrength.score >= 3 ? 'bg-blue-500' :
-                          passwordStrength.score >= 2 ? 'bg-yellow-500' :
-                          passwordStrength.score >= 1 ? 'bg-orange-500' : 'bg-red-500'
+                          passwordStrength.score >= 4
+                            ? 'bg-green-500'
+                            : passwordStrength.score >= 3
+                              ? 'bg-blue-500'
+                              : passwordStrength.score >= 2
+                                ? 'bg-yellow-500'
+                                : passwordStrength.score >= 1
+                                  ? 'bg-orange-500'
+                                  : 'bg-red-500'
                         }`}
-                        style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                        style={{
+                          width: `${(passwordStrength.score / 5) * 100}%`,
+                        }}
                       ></div>
                     </div>
-                    <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                    <span
+                      className={`text-xs font-medium ${passwordStrength.color}`}
+                    >
                       {passwordStrength.label}
                     </span>
                   </div>
                 </div>
               )}
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
             {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
@@ -271,7 +328,7 @@ export default function RegisterPage() {
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
@@ -282,7 +339,9 @@ export default function RegisterPage() {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -292,16 +351,20 @@ export default function RegisterPage() {
                 {...register('marketingConsent')}
                 type="checkbox"
                 id="marketingConsent"
-                className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
-              <label htmlFor="marketingConsent" className="text-sm text-gray-600">
-                I agree to receive marketing communications about special offers, new products, and loyalty program updates.
+              <label
+                htmlFor="marketingConsent"
+                className="text-sm text-gray-600"
+              >
+                I agree to receive marketing communications about special
+                offers, new products, and loyalty program updates.
               </label>
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="rounded-lg border border-red-200 bg-red-50 p-3">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
@@ -310,14 +373,14 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full btn-primary btn-lg flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary btn-lg flex w-full items-center justify-center space-x-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
-                <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full"></div>
+                <div className="spinner h-5 w-5 rounded-full border-2 border-white border-t-transparent"></div>
               ) : (
                 <>
                   <span>Create Account</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="h-4 w-4" />
                 </>
               )}
             </button>
@@ -330,7 +393,7 @@ export default function RegisterPage() {
                 <div className="w-full border-t border-gray-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or</span>
+                <span className="bg-white px-2 text-gray-500">Or</span>
               </div>
             </div>
           </div>
@@ -341,7 +404,7 @@ export default function RegisterPage() {
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="font-medium text-primary-600 hover:text-primary-500 transition-colors"
+                className="font-medium text-primary-600 transition-colors hover:text-primary-500"
               >
                 Sign in here
               </Link>
@@ -350,27 +413,39 @@ export default function RegisterPage() {
         </div>
 
         {/* Benefits */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
-            <div className="w-8 h-8 bg-loyalty-gold rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Check className="w-4 h-4 text-white" />
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-xl bg-white/50 p-4 text-center backdrop-blur-sm">
+            <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-loyalty-gold">
+              <Check className="h-4 w-4 text-white" />
             </div>
-            <h3 className="text-sm font-medium text-gray-900">Instant Rewards</h3>
-            <p className="text-xs text-gray-600">Start earning points immediately</p>
+            <h3 className="text-sm font-medium text-gray-900">
+              Instant Rewards
+            </h3>
+            <p className="text-xs text-gray-600">
+              Start earning points immediately
+            </p>
           </div>
-          <div className="text-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
-            <div className="w-8 h-8 bg-loyalty-silver rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Check className="w-4 h-4 text-white" />
+          <div className="rounded-xl bg-white/50 p-4 text-center backdrop-blur-sm">
+            <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-loyalty-silver">
+              <Check className="h-4 w-4 text-white" />
             </div>
-            <h3 className="text-sm font-medium text-gray-900">Exclusive Offers</h3>
-            <p className="text-xs text-gray-600">Member-only discounts & deals</p>
+            <h3 className="text-sm font-medium text-gray-900">
+              Exclusive Offers
+            </h3>
+            <p className="text-xs text-gray-600">
+              Member-only discounts & deals
+            </p>
           </div>
-          <div className="text-center p-4 bg-white/50 rounded-xl backdrop-blur-sm">
-            <div className="w-8 h-8 bg-loyalty-platinum rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Check className="w-4 h-4 text-white" />
+          <div className="rounded-xl bg-white/50 p-4 text-center backdrop-blur-sm">
+            <div className="mx-auto mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-loyalty-platinum">
+              <Check className="h-4 w-4 text-white" />
             </div>
-            <h3 className="text-sm font-medium text-gray-900">Track Everything</h3>
-            <p className="text-xs text-gray-600">Monitor points & order history</p>
+            <h3 className="text-sm font-medium text-gray-900">
+              Track Everything
+            </h3>
+            <p className="text-xs text-gray-600">
+              Monitor points & order history
+            </p>
           </div>
         </div>
       </div>

@@ -24,7 +24,9 @@ export interface JWTPayload {
 }
 
 // Verify JWT token and get user data
-export async function verifyToken(token: string): Promise<AuthenticatedUser | null> {
+export async function verifyToken(
+  token: string
+): Promise<AuthenticatedUser | null> {
   try {
     // Verify JWT
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
@@ -83,7 +85,9 @@ export async function verifyToken(token: string): Promise<AuthenticatedUser | nu
 }
 
 // Middleware for protected routes
-export async function authMiddleware(request: NextRequest): Promise<NextResponse | null> {
+export async function authMiddleware(
+  request: NextRequest
+): Promise<NextResponse | null> {
   const token = request.cookies.get('auth-token')?.value;
 
   if (!token) {
@@ -139,9 +143,11 @@ export async function roleMiddleware(
 }
 
 // Get user from request (for API routes)
-export async function getUserFromRequest(request: NextRequest): Promise<AuthenticatedUser | null> {
+export async function getUserFromRequest(
+  request: NextRequest
+): Promise<AuthenticatedUser | null> {
   const token = request.cookies.get('auth-token')?.value;
-  
+
   if (!token) {
     return null;
   }
@@ -150,23 +156,30 @@ export async function getUserFromRequest(request: NextRequest): Promise<Authenti
 }
 
 // Check if user has required permissions
-export function hasPermission(user: AuthenticatedUser, requiredRole: string): boolean {
+export function hasPermission(
+  user: AuthenticatedUser,
+  requiredRole: string
+): boolean {
   const roleHierarchy = {
-    'customer': 1,
-    'staff': 2,
-    'manager': 3,
-    'admin': 4,
+    customer: 1,
+    staff: 2,
+    manager: 3,
+    admin: 4,
   };
 
   const userLevel = roleHierarchy[user.role as keyof typeof roleHierarchy] || 0;
-  const requiredLevel = roleHierarchy[requiredRole as keyof typeof roleHierarchy] || 0;
+  const requiredLevel =
+    roleHierarchy[requiredRole as keyof typeof roleHierarchy] || 0;
 
   return userLevel >= requiredLevel;
 }
 
 // Generate CSRF token
 export function generateCSRFToken(): string {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
 }
 
 // Validate CSRF token

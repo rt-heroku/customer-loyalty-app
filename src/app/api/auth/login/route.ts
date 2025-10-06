@@ -16,7 +16,7 @@ const loginAttempts = new Map<string, { count: number; lastAttempt: number }>();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validation = loginSchema.safeParse(body);
     if (!validation.success) {
@@ -27,12 +27,16 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Rate limiting check
     const now = Date.now();
-    const attempts = loginAttempts.get(clientIp) || { count: 0, lastAttempt: 0 };
-    
+    const attempts = loginAttempts.get(clientIp) || {
+      count: 0,
+      lastAttempt: 0,
+    };
+
     if (attempts.count >= 5 && now - attempts.lastAttempt < 15 * 60 * 1000) {
       return NextResponse.json(
         { error: 'Too many login attempts. Please try again in 15 minutes.' },
@@ -55,7 +59,7 @@ export async function POST(request: NextRequest) {
       attempts.count++;
       attempts.lastAttempt = now;
       loginAttempts.set(clientIp, attempts);
-      
+
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
       attempts.count++;
       attempts.lastAttempt = now;
       loginAttempts.set(clientIp, attempts);
-      
+
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
@@ -90,20 +94,17 @@ export async function POST(request: NextRequest) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { 
-        userId: user.id, 
-        email: user.email, 
-        role: user.role 
+      {
+        userId: user.id,
+        email: user.email,
+        role: user.role,
       },
       process.env.JWT_SECRET!,
       { expiresIn: '7d' }
     );
 
     // Update last login
-    await query(
-      'UPDATE users SET last_login = NOW() WHERE id = $1',
-      [user.id]
-    );
+    await query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
 
     // Log successful login (if user_activity_log table exists)
     try {
@@ -137,7 +138,6 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

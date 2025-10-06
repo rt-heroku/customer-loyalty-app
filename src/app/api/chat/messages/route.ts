@@ -13,13 +13,15 @@ async function sendToMulesoftAPI(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.MULESOFT_API_TOKEN}`,
+        Authorization: `Bearer ${process.env.MULESOFT_API_TOKEN}`,
       },
       body: JSON.stringify(chatRequest),
     });
 
     if (!response.ok) {
-      throw new Error(`Mulesoft API error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Mulesoft API error: ${response.status} ${response.statusText}`
+      );
     }
 
     return await response.json();
@@ -30,8 +32,11 @@ async function sendToMulesoftAPI(
       error: {
         code: 'API_ERROR',
         message: 'Failed to connect to chat service',
-        details: { originalError: error instanceof Error ? error.message : 'Unknown error' }
-      }
+        details: {
+          originalError:
+            error instanceof Error ? error.message : 'Unknown error',
+        },
+      },
     };
   }
 }
@@ -77,17 +82,14 @@ export async function POST(request: NextRequest) {
 
     // Add attachments if any
     for (const attachment of attachments) {
-      await query(
-        'SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)',
-        [
-          userMessageId,
-          attachment.fileName,
-          attachment.fileSize,
-          attachment.mimeType,
-          attachment.filePath,
-          attachment.thumbnailPath
-        ]
-      );
+      await query('SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)', [
+        userMessageId,
+        attachment.fileName,
+        attachment.fileSize,
+        attachment.mimeType,
+        attachment.filePath,
+        attachment.thumbnailPath,
+      ]);
     }
 
     // Get chat settings
@@ -106,13 +108,13 @@ export async function POST(request: NextRequest) {
       attachments: attachments.map((att: any) => ({
         fileName: att.fileName,
         mimeType: att.mimeType,
-        fileData: att.fileData || '' // This should be base64 encoded file data
+        fileData: att.fileData || '', // This should be base64 encoded file data
       })),
       metadata: {
         userAgent: request.headers.get('user-agent') || '',
         timestamp: new Date().toISOString(),
-        source: 'web'
-      }
+        source: 'web',
+      },
     };
 
     // Send to Mulesoft API
@@ -120,15 +122,20 @@ export async function POST(request: NextRequest) {
 
     if (!mulesoftResponse.success) {
       // Update user message status to failed
-      await query(
-        'SELECT update_ai_chat_message_status($1, $2)',
-        [userMessageId, 'failed']
-      );
+      await query('SELECT update_ai_chat_message_status($1, $2)', [
+        userMessageId,
+        'failed',
+      ]);
 
-      return NextResponse.json({
-        error: mulesoftResponse.error?.message || 'Failed to get response from AI agent',
-        details: mulesoftResponse.error
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          error:
+            mulesoftResponse.error?.message ||
+            'Failed to get response from AI agent',
+          details: mulesoftResponse.error,
+        },
+        { status: 500 }
+      );
     }
 
     // Add AI response to database
@@ -144,8 +151,8 @@ export async function POST(request: NextRequest) {
           agentId: mulesoftResponse.agentId,
           conversationId: mulesoftResponse.conversationId,
           messageId: mulesoftResponse.messageId,
-          ...mulesoftResponse.metadata
-        })
+          ...mulesoftResponse.metadata,
+        }),
       ]
     );
 
@@ -156,26 +163,23 @@ export async function POST(request: NextRequest) {
       for (const attachment of mulesoftResponse.attachments) {
         // In a real implementation, you'd save the file data and get a file path
         const filePath = `/attachments/ai/${attachment.fileName}`;
-        
-        await query(
-          'SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)',
-          [
-            aiMessageId,
-            attachment.fileName,
-            attachment.fileData.length, // Approximate file size
-            attachment.mimeType,
-            filePath,
-            null
-          ]
-        );
+
+        await query('SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)', [
+          aiMessageId,
+          attachment.fileName,
+          attachment.fileData.length, // Approximate file size
+          attachment.mimeType,
+          filePath,
+          null,
+        ]);
       }
     }
 
     // Update user message status to delivered
-    await query(
-      'SELECT update_ai_chat_message_status($1, $2)',
-      [userMessageId, 'delivered']
-    );
+    await query('SELECT update_ai_chat_message_status($1, $2)', [
+      userMessageId,
+      'delivered',
+    ]);
 
     return NextResponse.json({
       success: true,
@@ -186,7 +190,7 @@ export async function POST(request: NextRequest) {
         status: 'delivered',
         isFromUser: true,
         createdAt: new Date(),
-        attachments
+        attachments,
       },
       aiMessage: {
         id: aiMessageId,
@@ -199,9 +203,9 @@ export async function POST(request: NextRequest) {
           agentId: mulesoftResponse.agentId,
           conversationId: mulesoftResponse.conversationId,
           messageId: mulesoftResponse.messageId,
-          ...mulesoftResponse.metadata
-        }
-      }
+          ...mulesoftResponse.metadata,
+        },
+      },
     });
   } catch (error) {
     console.error('Error sending chat message:', error);

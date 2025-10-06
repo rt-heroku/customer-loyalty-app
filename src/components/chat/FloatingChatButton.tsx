@@ -5,11 +5,11 @@ import { MessageCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingChatButtonProps } from '@/types/chat';
 
-export default function FloatingChatButton({ 
-  onClick, 
-  unreadCount, 
-  isVisible, 
-  className = '' 
+export default function FloatingChatButton({
+  onClick,
+  unreadCount,
+  isVisible,
+  className = '',
 }: FloatingChatButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -28,11 +28,11 @@ export default function FloatingChatButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          relative w-14 h-14 rounded-full shadow-lg
-          bg-gradient-to-r from-primary-500 to-primary-600
-          hover:from-primary-600 hover:to-primary-700
-          text-white flex items-center justify-center
-          transition-all duration-200 ease-in-out
+          relative flex h-14 w-14 items-center
+          justify-center rounded-full bg-gradient-to-r
+          from-primary-500 to-primary-600
+          text-white shadow-lg transition-all duration-200
+          ease-in-out hover:from-primary-600 hover:to-primary-700
           ${isHovered ? 'scale-110 shadow-xl' : 'scale-100'}
         `}
         whileHover={{ scale: 1.1 }}
@@ -47,7 +47,7 @@ export default function FloatingChatButton({
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <X className="w-6 h-6" />
+              <X className="h-6 w-6" />
             </motion.div>
           ) : (
             <motion.div
@@ -57,7 +57,7 @@ export default function FloatingChatButton({
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <MessageCircle className="w-6 h-6" />
+              <MessageCircle className="h-6 w-6" />
             </motion.div>
           )}
         </AnimatePresence>
@@ -65,7 +65,7 @@ export default function FloatingChatButton({
         {/* Unread count badge */}
         {unreadCount > 0 && (
           <motion.div
-            className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
@@ -92,10 +92,12 @@ export default function FloatingChatButton({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 10 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap"
+            className="absolute right-16 top-1/2 -translate-y-1/2 transform whitespace-nowrap rounded-lg bg-gray-900 px-3 py-2 text-sm text-white"
           >
-            {unreadCount > 0 ? `${unreadCount} new message${unreadCount > 1 ? 's' : ''}` : 'Start a conversation'}
-            <div className="absolute right-0 top-1/2 transform translate-x-1 -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent" />
+            {unreadCount > 0
+              ? `${unreadCount} new message${unreadCount > 1 ? 's' : ''}`
+              : 'Start a conversation'}
+            <div className="absolute right-0 top-1/2 h-0 w-0 -translate-y-1/2 translate-x-1 transform border-b-4 border-l-4 border-t-4 border-b-transparent border-l-gray-900 border-t-transparent" />
           </motion.div>
         )}
       </AnimatePresence>

@@ -2,28 +2,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
 import { z } from 'zod';
-import { 
-  getSystemSetting 
-} from '@/lib/system-settings';
+import { getSystemSetting } from '@/lib/system-settings';
 
 // Validation schema for registration
-const registerSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  phone: z.string().optional(),
-  marketingConsent: z.boolean().default(false),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const registerSchema = z
+  .object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string(),
+    firstName: z.string().min(2, 'First name must be at least 2 characters'),
+    lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+    phone: z.string().optional(),
+    marketingConsent: z.boolean().default(false),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validation = registerSchema.safeParse(body);
     if (!validation.success) {
@@ -34,20 +34,21 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password, firstName, lastName, phone } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Check if user already exists in users table
-    const existingUser = await query(
-      'SELECT id FROM users WHERE email = $1',
-      [email]
-    );
+    const existingUser = await query('SELECT id FROM users WHERE email = $1', [
+      email,
+    ]);
 
     if (existingUser.rows.length > 0) {
       return NextResponse.json(
-        { 
+        {
           error: 'User already exists',
           redirectTo: '/forgot-password',
-          message: 'An account with this email already exists. Please use the forgot password feature to reset your password.'
+          message:
+            'An account with this email already exists. Please use the forgot password feature to reset your password.',
         },
         { status: 409 }
       );
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
             `${firstName} ${lastName}`,
             phone || null,
             validation.data.marketingConsent,
-            email
+            email,
           ]
         );
 
@@ -135,11 +136,13 @@ export async function POST(request: NextRequest) {
         // Sync customer with external system
         try {
           console.log('Syncing user with external system');
-          
+
           // Get the integration endpoint and loyalty program ID from system settings
-          const integrationEndpoint = await getSystemSetting('integration_endpoint');
-  //        const loyaltyProgramId = await getSystemSetting('loyalty_program_id');
-          
+          const integrationEndpoint = await getSystemSetting(
+            'integration_endpoint'
+          );
+          //        const loyaltyProgramId = await getSystemSetting('loyalty_program_id');
+
           if (integrationEndpoint) {
             // Get the complete customer data for sync
             const customerSyncData = await query(
@@ -151,10 +154,10 @@ export async function POST(request: NextRequest) {
               WHERE u.id = c.user_id AND u.id = $1`,
               [user.id]
             );
-            
+
             if (customerSyncData.rows.length > 0) {
               const customerData = customerSyncData.rows[0];
-              
+
               const syncPayload = {
                 id: customerData.id,
                 first_name: customerData.first_name,
@@ -171,35 +174,41 @@ export async function POST(request: NextRequest) {
                 zip_code: customerData.zip_code,
                 phone: customerData.phone,
                 email: customerData.email,
-                date_of_birth: customerData.date_of_birth
+                date_of_birth: customerData.date_of_birth,
               };
-              
-              const syncResponse = await fetch(`${integrationEndpoint}/member/create`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(syncPayload)
-              });
-              
+
+              const syncResponse = await fetch(
+                `${integrationEndpoint}/member/create`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(syncPayload),
+                }
+              );
+
               if (syncResponse.ok) {
                 console.log('User successfully synced with Loyalty Cloud');
               } else {
-                console.error('Failed to sync user with Loyalty Cloud, check MuleSoft logs for more details:', syncResponse.statusText);
+                console.error(
+                  'Failed to sync user with Loyalty Cloud, check MuleSoft logs for more details:',
+                  syncResponse.statusText
+                );
               }
             }
           }
         } catch (syncError) {
-          console.error('Error syncing user with Loyalty Cloud, check MuleSoft logs for more details:', syncError);
+          console.error(
+            'Error syncing user with Loyalty Cloud, check MuleSoft logs for more details:',
+            syncError
+          );
           // Don't fail the registration if sync fails
           // TODO: Add message to Q to be processed later
         }
-
-
       }
       console.log('Logging registration activity');
 
-      
       // Log registration activity
       await query(
         `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
@@ -218,12 +227,11 @@ export async function POST(request: NextRequest) {
           role: user.role,
         },
       });
-      console.log('Registration successful'); 
+      console.log('Registration successful');
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
     }
-
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(

@@ -10,7 +10,7 @@ const forgotPasswordSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     // Validate input
     const validation = forgotPasswordSchema.safeParse(body);
     if (!validation.success) {
@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { email } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Check if user exists
     const userResult = await query(
@@ -33,14 +34,17 @@ export async function POST(request: NextRequest) {
       // For security, don't reveal if email exists or not
       return NextResponse.json({
         success: true,
-        message: 'If an account with that email exists, we have sent a password reset link.'
+        message:
+          'If an account with that email exists, we have sent a password reset link.',
       });
     }
 
     const user = userResult.rows[0];
 
     // Generate reset token (in a real implementation, you'd use a secure token)
-    const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const resetToken =
+      Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15);
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // Store reset token in database
@@ -63,13 +67,15 @@ export async function POST(request: NextRequest) {
 
     // In a real implementation, you would send an email here
     // For now, we'll just log the reset link (remove this in production)
-    console.log(`Password reset link for ${email}: /reset-password?token=${resetToken}`);
+    console.log(
+      `Password reset link for ${email}: /reset-password?token=${resetToken}`
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'If an account with that email exists, we have sent a password reset link.'
+      message:
+        'If an account with that email exists, we have sent a password reset link.',
     });
-
   } catch (error) {
     console.error('Forgot password error:', error);
     return NextResponse.json(

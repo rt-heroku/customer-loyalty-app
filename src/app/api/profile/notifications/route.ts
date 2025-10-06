@@ -19,7 +19,7 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const validation = notificationSchema.safeParse(body);
-    
+
     if (!validation.success) {
       return NextResponse.json(
         { error: 'Invalid input', details: validation.error.errors },
@@ -28,7 +28,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const { marketing } = validation.data;
-    const clientIp = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const clientIp =
+      request.headers.get('x-forwarded-for') || request.ip || 'unknown';
 
     // Update notification preferences in customers table
     await query(
@@ -42,14 +43,18 @@ export async function PUT(request: NextRequest) {
     await query(
       `INSERT INTO user_activity_log (user_id, activity_type, description, ip_address)
        VALUES ($1, $2, $3, $4)`,
-      [user.id, 'notification_update', 'Notification preferences updated', clientIp]
+      [
+        user.id,
+        'notification_update',
+        'Notification preferences updated',
+        clientIp,
+      ]
     );
 
     return NextResponse.json({
       success: true,
       message: 'Notification preferences updated successfully',
     });
-
   } catch (error) {
     console.error('Notification update error:', error);
     return NextResponse.json(

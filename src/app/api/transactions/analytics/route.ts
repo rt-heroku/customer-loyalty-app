@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
     }
 
     const customerId = customerResult.rows[0].id;
@@ -98,10 +101,18 @@ export async function GET(request: NextRequest) {
       [customerId]
     );
 
-    const currentYearSpending = parseFloat(currentYearResult.rows[0].current_year_spending);
-    const previousYearSpending = parseFloat(previousYearResult.rows[0].previous_year_spending);
-    const yearOverYearChange = previousYearSpending > 0 ? 
-      ((currentYearSpending - previousYearSpending) / previousYearSpending) * 100 : 0;
+    const currentYearSpending = parseFloat(
+      currentYearResult.rows[0].current_year_spending
+    );
+    const previousYearSpending = parseFloat(
+      previousYearResult.rows[0].previous_year_spending
+    );
+    const yearOverYearChange =
+      previousYearSpending > 0
+        ? ((currentYearSpending - previousYearSpending) /
+            previousYearSpending) *
+          100
+        : 0;
 
     return NextResponse.json({
       totalSpent: parseFloat(stats.total_spent),
@@ -112,21 +123,20 @@ export async function GET(request: NextRequest) {
       savingsFromLoyalty: loyaltySavings,
       spendingByMonth: monthlySpendingResult.rows.map(row => ({
         month: row.month,
-        amount: parseFloat(row.amount)
+        amount: parseFloat(row.amount),
       })),
       spendingByCategory: categorySpendingResult.rows.map(row => ({
         category: row.category,
-        amount: parseFloat(row.amount)
+        amount: parseFloat(row.amount),
       })),
       topProducts: topProductsResult.rows.map(row => ({
         name: row.product_name,
-        quantity: parseInt(row.total_quantity)
+        quantity: parseInt(row.total_quantity),
       })),
       yearOverYearChange: Math.round(yearOverYearChange * 100) / 100,
       currentYearSpending,
-      previousYearSpending
+      previousYearSpending,
     });
-
   } catch (error) {
     console.error('Error fetching analytics:', error);
     return NextResponse.json(
@@ -135,5 +145,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-

@@ -15,7 +15,6 @@ export async function GET(
         p.id,
         p.name,
         p.description,
-        p.short_description,
         p.price,
         p.original_price,
         p.currency,
@@ -38,14 +37,11 @@ export async function GET(
       FROM products p
       WHERE p.id = $1
     `;
-    
+
     const productResult = await query(productQuery, [id]);
-    
+
     if (productResult.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
     const row = productResult.rows[0];
@@ -100,16 +96,17 @@ export async function GET(
       id: row.id,
       name: row.name,
       description: row.description,
-      shortDescription: row.short_description || row.description.substring(0, 100),
       price: parseFloat(row.price),
-      originalPrice: row.original_price ? parseFloat(row.original_price) : undefined,
+      originalPrice: row.original_price
+        ? parseFloat(row.original_price)
+        : undefined,
       currency: row.currency || 'USD',
       images: imagesResult.rows.map((img: any) => ({
         id: img.id,
         url: img.url,
         alt: img.alt || row.name,
         isPrimary: img.isPrimary || false,
-        thumbnailUrl: img.thumbnailUrl || img.url
+        thumbnailUrl: img.thumbnailUrl || img.url,
       })),
       category: row.category,
       subcategory: row.subcategory,
@@ -126,14 +123,16 @@ export async function GET(
         name: variant.name,
         value: variant.value,
         price: variant.price ? parseFloat(variant.price) : undefined,
-        stockQuantity: parseInt(variant.stockQuantity || '0')
+        stockQuantity: parseInt(variant.stockQuantity || '0'),
       })),
       isOnSale: row.is_on_sale || false,
-      salePercentage: row.sale_percentage ? parseFloat(row.sale_percentage) : undefined,
+      salePercentage: row.sale_percentage
+        ? parseFloat(row.sale_percentage)
+        : undefined,
       isNew: row.is_new || false,
       isFeatured: row.is_featured || false,
       createdAt: row.created_at,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
     };
 
     // Add related products
@@ -142,12 +141,12 @@ export async function GET(
       name: rel.name,
       price: parseFloat(rel.price),
       rating: parseFloat(rel.rating || '0'),
-      stockStatus: rel.stockStatus || 'out_of_stock'
+      stockStatus: rel.stockStatus || 'out_of_stock',
     }));
 
     return NextResponse.json({
       product,
-      relatedProducts
+      relatedProducts,
     });
   } catch (error) {
     console.error('Error fetching product:', error);

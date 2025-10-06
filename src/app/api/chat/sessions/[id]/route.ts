@@ -46,8 +46,8 @@ export async function GET(
           status: row.message_status,
           isFromUser: row.message_is_from_user,
           createdAt: row.message_created_at,
-          metadata: row.message_metadata
-        }))
+          metadata: row.message_metadata,
+        })),
     };
 
     return NextResponse.json({ session });
@@ -88,10 +88,7 @@ export async function DELETE(
     }
 
     // Delete session (cascade will delete messages and attachments)
-    await query(
-      'DELETE FROM ai_chat_sessions WHERE id = $1',
-      [sessionId]
-    );
+    await query('DELETE FROM ai_chat_sessions WHERE id = $1', [sessionId]);
 
     return NextResponse.json({ message: 'Session deleted successfully' });
   } catch (error) {

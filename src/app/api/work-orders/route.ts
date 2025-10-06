@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       description,
       customerNotes,
       estimatedCost,
-      estimatedCompletion
+      estimatedCompletion,
     } = body;
 
     // Validate required fields
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       description,
       customerNotes || null,
       estimatedCost || null,
-      estimatedCompletion || null
+      estimatedCompletion || null,
     ]);
 
     const workOrderId = result.rows[0].id;
@@ -83,9 +83,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       workOrderId,
-      message: 'Work order submitted successfully'
+      message: 'Work order submitted successfully',
     });
-
   } catch (error) {
     console.error('Error creating work order:', error);
     return NextResponse.json(
@@ -98,7 +97,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const token = request.cookies.get('auth-token')?.value;
-    
+
     if (!token) {
       return NextResponse.json(
         { error: 'No authentication token' },
@@ -191,7 +190,9 @@ export async function GET(request: NextRequest) {
       description: row.description,
       customerNotes: row.customerNotes,
       technicianNotes: row.technicianNotes,
-      estimatedCost: row.estimatedCost ? parseFloat(row.estimatedCost) : undefined,
+      estimatedCost: row.estimatedCost
+        ? parseFloat(row.estimatedCost)
+        : undefined,
       actualCost: row.actualCost ? parseFloat(row.actualCost) : undefined,
       estimatedCompletion: row.estimatedCompletion,
       actualCompletion: row.actualCompletion,
@@ -199,19 +200,21 @@ export async function GET(request: NextRequest) {
       customerSignature: row.customerSignature,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
-      service: row.serviceId ? {
-        id: row.serviceId,
-        name: row.serviceName,
-        description: row.serviceDescription,
-        duration: 0,
-        price: 0,
-        category: '',
-        currency: 'USD',
-        isAvailable: true,
-        storeId: row.storeId,
-        requiresAppointment: true,
-        images: []
-      } : undefined,
+      service: row.serviceId
+        ? {
+            id: row.serviceId,
+            name: row.serviceName,
+            description: row.serviceDescription,
+            duration: 0,
+            price: 0,
+            category: '',
+            currency: 'USD',
+            isAvailable: true,
+            storeId: row.storeId,
+            requiresAppointment: true,
+            images: [],
+          }
+        : undefined,
       store: {
         id: row.storeId,
         name: row.storeName,
@@ -234,14 +237,13 @@ export async function GET(request: NextRequest) {
         images: [],
         description: '',
         createdAt: '',
-        updatedAt: ''
+        updatedAt: '',
       },
       images: [],
-      attachments: []
+      attachments: [],
     }));
 
     return NextResponse.json({ workOrders });
-
   } catch (error) {
     console.error('Error fetching work orders:', error);
     return NextResponse.json(

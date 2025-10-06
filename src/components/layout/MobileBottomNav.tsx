@@ -3,15 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Home, 
-  ShoppingBag, 
-  MapPin, 
-  Heart, 
+import {
+  Home,
+  ShoppingBag,
+  MapPin,
+  Heart,
   User,
   Plus,
   Scan,
-  Bell
+  Bell,
 } from 'lucide-react';
 
 import { pwaManager } from '@/lib/pwa';
@@ -40,21 +40,21 @@ export default function MobileBottomNav() {
       label: 'Home',
       icon: Home,
       href: '/dashboard',
-      isActive: pathname === '/dashboard'
+      isActive: pathname === '/dashboard',
     },
     {
       id: 'products',
       label: 'Products',
       icon: ShoppingBag,
       href: '/products',
-      isActive: pathname.startsWith('/products')
+      isActive: pathname.startsWith('/products'),
     },
     {
       id: 'stores',
       label: 'Stores',
       icon: MapPin,
       href: '/stores',
-      isActive: pathname.startsWith('/stores')
+      isActive: pathname.startsWith('/stores'),
     },
     {
       id: 'wishlist',
@@ -62,15 +62,15 @@ export default function MobileBottomNav() {
       icon: Heart,
       href: '/wishlist',
       isActive: pathname === '/wishlist',
-      badge: 0
+      badge: 0,
     },
     {
       id: 'profile',
       label: 'Profile',
       icon: User,
       href: '/profile',
-      isActive: pathname === '/profile'
-    }
+      isActive: pathname === '/profile',
+    },
   ];
 
   // Quick action items
@@ -80,28 +80,28 @@ export default function MobileBottomNav() {
       label: 'Scan QR',
       icon: Scan,
       action: () => router.push('/scan'),
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'notifications',
       label: 'Notifications',
       icon: Bell,
       action: () => router.push('/notifications'),
-      color: 'bg-orange-500'
-    }
+      color: 'bg-orange-500',
+    },
   ];
 
   // Handle scroll to show/hide navigation
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
-      
+
       setLastScrollY(currentScrollY);
     };
 
@@ -140,7 +140,7 @@ export default function MobileBottomNav() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
                 onClick={() => handleQuickAction(action.action)}
-                className={`${action.color} w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-white transform hover:scale-110 transition-transform`}
+                className={`${action.color} flex h-14 w-14 transform items-center justify-center rounded-full text-white shadow-lg transition-transform hover:scale-110`}
                 style={{ touchAction: 'manipulation' }}
               >
                 <action.icon size={24} />
@@ -155,23 +155,23 @@ export default function MobileBottomNav() {
         initial={{ y: 100 }}
         animate={{ y: isVisible ? 0 : 100 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg md:hidden"
-        style={{ 
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white shadow-lg md:hidden"
+        style={{
           paddingBottom: 'env(safe-area-inset-bottom)',
-          touchAction: 'manipulation'
+          touchAction: 'manipulation',
         }}
       >
         <div className="flex items-center justify-around px-2 py-2">
-          {navItems.map((item) => {
+          {navItems.map(item => {
             const Icon = item.icon;
             return (
               <motion.button
                 key={item.id}
                 onClick={() => handleNavigation(item.href)}
-                className={`relative flex flex-col items-center justify-center w-16 h-16 rounded-xl transition-all duration-200 ${
-                  item.isActive 
-                    ? 'text-blue-600 bg-blue-50' 
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                className={`relative flex h-16 w-16 flex-col items-center justify-center rounded-xl transition-all duration-200 ${
+                  item.isActive
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
                 }`}
                 whileTap={{ scale: 0.95 }}
                 style={{ touchAction: 'manipulation' }}
@@ -182,19 +182,19 @@ export default function MobileBottomNav() {
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium"
+                      className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-medium text-white"
                     >
                       {item.badge > 99 ? '99+' : item.badge}
                     </motion.span>
                   )}
                 </div>
-                <span className="text-xs mt-1 font-medium">{item.label}</span>
-                
+                <span className="mt-1 text-xs font-medium">{item.label}</span>
+
                 {/* Active indicator */}
                 {item.isActive && (
                   <motion.div
                     layoutId="activeIndicator"
-                    className="absolute bottom-0 w-8 h-1 bg-blue-600 rounded-t-full"
+                    className="absolute bottom-0 h-1 w-8 rounded-t-full bg-blue-600"
                     initial={false}
                     transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   />
@@ -206,17 +206,17 @@ export default function MobileBottomNav() {
           {/* Quick Actions Button */}
           <motion.button
             onClick={() => setShowQuickActions(!showQuickActions)}
-            className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center transition-all duration-200 ${
-              showQuickActions 
-                ? 'text-blue-600 bg-blue-50' 
-                : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+            className={`flex h-16 w-16 flex-col items-center justify-center rounded-xl transition-all duration-200 ${
+              showQuickActions
+                ? 'bg-blue-50 text-blue-600'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
             }`}
             whileTap={{ scale: 0.95 }}
             animate={{ rotate: showQuickActions ? 45 : 0 }}
             style={{ touchAction: 'manipulation' }}
           >
             <Plus size={24} />
-            <span className="text-xs mt-1 font-medium">More</span>
+            <span className="mt-1 text-xs font-medium">More</span>
           </motion.button>
         </div>
 
@@ -228,9 +228,9 @@ export default function MobileBottomNav() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isVisible ? 0 : 1 }}
-        className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 md:hidden"
+        className="fixed bottom-4 left-1/2 z-30 -translate-x-1/2 transform md:hidden"
       >
-        <div className="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-xs">
+        <div className="rounded-full bg-black bg-opacity-50 px-3 py-1 text-xs text-white">
           Swipe up for navigation
         </div>
       </motion.div>
@@ -256,7 +256,12 @@ export function useSwipeGesture(
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (startY === null || startX === null) return;
-    if (!e.changedTouches || e.changedTouches.length === 0 || !e.changedTouches[0]) return;
+    if (
+      !e.changedTouches ||
+      e.changedTouches.length === 0 ||
+      !e.changedTouches[0]
+    )
+      return;
 
     const endY = e.changedTouches[0].clientY;
     const endX = e.changedTouches[0].clientX;
