@@ -76,15 +76,16 @@ interface Voucher {
   voucher_type: string;
   face_value: number;
   discount_percent: number;
-  discount_amount: number;
   remaining_value: number;
+  redeemed_value: number;
+  reserved_value: number;
   status: string;
   created_date: string;
   expiration_date: string;
-  redeemed_date: string;
+  use_date: string;
   image_url: string;
-  terms_conditions: string;
   is_active: boolean;
+  effective_date: string;
   product_name: string;
   product_price: number;
   product_image_url: string;
@@ -595,19 +596,19 @@ export default function LoyaltyPage() {
 
                           <div className="flex items-center justify-between">
                             <div>
-                              {voucher.voucher_type === 'Percentage' && (
+                              {voucher.voucher_type === 'Discount' && voucher.discount_percent && (
                                 <span className="text-lg font-bold text-green-600">
                                   {voucher.discount_percent}% OFF
-                                </span>
-                              )}
-                              {voucher.voucher_type === 'Fixed' && (
-                                <span className="text-lg font-bold text-green-600">
-                                  {formatCurrency(voucher.discount_amount)} OFF
                                 </span>
                               )}
                               {voucher.voucher_type === 'Value' && (
                                 <span className="text-lg font-bold text-green-600">
                                   {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'ProductSpecific' && (
+                                <span className="text-lg font-bold text-green-600">
+                                  {voucher.product_name || 'Product Discount'}
                                 </span>
                               )}
                             </div>
@@ -667,19 +668,19 @@ export default function LoyaltyPage() {
 
                           <div className="flex items-center justify-between">
                             <div>
-                              {voucher.voucher_type === 'Percentage' && (
+                              {voucher.voucher_type === 'Discount' && voucher.discount_percent && (
                                 <span className="text-lg font-bold text-gray-600">
                                   {voucher.discount_percent}% OFF
-                                </span>
-                              )}
-                              {voucher.voucher_type === 'Fixed' && (
-                                <span className="text-lg font-bold text-gray-600">
-                                  {formatCurrency(voucher.discount_amount)} OFF
                                 </span>
                               )}
                               {voucher.voucher_type === 'Value' && (
                                 <span className="text-lg font-bold text-gray-600">
                                   {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'ProductSpecific' && (
+                                <span className="text-lg font-bold text-gray-600">
+                                  {voucher.product_name || 'Product Discount'}
                                 </span>
                               )}
                             </div>
@@ -688,9 +689,9 @@ export default function LoyaltyPage() {
                             </span>
                           </div>
 
-                          {voucher.redeemed_date && (
+                          {voucher.use_date && (
                             <p className="text-xs text-gray-500">
-                              Redeemed: {formatDate(voucher.redeemed_date)}
+                              Redeemed: {formatDate(voucher.use_date)}
                             </p>
                           )}
                         </div>
@@ -739,19 +740,19 @@ export default function LoyaltyPage() {
 
                           <div className="flex items-center justify-between">
                             <div>
-                              {voucher.voucher_type === 'Percentage' && (
+                              {voucher.voucher_type === 'Discount' && voucher.discount_percent && (
                                 <span className="text-lg font-bold text-gray-400">
                                   {voucher.discount_percent}% OFF
-                                </span>
-                              )}
-                              {voucher.voucher_type === 'Fixed' && (
-                                <span className="text-lg font-bold text-gray-400">
-                                  {formatCurrency(voucher.discount_amount)} OFF
                                 </span>
                               )}
                               {voucher.voucher_type === 'Value' && (
                                 <span className="text-lg font-bold text-gray-400">
                                   {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'ProductSpecific' && (
+                                <span className="text-lg font-bold text-gray-400">
+                                  {voucher.product_name || 'Product Discount'}
                                 </span>
                               )}
                             </div>
