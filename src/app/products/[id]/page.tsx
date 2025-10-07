@@ -7,7 +7,6 @@ import {
   Heart,
   Share2,
   Star,
-  ShoppingCart,
   ArrowLeft,
   Minus,
   Plus,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Product } from '@/types/product';
+import WishlistModal from '@/components/products/WishlistModal';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -31,6 +31,15 @@ export default function ProductDetailPage() {
 
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistModal, setWishlistModal] = useState<{
+    isOpen: boolean;
+    productId: number;
+    productName: string;
+  }>({
+    isOpen: false,
+    productId: 0,
+    productName: '',
+  });
 
   const loadProduct = useCallback(async () => {
     try {
@@ -99,6 +108,35 @@ export default function ProductDetailPage() {
       console.error('Error toggling wishlist:', error);
     } finally {
       setWishlistLoading(false);
+    }
+  };
+
+  const handleAddToWishlist = (productId: number, productName: string) => {
+    setWishlistModal({
+      isOpen: true,
+      productId,
+      productName,
+    });
+  };
+
+  const handleWishlistSelect = async (wishlistId: number, productId: number) => {
+    try {
+      const response = await fetch('/api/wishlist/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wishlistId,
+          productId,
+        }),
+      });
+
+      if (response.ok) {
+        // Show success message or update UI
+        console.log('Product added to wishlist successfully');
+        setIsInWishlist(true);
+      }
+    } catch (error) {
+      console.error('Error adding product to wishlist:', error);
     }
   };
 
@@ -369,13 +407,17 @@ export default function ProductDetailPage() {
               <div className="flex space-x-3">
                 <button
                   onClick={() => {
-                    /* Add to cart functionality */
+                    if (!user) {
+                      router.push('/login');
+                      return;
+                    }
+                    handleAddToWishlist(parseInt(product.id), product.name);
                   }}
                   disabled={product.stockStatus === 'out_of_stock'}
                   className="flex flex-1 items-center justify-center rounded-lg bg-primary-600 px-6 py-3 font-medium text-white hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-gray-300"
                 >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart
+                  <Heart className="mr-2 h-5 w-5" />
+                  Add to Wishlist
                 </button>
 
                 <button
@@ -458,6 +500,14 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+      
+      <WishlistModal
+        isOpen={wishlistModal.isOpen}
+        onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
+        productId={wishlistModal.productId}
+        productName={wishlistModal.productName}
+        onAddToWishlist={handleWishlistSelect}
+      />
     </div>
   );
 }

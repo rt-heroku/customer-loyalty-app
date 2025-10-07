@@ -9,11 +9,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { productId, notes } = await request.json();
+    const { wishlistId, productId, notes } = await request.json();
 
-    if (!productId) {
+    if (!wishlistId || !productId) {
       return NextResponse.json(
-        { error: 'Product ID is required' },
+        { error: 'Wishlist ID and Product ID are required' },
         { status: 400 }
       );
     }
@@ -33,12 +33,12 @@ export async function POST(request: NextRequest) {
 
     const customerId = customerResult.rows[0].id;
 
-    // Check if product already exists in customer's wishlist
+    // Check if product already exists in this wishlist
     const existingQuery = `
       SELECT id FROM customer_wishlists 
-      WHERE customer_id = $1 AND product_id = $2
+      WHERE customer_id = $1 AND product_id = $2 AND wishlist_name = $3
     `;
-    const existingResult = await query(existingQuery, [customerId, productId]);
+    const existingResult = await query(existingQuery, [customerId, productId, wishlistId]);
 
     if (existingResult.rows.length > 0) {
       return NextResponse.json(
@@ -49,14 +49,15 @@ export async function POST(request: NextRequest) {
 
     // Add product to customer's wishlist
     const addQuery = `
-      INSERT INTO customer_wishlists (customer_id, product_id, notes, added_at, priority)
-      VALUES ($1, $2, $3, NOW(), 1)
+      INSERT INTO customer_wishlists (customer_id, product_id, wishlist_name, notes, added_at, priority)
+      VALUES ($1, $2, $3, $4, NOW(), 1)
       RETURNING id, added_at
     `;
 
     const result = await query(addQuery, [
       customerId,
       productId,
+      wishlistId, // Use wishlistId as wishlist_name
       notes || null,
     ]);
 
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
       id: result.rows[0].id,
       customerId,
       productId,
+      wishlistName: wishlistId,
       notes: notes || null,
       addedAt: result.rows[0].added_at,
     });
@@ -84,11 +86,12 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
+    const wishlistId = searchParams.get('wishlistId');
     const productId = searchParams.get('productId');
 
-    if (!productId) {
+    if (!wishlistId || !productId) {
       return NextResponse.json(
-        { error: 'Product ID is required' },
+        { error: 'Wishlist ID and Product ID are required' },
         { status: 400 }
       );
     }
@@ -111,10 +114,10 @@ export async function DELETE(request: NextRequest) {
     // Remove product from customer's wishlist
     const deleteQuery = `
       DELETE FROM customer_wishlists 
-      WHERE customer_id = $1 AND product_id = $2
+      WHERE customer_id = $1 AND product_id = $2 AND wishlist_name = $3
     `;
 
-    const result = await query(deleteQuery, [customerId, productId]);
+    const result = await query(deleteQuery, [customerId, productId, wishlistId]);
 
     if (result.rowCount === 0) {
       return NextResponse.json(

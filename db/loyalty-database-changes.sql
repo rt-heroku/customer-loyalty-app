@@ -184,10 +184,11 @@ CREATE TABLE IF NOT EXISTS customer_wishlists (
     id SERIAL PRIMARY KEY,
     customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    wishlist_name VARCHAR(255) DEFAULT 'My Wishlist',
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,
     priority INTEGER DEFAULT 1, -- 1=low, 5=high
-    UNIQUE(customer_id, product_id)
+    UNIQUE(customer_id, product_id, wishlist_name)
 );
 
 -- Create product reviews table
