@@ -88,10 +88,9 @@ export async function GET(request: NextRequest) {
             const imagesQuery = `
               SELECT 
                 id,
-                url,
+                image_url as url,
                 alt_text as alt,
-                is_primary as "isPrimary",
-                thumbnail_url as "thumbnailUrl"
+                is_primary as "isPrimary"
               FROM product_images 
               WHERE product_id = $1 
               ORDER BY is_primary DESC, id ASC
@@ -108,7 +107,6 @@ export async function GET(request: NextRequest) {
                   url: img.url,
                   alt: img.alt || item.name,
                   isPrimary: img.isPrimary || false,
-                  thumbnailUrl: img.thumbnailUrl || img.url,
                 },
               ];
             }
