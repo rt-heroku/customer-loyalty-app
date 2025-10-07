@@ -3,6 +3,29 @@
 -- These changes build upon the existing POS demo database schema
 
 -- ============================================================================
+-- ROLES AND PERMISSIONS
+-- ============================================================================
+
+-- Create roles table if it doesn't exist
+CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    permissions JSONB DEFAULT '{}',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert default roles if they don't exist
+INSERT INTO roles (name, description, permissions) VALUES 
+('Admin', 'System Administrator', '{"all": true}'),
+('Manager', 'Store Manager', '{"store": true, "reports": true}'),
+('Employee', 'Store Employee', '{"pos": true, "inventory": true}'),
+('Customer', 'Customer', '{"profile": true, "orders": true}')
+ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
 -- LOYALTY PROGRAM ENHANCEMENTS
 -- ============================================================================
 

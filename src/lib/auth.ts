@@ -31,10 +31,11 @@ export async function verifyToken(
     // Verify JWT
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
 // console.log('verifyToken -> Payload: ', payload);
-    // Get user data directly from JWT payload (simplified approach)
+    // Get user data with role name from roles table
     const userResult = await query(
-      `SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.phone, u.is_active
+      `SELECT u.id, u.email, u.first_name, u.last_name, r.name as role, u.phone, u.is_active
        FROM users u
+       LEFT JOIN roles r ON u.role_id = r.id
        WHERE u.id = $1 AND u.is_active = true`,
       [payload.userId]
     );
