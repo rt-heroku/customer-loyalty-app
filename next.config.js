@@ -1,186 +1,5 @@
 /** @type {import('next').NextConfig} */
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/fonts\.(?:gstatic)\.com\/.*/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'google-fonts-webfonts',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 31536000, // 1 year
-        },
-      },
-    },
-    {
-      urlPattern: /^https:\/\/fonts\.(?:googleapis)\.com\/.*/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'google-fonts-stylesheets',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 604800, // 1 week
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:eot|otf|ttc|ttf|woff|woff2|font.css)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-font-assets',
-        expiration: {
-          maxEntries: 4,
-          maxAgeSeconds: 604800, // 1 week
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:jpg|jpeg|gif|png|svg|ico|webp)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-image-assets',
-        expiration: {
-          maxEntries: 64,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\/_next\/image\?url=.+$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'next-image',
-        expiration: {
-          maxEntries: 64,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:mp3|wav|ogg)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'static-audio-assets',
-        rangeRequests: true,
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:mp4)$/i,
-      handler: 'CacheFirst',
-      options: {
-        cacheName: 'static-video-assets',
-        rangeRequests: true,
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:js)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-js-assets',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:css|less)$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'static-style-assets',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\/_next\/data\/.+\/.+\.json$/i,
-      handler: 'StaleWhileRevalidate',
-      options: {
-        cacheName: 'next-data',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: /\.(?:json|xml|csv)$/i,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'static-data-assets',
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: ({ url }) => {
-        const isSameOrigin = url.origin === self.location.origin;
-        const isApiRoute = url.pathname.startsWith('/api/');
-        const isAuthRoute = url.pathname.startsWith('/api/auth/');
-        return isSameOrigin && isApiRoute && !isAuthRoute;
-      },
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'apis',
-        networkTimeoutSeconds: 10,
-        expiration: {
-          maxEntries: 16,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: ({ url }) => {
-        const isSameOrigin = url.origin === self.location.origin;
-        const isApiRoute = url.pathname.startsWith('/api/');
-        return isSameOrigin && !isApiRoute;
-      },
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'others',
-        networkTimeoutSeconds: 10,
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 86400, // 1 day
-        },
-      },
-    },
-    {
-      urlPattern: ({ url }) => url.origin !== self.location.origin,
-      handler: 'NetworkFirst',
-      options: {
-        cacheName: 'cross-origin',
-        networkTimeoutSeconds: 10,
-        expiration: {
-          maxEntries: 32,
-          maxAgeSeconds: 3600, // 1 hour
-        },
-      },
-    },
-  ],
-});
-
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-  // PWA Configuration
-  ...withPWA,
-
   // Performance Optimizations
   experimental: {
     optimizeCss: true,
@@ -288,6 +107,19 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/javascript',
+          },
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
           },
         ],
       },
