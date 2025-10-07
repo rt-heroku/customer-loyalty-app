@@ -6,8 +6,12 @@ import { Star, Gift, User, ChevronRight } from 'lucide-react';
 import { formatCurrency, formatDate, getLoyaltyTierInfo } from '@/lib/utils';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [stats, setStats] = useState<any>(null);
+
+  // Debug logging
+  console.log('Dashboard - user:', user);
+  console.log('Dashboard - loading:', loading);
 
 
   const fetchDashboardStats = useCallback(async () => {
@@ -30,7 +34,27 @@ export default function Dashboard() {
     loadDashboardData();
   }, [fetchDashboardStats]);
 
-  if (!user) return null;
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="mb-4 text-2xl font-bold text-gray-900">Access Denied</h1>
+          <p className="text-gray-600">Please log in to access the dashboard.</p>
+        </div>
+      </div>
+    );
+  }
 
   const tierInfo = getLoyaltyTierInfo(user.tier || 'Bronze');
   const nextTier = tierInfo.nextTier;

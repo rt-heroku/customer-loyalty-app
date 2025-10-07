@@ -121,14 +121,35 @@ export async function POST(request: NextRequest) {
       console.log('Activity logging not available:', (error as Error).message);
     }
 
+    // Get full user data for response
+    const fullUserResult = await query(
+      `SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.phone, u.is_active,
+              c.points, c.total_spent, c.visit_count, c.customer_tier, c.member_status, c.enrollment_date
+       FROM users u
+       LEFT JOIN customers c ON u.id = c.user_id
+       WHERE u.id = $1`,
+      [user.id]
+    );
+
+    const fullUser = fullUserResult.rows[0];
+
     // Set HTTP-only cookie
     const response = NextResponse.json({
       success: true,
       message: 'Login successful',
       user: {
-        id: user.id,
-        email: user.email,
-        role: user.role_name,
+        id: fullUser.id,
+        email: fullUser.email,
+        firstName: fullUser.first_name,
+        lastName: fullUser.last_name,
+        role: fullUser.role,
+        phone: fullUser.phone,
+        points: fullUser.points,
+        totalSpent: fullUser.total_spent,
+        visitCount: fullUser.visit_count,
+        tier: fullUser.customer_tier,
+        memberStatus: fullUser.member_status,
+        enrollmentDate: fullUser.enrollment_date,
       },
     });
 
