@@ -266,3 +266,80 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const wishlistId = searchParams.get('id');
+
+    if (!wishlistId) {
+      return NextResponse.json(
+        { error: 'Wishlist ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // Get customer ID for the user
+    const customerResult = await query(
+      'SELECT id FROM customers WHERE user_id = $1',
+      [user.id]
+    );
+
+    if (customerResult.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
+    }
+
+    const customerId = customerResult.rows[0].id;
+
+    // Verify wishlist belongs to customer
+    const wishlistQuery = `
+      SELECT id FROM wishlists 
+      WHERE id = $1 AND customer_id = $2
+    `;
+    const wishlistResult = await query(wishlistQuery, [parseInt(wishlistId), customerId]);
+
+    if (wishlistResult.rows.length === 0) {
+      return NextResponse.json(
+        { error: 'Wishlist not found or access denied' },
+        { status: 404 }
+      );
+    }
+
+    // Delete all items from customer_wishlists first (due to foreign key constraints)
+    await query(
+      'DELETE FROM customer_wishlists WHERE wishlist_id = $1',
+      [parseInt(wishlistId)]
+    );
+
+    // Delete the wishlist
+    const deleteQuery = `
+      DELETE FROM wishlists 
+      WHERE id = $1 AND customer_id = $2
+    `;
+
+    const result = await query(deleteQuery, [parseInt(wishlistId), customerId]);
+
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { error: 'Wishlist not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting wishlist:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete wishlist' },
+      { status: 500 }
+    );
+  }
+}

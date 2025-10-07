@@ -77,7 +77,7 @@ export default function WishlistPage() {
     if (!confirm('Are you sure you want to delete this wishlist?')) return;
 
     try {
-      const response = await fetch(`/api/wishlist/${wishlistId}`, {
+      const response = await fetch(`/api/wishlist?id=${wishlistId}`, {
         method: 'DELETE',
       });
 
