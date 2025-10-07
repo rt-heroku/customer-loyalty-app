@@ -179,16 +179,29 @@ CREATE TABLE IF NOT EXISTS customer_service_tickets (
 -- WISHLIST AND PRODUCT MANAGEMENT
 -- ============================================================================
 
--- Create customer wishlists table
+-- Create wishlists table for wishlist metadata
+CREATE TABLE IF NOT EXISTS wishlists (
+    id SERIAL PRIMARY KEY,
+    customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_public BOOLEAN DEFAULT FALSE,
+    share_token VARCHAR(255) UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(customer_id, name)
+);
+
+-- Create customer wishlists table for product-wishlist relationships
 CREATE TABLE IF NOT EXISTS customer_wishlists (
     id SERIAL PRIMARY KEY,
     customer_id INTEGER REFERENCES customers(id) ON DELETE CASCADE,
     product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
-    wishlist_name VARCHAR(255) DEFAULT 'My Wishlist',
+    wishlist_id INTEGER REFERENCES wishlists(id) ON DELETE CASCADE,
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     notes TEXT,
     priority INTEGER DEFAULT 1, -- 1=low, 5=high
-    UNIQUE(customer_id, product_id, wishlist_name)
+    UNIQUE(customer_id, product_id, wishlist_id)
 );
 
 -- Create product reviews table

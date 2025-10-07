@@ -25,20 +25,28 @@ export async function GET(request: NextRequest) {
 
     const customerId = customerResult.rows[0].id;
 
-    // Get all unique wishlist names for this customer
-    const wishlistNamesQuery = `
-      SELECT DISTINCT wishlist_name
-      FROM customer_wishlists
-      WHERE customer_id = $1
-      ORDER BY wishlist_name
+    // Get all wishlists for this customer
+    const wishlistsQuery = `
+      SELECT 
+        w.id,
+        w.name,
+        w.description,
+        w.is_public,
+        w.share_token,
+        w.created_at,
+        w.updated_at,
+        COUNT(cw.id) as item_count
+      FROM wishlists w
+      LEFT JOIN customer_wishlists cw ON w.id = cw.wishlist_id
+      WHERE w.customer_id = $1
+      GROUP BY w.id, w.name, w.description, w.is_public, w.share_token, w.created_at, w.updated_at
+      ORDER BY w.updated_at DESC
     `;
 
-    const wishlistNamesResult = await query(wishlistNamesQuery, [customerId]);
+    const wishlistsResult = await query(wishlistsQuery, [customerId]);
 
     const wishlists: Wishlist[] = await Promise.all(
-      wishlistNamesResult.rows.map(async (wishlistNameRow: any) => {
-        const wishlistName = wishlistNameRow.wishlist_name;
-
+      wishlistsResult.rows.map(async (wishlist: any) => {
         // Get items for this wishlist
         const itemsQuery = `
           SELECT 
@@ -68,11 +76,11 @@ export async function GET(request: NextRequest) {
             p.updated_at
           FROM customer_wishlists cw
           JOIN products p ON cw.product_id = p.id
-          WHERE cw.customer_id = $1 AND cw.wishlist_name = $2
+          WHERE cw.wishlist_id = $1
           ORDER BY cw.priority DESC, cw.added_at DESC
         `;
 
-        const itemsResult = await query(itemsQuery, [customerId, wishlistName]);
+        const itemsResult = await query(itemsQuery, [wishlist.id]);
 
         const items: WishlistItem[] = await Promise.all(
           itemsResult.rows.map(async (item: any) => {
@@ -144,14 +152,14 @@ export async function GET(request: NextRequest) {
         );
 
         return {
-          id: wishlistName, // Use wishlist name as ID
+          id: wishlist.id.toString(),
           userId: user.id,
-          name: wishlistName,
-          isPublic: false,
-          shareToken: '',
+          name: wishlist.name,
+          isPublic: wishlist.is_public,
+          shareToken: wishlist.share_token,
           items,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+          createdAt: wishlist.created_at,
+          updatedAt: wishlist.updated_at,
         };
       })
     );
@@ -173,7 +181,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { name } = await request.json();
+    const { name, description, isPublic = false } = await request.json();
 
     if (!name) {
       return NextResponse.json(
@@ -199,8 +207,8 @@ export async function POST(request: NextRequest) {
 
     // Check if wishlist name already exists for this customer
     const existingQuery = `
-      SELECT id FROM customer_wishlists 
-      WHERE customer_id = $1 AND wishlist_name = $2
+      SELECT id FROM wishlists 
+      WHERE customer_id = $1 AND name = $2
       LIMIT 1
     `;
     const existingResult = await query(existingQuery, [customerId, name]);
@@ -212,17 +220,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Since we're using customer_wishlists table, we just return the wishlist structure
-    // The actual wishlist creation happens when items are added
+    // Create new wishlist
+    const createQuery = `
+      INSERT INTO wishlists (customer_id, name, description, is_public, share_token)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id, name, description, is_public, share_token, created_at, updated_at
+    `;
+
+    const shareToken = `wishlist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const result = await query(createQuery, [
+      customerId,
+      name,
+      description || null,
+      isPublic,
+      shareToken,
+    ]);
+
+    const wishlist = result.rows[0];
+
     return NextResponse.json({
-      id: name, // Use name as ID
+      id: wishlist.id.toString(),
       userId: user.id,
-      name: name,
-      isPublic: false,
-      shareToken: '',
+      name: wishlist.name,
+      description: wishlist.description,
+      isPublic: wishlist.is_public,
+      shareToken: wishlist.share_token,
       items: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: wishlist.created_at,
+      updatedAt: wishlist.updated_at,
     });
   } catch (error) {
     console.error('Error creating wishlist:', error);
