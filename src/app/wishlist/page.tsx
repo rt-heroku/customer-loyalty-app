@@ -7,7 +7,6 @@ import {
   Heart,
   Share2,
   Trash2,
-  ShoppingCart,
   Eye,
   Users,
   Lock,

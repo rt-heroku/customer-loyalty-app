@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Gift,
@@ -571,9 +572,11 @@ export default function LoyaltyPage() {
                       >
                         {voucher.image_url && (
                           <div className="mb-4">
-                            <img
+                            <Image
                               src={voucher.image_url}
                               alt={voucher.name}
+                              width={400}
+                              height={128}
                               className="h-32 w-full rounded-lg object-cover"
                             />
                           </div>
@@ -643,9 +646,11 @@ export default function LoyaltyPage() {
                       >
                         {voucher.image_url && (
                           <div className="mb-4">
-                            <img
+                            <Image
                               src={voucher.image_url}
                               alt={voucher.name}
+                              width={400}
+                              height={128}
                               className="h-32 w-full rounded-lg object-cover grayscale"
                             />
                           </div>
@@ -715,9 +720,11 @@ export default function LoyaltyPage() {
                       >
                         {voucher.image_url && (
                           <div className="mb-4">
-                            <img
+                            <Image
                               src={voucher.image_url}
                               alt={voucher.name}
+                              width={400}
+                              height={128}
                               className="h-32 w-full rounded-lg object-cover grayscale"
                             />
                           </div>

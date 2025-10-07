@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { Camera, X, Upload, AlertCircle } from 'lucide-react';
+import { X, Upload, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ImageUploadProps {
@@ -44,11 +44,6 @@ export default function ImageUpload({
     lg: 'h-32 w-32'
   };
 
-  const iconSizes = {
-    sm: 'h-4 w-4',
-    md: 'h-6 w-6',
-    lg: 'h-8 w-8'
-  };
 
   const processImage = useCallback((file: File): Promise<{
     base64: string;

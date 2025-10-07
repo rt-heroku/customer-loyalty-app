@@ -47,7 +47,7 @@ function initializePool(): Pool {
     });
 
     // Monitor connection events
-    pool.on('connect', (client) => {
+    pool.on('connect', () => {
       connectionStats.totalConnections++;
       connectionStats.activeConnections++;
       console.log(`Database connection established. Active: ${connectionStats.activeConnections}/${dbConfig.max}`);
