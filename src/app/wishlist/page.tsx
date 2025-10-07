@@ -95,7 +95,7 @@ export default function WishlistPage() {
   const removeFromWishlist = async (wishlistId: string, productId: string) => {
     try {
       const response = await fetch(
-        `/api/wishlist/${wishlistId}/items/${productId}`,
+        `/api/wishlist/items?wishlistId=${wishlistId}&productId=${productId}`,
         {
           method: 'DELETE',
         }

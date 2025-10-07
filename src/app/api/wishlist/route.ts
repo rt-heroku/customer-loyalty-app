@@ -99,17 +99,7 @@ export async function GET(request: NextRequest) {
             const imagesResult = await query(imagesQuery, [item.product_id]);
             
             let images: any[] = [];
-            if (imagesResult.rows.length > 0 && imagesResult.rows[0].url) {
-              const img = imagesResult.rows[0];
-              images = [
-                {
-                  id: img.id,
-                  url: img.url,
-                  alt: img.alt || item.name,
-                  isPrimary: img.isPrimary || false,
-                },
-              ];
-            } else if (item.main_image_url) {
+            if (item.main_image_url) {
               // Fallback to main_image_url from products table
               images = [
                 {
@@ -120,6 +110,17 @@ export async function GET(request: NextRequest) {
                 },
               ];
             }
+            else if (imagesResult.rows.length > 0 && imagesResult.rows[0].url) {
+              const img = imagesResult.rows[0];
+              images = [
+                {
+                  id: img.id,
+                  url: img.url,
+                  alt: img.alt || item.name,
+                  isPrimary: img.isPrimary || false,
+                },
+              ];
+            } 
 
             return {
               id: item.id,
