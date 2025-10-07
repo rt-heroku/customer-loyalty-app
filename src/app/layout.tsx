@@ -170,7 +170,10 @@ export default function RootLayout({
                         }
                       }).then(function() {
                         // Register new service worker
-                        return navigator.serviceWorker.register('/sw.js');
+                        return navigator.serviceWorker.register('/sw.js', {
+                          scope: '/',
+                          updateViaCache: 'none'
+                        });
                       }).then(function(registration) {
                           console.log('SW registered: ', registration);
                           
