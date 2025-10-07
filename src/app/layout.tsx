@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -15,9 +15,6 @@ export const metadata: Metadata = {
   description:
     'Manage your loyalty program, track points, and access exclusive rewards',
   manifest: '/manifest.json',
-  themeColor: '#3b82f6',
-  viewport:
-    'width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
@@ -28,11 +25,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/icon-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
+      { url: '/icon-512x512.svg', sizes: '512x512', type: 'image/svg+xml' },
     ],
     apple: [
-      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-192x192.svg', sizes: '192x192', type: 'image/svg+xml' },
     ],
   },
   other: {
@@ -40,6 +37,14 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+  userScalable: false,
+  viewportFit: 'cover',
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({
@@ -68,23 +73,24 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#3b82f6" />
         <meta name="msapplication-tap-highlight" content="no" />
         <meta name="theme-color" content="#3b82f6" />
+        <meta name="grammarly-disable-extension" content="true" />
 
         {/* Apple Touch Icons */}
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icon-192x192.svg" />
         <link
           rel="apple-touch-icon"
           sizes="152x152"
-          href="/icons/icon-152x152.png"
+          href="/icon-192x192.svg"
         />
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href="/icons/icon-192x192.png"
+          href="/icon-192x192.svg"
         />
         <link
           rel="apple-touch-icon"
           sizes="167x167"
-          href="/icons/icon-152x152.png"
+          href="/icon-192x192.svg"
         />
 
         {/* Splash Screens */}
@@ -155,38 +161,43 @@ export default function RootLayout({
               (function() {
                 if ('serviceWorker' in navigator) {
                   window.addEventListener('load', function() {
-                    // Clear any existing service workers first
-                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                      for(let registration of registrations) {
-                        registration.unregister();
-                      }
-                    }).then(function() {
-                      // Register new service worker
-                      return navigator.serviceWorker.register('/sw.js');
-                    }).then(function(registration) {
-                        console.log('SW registered: ', registration);
-                        
-                        // Handle updates
-                        registration.addEventListener('updatefound', function() {
-                          const newWorker = registration.installing;
-                          if (newWorker) {
-                            newWorker.addEventListener('statechange', function() {
-                              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                // New version available
-                                if (confirm('A new version is available. Would you like to update?')) {
-                                  window.location.reload();
+                    // Only register if we're on the correct port
+                    if (window.location.port === '3000' || window.location.hostname === 'localhost') {
+                      // Clear any existing service workers first
+                      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        for(let registration of registrations) {
+                          registration.unregister();
+                        }
+                      }).then(function() {
+                        // Register new service worker
+                        return navigator.serviceWorker.register('/sw.js');
+                      }).then(function(registration) {
+                          console.log('SW registered: ', registration);
+                          
+                          // Handle updates
+                          registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            if (newWorker) {
+                              newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                  // New version available
+                                  if (confirm('A new version is available. Would you like to update?')) {
+                                    window.location.reload();
+                                  }
                                 }
-                              }
-                            });
+                              });
+                            }
+                          });
+                        }).catch(function(registrationError) {
+                          console.log('SW registration failed: ', registrationError);
+                          // Don't show error if it's just a 404 (SW file doesn't exist)
+                          if (!registrationError.message.includes('404') && !registrationError.message.includes('500')) {
+                            console.warn('Service Worker registration failed, continuing without SW');
                           }
                         });
-                      }).catch(function(registrationError) {
-                        console.log('SW registration failed: ', registrationError);
-                        // Don't show error if it's just a 404 (SW file doesn't exist)
-                        if (!registrationError.message.includes('404')) {
-                          console.warn('Service Worker registration failed, continuing without SW');
-                        }
-                      });
+                    } else {
+                      console.log('Skipping Service Worker registration on non-localhost');
+                    }
                   });
                 }
 

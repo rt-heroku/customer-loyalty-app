@@ -47,6 +47,57 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
+  const [customerImage, setCustomerImage] = useState<string | null>(null);
+  const [locationLogo, setLocationLogo] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>('Loyalty App');
+
+  // Load customer image
+  useEffect(() => {
+    const loadCustomerImage = async () => {
+      try {
+        const response = await fetch('/api/customers/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setCustomerImage(data.customer.avatar?.image_data || null);
+        }
+      } catch (error) {
+        console.error('Error loading customer image:', error);
+      }
+    };
+
+    if (user) {
+      loadCustomerImage();
+    }
+  }, [user]);
+
+  // Load location logo and company name
+  useEffect(() => {
+    const loadLocationData = async () => {
+      try {
+        // Load company name from system settings
+        const companyResponse = await fetch('/api/system-settings?key=company_name');
+        if (companyResponse.ok) {
+          const companyData = await companyResponse.json();
+          if (companyData.success && companyData.value) {
+            setCompanyName(companyData.value);
+          }
+        }
+
+        // Load location logo
+        const locationResponse = await fetch('/api/locations/current');
+        if (locationResponse.ok) {
+          const locationData = await locationResponse.json();
+          if (locationData.success && locationData.location) {
+            setLocationLogo(locationData.location.logo_base64 || locationData.location.logo_url);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading location data:', error);
+      }
+    };
+
+    loadLocationData();
+  }, []);
 
   // Debug logging
   useEffect(() => {
@@ -177,11 +228,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Mobile Sidebar */}
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-80 border-r border-gray-200 bg-white shadow-xl transition-transform duration-300 ease-in-out',
-          // Mobile: slide in/out
+          // Mobile: slide in/out, hidden on desktop
           'lg:hidden',
           isOpen ? 'translate-x-0' : '-translate-x-full'
         )}
@@ -189,11 +240,17 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500">
-              <span className="text-lg font-bold text-white">L</span>
-            </div>
+            {locationLogo && (
+              <div className="flex h-12 w-16 items-center justify-center overflow-hidden">
+                <img
+                  src={locationLogo}
+                  alt="Company Logo"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Loyalty App</h1>
+              <h1 className="text-xl font-bold text-gray-900">{companyName}</h1>
               <p className="text-sm text-gray-500">Customer Portal</p>
             </div>
           </div>
@@ -237,8 +294,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* User Profile */}
         <div className="border-b border-gray-200 p-4">
           <div className="flex items-center space-x-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-bold text-white">
-              {getInitials(`${user.firstName} ${user.lastName}`)}
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-bold text-white overflow-hidden">
+              {customerImage ? (
+                <img
+                  src={customerImage}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                getInitials(`${user.firstName} ${user.lastName}`)
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate font-medium text-gray-900">
@@ -289,18 +354,24 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       {/* Desktop Sidebar */}
       <div
         className={cn(
-          'lg:fixed lg:inset-y-0 lg:left-0 lg:w-80 lg:border-r lg:border-gray-200 lg:bg-white lg:shadow-none',
+          'hidden lg:fixed lg:inset-y-0 lg:left-0 lg:w-80 lg:border-r lg:border-gray-200 lg:bg-white lg:shadow-none',
           isOpen ? 'lg:block' : 'lg:hidden'
         )}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary-500 to-secondary-500">
-              <span className="text-lg font-bold text-white">L</span>
-            </div>
+            {locationLogo && (
+              <div className="flex h-12 w-16 items-center justify-center overflow-hidden">
+                <img
+                  src={locationLogo}
+                  alt="Company Logo"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+            )}
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Loyalty App</h1>
+              <h1 className="text-xl font-bold text-gray-900">{companyName}</h1>
               <p className="text-sm text-gray-500">Customer Portal</p>
             </div>
           </div>
@@ -387,8 +458,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* User Section */}
           <div className="border-t border-gray-200 pt-4">
             <div className="flex items-center space-x-3 rounded-lg px-3 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700">
-                {getInitials(user?.firstName, user?.lastName)}
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700 overflow-hidden">
+                {customerImage ? (
+                  <img
+                    src={customerImage}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  getInitials(`${user?.firstName} ${user?.lastName}`)
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">

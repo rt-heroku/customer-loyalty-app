@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   User,
-  Camera,
   Lock,
   Bell,
   Shield,
@@ -18,6 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ImageUpload from '@/components/ui/ImageUpload';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -36,6 +36,22 @@ export default function ProfilePage() {
     push: true,
     marketing: false,
   });
+  const [customerProfile, setCustomerProfile] = useState<any>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileForm, setProfileForm] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+    date_of_birth: '',
+    address_line1: '',
+    address_line2: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    country: '',
+    preferred_contact: 'email',
+    marketing_consent: false
+  });
 
   const tabs = [
     { id: 'personal', label: 'Personal', icon: User },
@@ -43,6 +59,85 @@ export default function ProfilePage() {
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'activity', label: 'Activity', icon: Shield },
   ];
+
+  // Load customer profile
+  useEffect(() => {
+    const loadCustomerProfile = async () => {
+      // console.log('loadCustomerProfile called, user:', user);
+      try {
+        const response = await fetch('/api/customers/profile');
+        // console.log('loadCustomerProfile -> Response: ', response);
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Customer Profile Data: ', data);
+          setCustomerProfile(data.customer);
+          setProfileImage(data.customer.avatar?.image_data || null);
+          setProfileForm({
+            first_name: data.customer.first_name || '',
+            last_name: data.customer.last_name || '',
+            phone: data.customer.phone || '',
+            date_of_birth: data.customer.date_of_birth ? new Date(data.customer.date_of_birth).toISOString().split('T')[0] : '',
+            address_line1: data.customer.address_line1 || '',
+            address_line2: data.customer.address_line2 || '',
+            city: data.customer.city || '',
+            state: data.customer.state || '',
+            zip_code: data.customer.zip_code || '',
+            country: data.customer.country || '',
+            preferred_contact: data.customer.preferred_contact || 'email',
+            marketing_consent: data.customer.marketing_consent || false
+          });
+          // console.log('Customer Profile: ', data.customer);
+        } else {
+          console.error('Failed to load customer profile:', response.status, response.statusText);
+        }
+      } catch (error) {
+        console.error('Error loading customer profile:', error);
+      }
+    };
+
+    if (user) {
+      console.log('User is available, loading customer profile...');
+      loadCustomerProfile();
+    } else {
+      console.log('User not available yet');
+    }
+  }, [user]);
+
+  const handleImageUpload = async (imageData: {
+    image_data: string;
+    filename: string;
+    file_size: number;
+    width: number;
+    height: number;
+  }) => {
+    if (!customerProfile) return;
+
+    try {
+      const response = await fetch(`/api/customers/${customerProfile.id}/avatar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(imageData),
+      });
+
+      if (response.ok) {
+        setToast({ type: 'success', message: 'Profile picture updated successfully!' });
+      } else {
+        throw new Error('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      setToast({ type: 'error', message: 'Failed to upload profile picture' });
+    }
+  };
+
+  const handleFormChange = (field: string, value: string | boolean) => {
+    setProfileForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   const handleNotificationToggle = (type: keyof typeof notifications) => {
     setNotifications(prev => ({
@@ -54,10 +149,24 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setToast({ type: 'success', message: 'Profile updated successfully!' });
+      const response = await fetch('/api/customers/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileForm),
+      });
+
+      if (response.ok) {
+        setToast({ type: 'success', message: 'Profile updated successfully!' });
+        // Reload customer profile to get updated data
+        const data = await response.json();
+        setCustomerProfile(data.customer);
+      } else {
+        throw new Error('Failed to update profile');
+      }
     } catch (error) {
+      console.error('Error updating profile:', error);
       setToast({ type: 'error', message: 'Failed to update profile' });
     } finally {
       setIsLoading(false);
@@ -158,25 +267,19 @@ export default function ProfilePage() {
                 </h2>
 
                 <div className="mb-6 flex items-center space-x-6">
-                  <div className="relative">
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-3xl font-bold text-white">
-                      {user.firstName?.[0] ||
-                        user.email?.[0]?.toUpperCase() ||
-                        'U'}
-                    </div>
-                    <button
-                      type="button"
-                      className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-200 bg-white transition-colors hover:border-primary-300"
-                    >
-                      <Camera className="h-4 w-4 text-gray-600" />
-                    </button>
-                  </div>
+                  <ImageUpload
+                    currentImage={profileImage}
+                    onImageChange={setProfileImage}
+                    onUpload={handleImageUpload}
+                    size="lg"
+                    disabled={!customerProfile}
+                  />
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">
                       Profile Picture
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Upload a new profile picture
+                      Upload a new profile picture (max 10MB)
                     </p>
                   </div>
                 </div>
@@ -188,7 +291,8 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="text"
-                      defaultValue={user.firstName || ''}
+                      value={profileForm.first_name}
+                      onChange={(e) => handleFormChange('first_name', e.target.value)}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
@@ -198,7 +302,8 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="text"
-                      defaultValue={user.lastName || ''}
+                      value={profileForm.last_name}
+                      onChange={(e) => handleFormChange('last_name', e.target.value)}
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
@@ -211,9 +316,11 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="email"
-                      defaultValue={user.email || ''}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      value={user.email || ''}
+                      disabled
+                      className="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-gray-500"
                     />
+                    <p className="mt-1 text-xs text-gray-500">Email cannot be changed</p>
                   </div>
                   <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -221,9 +328,128 @@ export default function ProfilePage() {
                     </label>
                     <input
                       type="tel"
+                      value={profileForm.phone}
+                      onChange={(e) => handleFormChange('phone', e.target.value)}
                       placeholder="+1 (555) 123-4567"
                       className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
                     />
+                  </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Date of Birth
+                    </label>
+                    <input
+                      type="date"
+                      value={profileForm.date_of_birth}
+                      onChange={(e) => handleFormChange('date_of_birth', e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-700">
+                      Preferred Contact
+                    </label>
+                    <select
+                      value={profileForm.preferred_contact}
+                      onChange={(e) => handleFormChange('preferred_contact', e.target.value)}
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                    >
+                      <option value="email">Email</option>
+                      <option value="phone">Phone</option>
+                      <option value="sms">SMS</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <h3 className="mb-4 text-lg font-semibold text-gray-900">Address Information</h3>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="md:col-span-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Address Line 1
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.address_line1}
+                        onChange={(e) => handleFormChange('address_line1', e.target.value)}
+                        placeholder="Street address"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Address Line 2
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.address_line2}
+                        onChange={(e) => handleFormChange('address_line2', e.target.value)}
+                        placeholder="Apartment, suite, etc. (optional)"
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        City
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.city}
+                        onChange={(e) => handleFormChange('city', e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        State/Province
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.state}
+                        onChange={(e) => handleFormChange('state', e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        ZIP/Postal Code
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.zip_code}
+                        onChange={(e) => handleFormChange('zip_code', e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block text-sm font-medium text-gray-700">
+                        Country
+                      </label>
+                      <input
+                        type="text"
+                        value={profileForm.country}
+                        onChange={(e) => handleFormChange('country', e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-primary-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      id="marketing_consent"
+                      checked={profileForm.marketing_consent}
+                      onChange={(e) => handleFormChange('marketing_consent', e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    <label htmlFor="marketing_consent" className="text-sm text-gray-700">
+                      I agree to receive marketing communications and promotional offers
+                    </label>
                   </div>
                 </div>
 

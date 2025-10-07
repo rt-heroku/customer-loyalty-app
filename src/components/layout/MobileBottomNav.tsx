@@ -12,6 +12,7 @@ import {
   Plus,
   Scan,
   Bell,
+  MessageCircle,
 } from 'lucide-react';
 
 import { pwaManager } from '@/lib/pwa';
@@ -32,6 +33,31 @@ export default function MobileBottomNav() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showQuickActions, setShowQuickActions] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Check if we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Check if device is mobile
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, [isClient]);
+
+  // Don't render on server or desktop
+  if (!isClient || !isMobile) {
+    return null;
+  }
 
   // Navigation items
   const navItems: NavItem[] = [
@@ -124,6 +150,16 @@ export default function MobileBottomNav() {
 
   return (
     <>
+      {/* Chat Button - Fixed above bottom nav (mobile only) */}
+      <motion.button
+        onClick={() => router.push('/chat')}
+        className="fixed bottom-20 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg transition-transform hover:scale-110 md:hidden"
+        whileTap={{ scale: 0.95 }}
+        style={{ touchAction: 'manipulation' }}
+      >
+        <MessageCircle size={24} />
+      </motion.button>
+
       {/* Quick Actions FAB */}
       <AnimatePresence>
         {showQuickActions && (

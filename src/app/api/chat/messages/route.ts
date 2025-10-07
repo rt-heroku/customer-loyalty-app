@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Verify session belongs to user
     const sessionResult = await query(
-      'SELECT id FROM ai_chat_sessions WHERE id = $1 AND user_id = $2',
+      'SELECT id FROM chat_sessions WHERE id = $1 AND user_id = $2',
       [sessionId, user.id]
     );
 
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     // Add user message to database
     const messageResult = await query(
-      'SELECT add_ai_chat_message($1, $2, $3, $4, $5, $6) as message_id',
+      'SELECT add_chat_message($1, $2, $3, $4, $5, $6) as message_id',
       [sessionId, user.id, message, true, 'text', '{}']
     );
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     // Add attachments if any
     for (const attachment of attachments) {
-      await query('SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)', [
+      await query('SELECT add_chat_attachment($1, $2, $3, $4, $5, $6)', [
         userMessageId,
         attachment.fileName,
         attachment.fileSize,
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
 
     if (!mulesoftResponse.success) {
       // Update user message status to failed
-      await query('SELECT update_ai_chat_message_status($1, $2)', [
+      await query('SELECT update_chat_message_status($1, $2)', [
         userMessageId,
         'failed',
       ]);
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
 
     // Add AI response to database
     const aiMessageResult = await query(
-      'SELECT add_ai_chat_message($1, $2, $3, $4, $5, $6) as message_id',
+      'SELECT add_chat_message($1, $2, $3, $4, $5, $6) as message_id',
       [
         sessionId,
         user.id,
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
         // In a real implementation, you'd save the file data and get a file path
         const filePath = `/attachments/ai/${attachment.fileName}`;
 
-        await query('SELECT add_ai_chat_attachment($1, $2, $3, $4, $5, $6)', [
+        await query('SELECT add_chat_attachment($1, $2, $3, $4, $5, $6)', [
           aiMessageId,
           attachment.fileName,
           attachment.fileData.length, // Approximate file size
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user message status to delivered
-    await query('SELECT update_ai_chat_message_status($1, $2)', [
+    await query('SELECT update_chat_message_status($1, $2)', [
       userMessageId,
       'delivered',
     ]);

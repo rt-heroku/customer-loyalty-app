@@ -8,13 +8,6 @@
       "description": "Overview of your loyalty status and recent activity"
     },
     {
-      "id": "profile",
-      "label": "Profile",
-      "icon": "User",
-      "href": "/profile",
-      "description": "Manage your account settings and preferences"
-    },
-    {
       "id": "loyalty",
       "label": "Loyalty Program",
       "icon": "Crown",
@@ -34,6 +27,15 @@
           "href": "/transactions",
           "description": "Complete transaction history with search and filters"
         }
+        /*,
+        {
+          "id": "tracking",
+          "label": "Order Tracking",
+          "icon": "Truck",
+          "href": "/tracking",
+          "description": "Track current orders and shipping status"
+        }
+          */
       ]
     },
     {
@@ -85,6 +87,60 @@
           "href": "/stores",
           "description": "Find stores near you with interactive map"
         }
+        /*,
+        {
+          "id": "appointments",
+          "label": "My Appointments",
+          "icon": "Calendar",
+          "href": "/appointments",
+          "description": "View and manage your service appointments"
+        },
+        {
+          "id": "work-orders",
+          "label": "Work Orders",
+          "icon": "Wrench",
+          "href": "/work-orders",
+          "description": "Track your service requests and repairs"
+        }
+        */
+      ]
+    },
+    {
+      "id": "profile",
+      "label": "Profile",
+      "icon": "User",
+      "href": "/profile",
+      "description": "Manage your account settings and preferences"
+    },
+    {
+      "id": "support",
+      "label": "Support",
+      "icon": "MessageCircle",
+      "description": "Get help and contact customer service",
+      "submenu": [
+        {
+          "id": "chat",
+          "label": "AI Assistant",
+          "icon": "MessageCircle",
+          "href": "/chat",
+          "description": "Chat with our AI-powered support agent"
+        }
+        /*,
+        {
+          "id": "tickets",
+          "label": "Support Tickets",
+          "icon": "Ticket",
+          "href": "/support/tickets",
+          "description": "View and manage your support requests"
+        },
+        {
+          "id": "faq",
+          "label": "FAQ",
+          "icon": "HelpCircle",
+          "href": "/support/faq",
+          "description": "Frequently asked questions and help articles"
+        }
+        */
       ]
     }
   ],

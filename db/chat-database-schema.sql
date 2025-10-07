@@ -1,38 +1,61 @@
 -- Chat System Database Schema
 -- This file contains the database tables and functions needed for the chat system
+drop table if exists chat_sessions;
+drop table if exists chat_messages;
+drop table if exists chat_attachments;
+drop index if exists idx_chat_sessions_user_id;
+drop index if exists idx_chat_sessions_created_at;
+drop index if exists idx_chat_sessions_active;
+drop index if exists idx_chat_messages_session_id;
+drop index if exists idx_chat_messages_user_id;
+drop index if exists idx_chat_messages_created_at;
+drop index if exists idx_chat_messages_status;
+drop index if exists idx_chat_attachments_message_id;
+drop index if exists idx_chat_attachments_uploaded_at;
+drop function if exists create_ai_chat_session;
+drop function if exists add_chat_message;
+drop function if exists get_chat_session_with_messages;
+drop function if exists get_user_ai_chat_sessions;
+drop function if exists update_chat_message_status;
+drop function if exists add_chat_attachment;
+drop function if exists get_chat_message_attachments;
 
 -- Chat Sessions Table
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_message_at TIMESTAMP WITH TIME ZONE,
     is_active BOOLEAN DEFAULT true,
-    metadata JSONB DEFAULT '{}',
-    INDEX idx_chat_sessions_user_id (user_id),
-    INDEX idx_chat_sessions_created_at (created_at),
-    INDEX idx_chat_sessions_active (is_active)
+    metadata JSONB DEFAULT '{}'
 );
+
+-- Create indexes for chat_sessions table
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON chat_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_created_at ON chat_sessions(created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_active ON chat_sessions(is_active);
 
 -- Chat Messages Table
 CREATE TABLE IF NOT EXISTS chat_messages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID NOT NULL REFERENCES chat_sessions(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
     type VARCHAR(20) DEFAULT 'text' CHECK (type IN ('text', 'attachment', 'system')),
     status VARCHAR(20) DEFAULT 'sent' CHECK (status IN ('sending', 'sent', 'delivered', 'read', 'failed')),
     is_from_user BOOLEAN NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    metadata JSONB DEFAULT '{}',
-    INDEX idx_chat_messages_session_id (session_id),
-    INDEX idx_chat_messages_user_id (user_id),
-    INDEX idx_chat_messages_created_at (created_at),
-    INDEX idx_chat_messages_status (status)
+    metadata JSONB DEFAULT '{}'
 );
+
+-- Create indexes for chat_messages table
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session_id ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id ON chat_messages(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_created_at ON chat_messages(created_at);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_status ON chat_messages(status);
 
 -- Chat Attachments Table
 CREATE TABLE IF NOT EXISTS chat_attachments (
@@ -43,17 +66,19 @@ CREATE TABLE IF NOT EXISTS chat_attachments (
     mime_type VARCHAR(100) NOT NULL,
     file_path VARCHAR(500) NOT NULL,
     thumbnail_path VARCHAR(500),
-    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_chat_attachments_message_id (message_id),
-    INDEX idx_chat_attachments_uploaded_at (uploaded_at)
+    uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Create indexes for chat_attachments table
+CREATE INDEX IF NOT EXISTS idx_chat_attachments_message_id ON chat_attachments(message_id);
+CREATE INDEX IF NOT EXISTS idx_chat_attachments_uploaded_at ON chat_attachments(uploaded_at);
 
 -- Chat Settings in System Settings
 -- These will be added using the existing system settings functions
 
 -- Function to create a new chat session
-CREATE OR REPLACE FUNCTION create_chat_session(
-    p_user_id UUID,
+CREATE OR REPLACE FUNCTION create_ai_chat_session(
+    p_user_id INTEGER,
     p_title VARCHAR(255) DEFAULT NULL
 ) RETURNS UUID AS $$
 DECLARE
@@ -70,10 +95,10 @@ $$ LANGUAGE plpgsql;
 -- Function to add a message to a chat session
 CREATE OR REPLACE FUNCTION add_chat_message(
     p_session_id UUID,
-    p_user_id UUID,
+    p_user_id INTEGER,
     p_content TEXT,
-    p_type VARCHAR(20) DEFAULT 'text',
     p_is_from_user BOOLEAN,
+    p_type VARCHAR(20) DEFAULT 'text',
     p_metadata JSONB DEFAULT '{}'
 ) RETURNS UUID AS $$
 DECLARE
@@ -95,7 +120,7 @@ $$ LANGUAGE plpgsql;
 -- Function to get chat session with messages
 CREATE OR REPLACE FUNCTION get_chat_session_with_messages(
     p_session_id UUID,
-    p_user_id UUID
+    p_user_id INTEGER
 ) RETURNS TABLE (
     session_id UUID,
     session_title VARCHAR(255),
@@ -137,8 +162,8 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Function to get user's chat sessions
-CREATE OR REPLACE FUNCTION get_user_chat_sessions(
-    p_user_id UUID,
+CREATE OR REPLACE FUNCTION get_user_ai_chat_sessions(
+    p_user_id INTEGER,
     p_limit INTEGER DEFAULT 50,
     p_offset INTEGER DEFAULT 0
 ) RETURNS TABLE (

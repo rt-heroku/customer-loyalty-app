@@ -20,7 +20,7 @@ export async function GET(
     const sessionId = params.id;
 
     const result = await query(
-      'SELECT * FROM get_ai_chat_session_with_messages($1, $2)',
+      'SELECT * FROM get_chat_session_with_messages($1, $2)',
       [sessionId, user.id]
     );
 

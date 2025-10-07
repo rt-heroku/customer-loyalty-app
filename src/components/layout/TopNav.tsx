@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Menu,
@@ -10,6 +11,7 @@ import {
   LogOut,
   Settings,
   HelpCircle,
+  Bot,
 } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 
@@ -20,8 +22,29 @@ interface TopNavProps {
 
 export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [customerImage, setCustomerImage] = useState<string | null>(null);
+
+  // Load customer image
+  useEffect(() => {
+    const loadCustomerImage = async () => {
+      try {
+        const response = await fetch('/api/customers/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setCustomerImage(data.customer.avatar?.image_data || null);
+        }
+      } catch (error) {
+        console.error('Error loading customer image:', error);
+      }
+    };
+
+    if (user) {
+      loadCustomerImage();
+    }
+  }, [user]);
 
   // Debug logging
   useEffect(() => {
@@ -64,6 +87,15 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
 
         {/* Right side - User actions */}
         <div className="flex items-center space-x-4">
+          {/* Chat Button - Desktop only */}
+          <button
+            onClick={() => router.push('/chat')}
+            className="hidden md:flex items-center space-x-2 rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600"
+          >
+            <Bot className="h-4 w-4" />
+            <span className="text-sm font-medium">AI Assistant</span>
+          </button>
+
           {/* Notifications */}
           <div className="relative">
             <button
@@ -130,8 +162,16 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-3 rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-bold text-white">
-                {getInitials(`${user.firstName} ${user.lastName}`)}
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-sm font-bold text-white overflow-hidden">
+                {customerImage ? (
+                  <img
+                    src={customerImage}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  getInitials(`${user.firstName} ${user.lastName}`)
+                )}
               </div>
               <div className="hidden text-left md:block">
                 <div className="text-sm font-medium text-gray-900">
@@ -159,7 +199,8 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
                 <div className="py-1">
                   <button
                     onClick={() => {
-                      /* Navigate to profile */
+                      setShowUserMenu(false);
+                      router.push('/profile');
                     }}
                     className="flex w-full items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -168,7 +209,8 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
                   </button>
                   <button
                     onClick={() => {
-                      /* Navigate to settings */
+                      setShowUserMenu(false);
+                      router.push('/settings');
                     }}
                     className="flex w-full items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                   >
@@ -177,7 +219,18 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
                   </button>
                   <button
                     onClick={() => {
-                      /* Navigate to help */
+                      setShowUserMenu(false);
+                      router.push('/chat');
+                    }}
+                    className="flex w-full items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <Bot className="h-4 w-4" />
+                    <span>AI Assistant</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      router.push('/help');
                     }}
                     className="flex w-full items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                   >

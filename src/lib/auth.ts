@@ -30,7 +30,7 @@ export async function verifyToken(
   try {
     // Verify JWT
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
-console.log('verifyToken -> Payload: ', payload);
+// console.log('verifyToken -> Payload: ', payload);
     // Get user data directly from JWT payload (simplified approach)
     const userResult = await query(
       `SELECT u.id, u.email, u.first_name, u.last_name, u.role, u.phone, u.is_active

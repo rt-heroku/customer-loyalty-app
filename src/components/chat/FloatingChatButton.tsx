@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingChatButtonProps } from '@/types/chat';
@@ -12,8 +12,29 @@ export default function FloatingChatButton({
   className = '',
 }: FloatingChatButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-  if (!isVisible) return null;
+  // Check if we're on the client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Check if device is mobile
+  useEffect(() => {
+    if (!isClient) return;
+    
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, [isClient]);
+
+  // Don't render on server or desktop
+  if (!isClient || !isMobile || !isVisible) return null;
 
   return (
     <motion.div
