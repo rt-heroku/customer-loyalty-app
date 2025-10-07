@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import Sidebar from './Sidebar';
 import TopNav from './TopNav';
+import MobileBottomNav from './MobileBottomNav';
+import ChatLayout from '../chat/ChatLayout';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -81,6 +83,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
         {/* Page content */}
         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       </div>
+
+      {/* Mobile bottom navigation and chat - only for authenticated pages */}
+      <MobileBottomNav />
+      <ChatLayout />
     </div>
   );
 }

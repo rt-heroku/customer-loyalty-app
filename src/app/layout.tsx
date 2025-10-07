@@ -5,8 +5,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ChatProvider } from '@/contexts/ChatContext';
 import { SystemSettingsProvider } from '@/contexts/SystemSettingsContext';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
-import MobileBottomNav from '@/components/layout/MobileBottomNav';
-import ChatLayout from '@/components/chat/ChatLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -147,8 +145,6 @@ export default function RootLayout({
           <SystemSettingsProvider>
             <ChatProvider>
               <ConditionalLayout>{children}</ConditionalLayout>
-              <MobileBottomNav />
-              <ChatLayout />
             </ChatProvider>
           </SystemSettingsProvider>
         </AuthProvider>

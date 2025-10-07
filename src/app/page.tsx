@@ -47,7 +47,7 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 {companyLogo ? (
-                  <div className="relative h-12 w-12">
+                  <div className="relative h-12 w-24">
                     <Image
                       src={companyLogo}
                       alt="Company Logo"
