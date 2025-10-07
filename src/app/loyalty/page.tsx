@@ -558,7 +558,7 @@ export default function LoyaltyPage() {
               )}
 
               {/* Available Vouchers */}
-              {vouchersData?.groupedVouchers.issued.length > 0 && (
+              {vouchersData?.groupedVouchers?.issued && vouchersData.groupedVouchers.issued.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Available Vouchers
@@ -630,7 +630,7 @@ export default function LoyaltyPage() {
               )}
 
               {/* Redeemed Vouchers */}
-              {vouchersData?.groupedVouchers.redeemed.length > 0 && (
+              {vouchersData?.groupedVouchers?.redeemed && vouchersData.groupedVouchers.redeemed.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Redeemed Vouchers
@@ -702,7 +702,7 @@ export default function LoyaltyPage() {
               )}
 
               {/* Expired Vouchers */}
-              {vouchersData?.groupedVouchers.expired.length > 0 && (
+              {vouchersData?.groupedVouchers?.expired && vouchersData.groupedVouchers.expired.length > 0 && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-900">
                     Expired Vouchers

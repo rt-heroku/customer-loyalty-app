@@ -9,7 +9,7 @@ interface WishlistModalProps {
   onClose: () => void;
   productId: number;
   productName: string;
-  onAddToWishlist: (wishlistId: number) => void;
+  onAddToWishlist: (wishlistId: number, productId: number) => void;
 }
 
 export default function WishlistModal({
@@ -68,7 +68,7 @@ export default function WishlistModal({
         setNewWishlistName('');
         setShowCreateForm(false);
         // Automatically add product to the new wishlist
-        onAddToWishlist(newWishlist.id);
+        onAddToWishlist(newWishlist.id, productId);
         onClose();
       }
     } catch (error) {
@@ -79,7 +79,7 @@ export default function WishlistModal({
   };
 
   const handleWishlistSelect = (wishlistId: number) => {
-    onAddToWishlist(wishlistId);
+    onAddToWishlist(wishlistId, productId);
     onClose();
   };
 
@@ -114,7 +114,7 @@ export default function WishlistModal({
             {wishlists.map((wishlist) => (
               <button
                 key={wishlist.id}
-                onClick={() => handleWishlistSelect(wishlist.id)}
+                onClick={() => handleWishlistSelect(parseInt(wishlist.id))}
                 className="flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 <div className="flex items-center space-x-3">

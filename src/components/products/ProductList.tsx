@@ -76,14 +76,14 @@ export default function ProductList({ products }: ProductListProps) {
     });
   };
 
-  const handleWishlistSelect = async (wishlistId: number) => {
+  const handleWishlistSelect = async (wishlistId: number, productId: number) => {
     try {
       const response = await fetch('/api/wishlist/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           wishlistId,
-          productId: wishlistModal.productId,
+          productId,
         }),
       });
 
@@ -150,7 +150,8 @@ export default function ProductList({ products }: ProductListProps) {
   };
 
   return (
-    <div className="space-y-4 p-6">
+    <>
+      <div className="space-y-4 p-6">
       {products.map(product => {
         const isInWishlist = wishlistItems.has(product.id);
         const isLoading = loadingStates.has(product.id);
@@ -330,7 +331,7 @@ export default function ProductList({ products }: ProductListProps) {
                           // Redirect to login or show login modal
                           return;
                         }
-                        handleAddToWishlist(product.id, product.name);
+                        handleAddToWishlist(parseInt(product.id), product.name);
                       }}
                       disabled={product.stockStatus === 'out_of_stock'}
                       className={cn(
@@ -353,14 +354,13 @@ export default function ProductList({ products }: ProductListProps) {
         );
       })}
     </div>
-    <>
-      <WishlistModal
-        isOpen={wishlistModal.isOpen}
-        onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
-        productId={wishlistModal.productId}
-        productName={wishlistModal.productName}
-        onAddToWishlist={handleWishlistSelect}
-      />
+    <WishlistModal
+      isOpen={wishlistModal.isOpen}
+      onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
+      productId={wishlistModal.productId}
+      productName={wishlistModal.productName}
+      onAddToWishlist={handleWishlistSelect}
+    />
     </>
   );
 }

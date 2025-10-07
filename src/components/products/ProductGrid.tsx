@@ -70,14 +70,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
     });
   };
 
-  const handleWishlistSelect = async (wishlistId: number) => {
+  const handleWishlistSelect = async (wishlistId: number, productId: number) => {
     try {
       const response = await fetch('/api/wishlist/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           wishlistId,
-          productId: wishlistModal.productId,
+          productId,
         }),
       });
 
@@ -144,7 +144,8 @@ export default function ProductGrid({ products }: ProductGridProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <>
+      <div className="grid grid-cols-1 gap-6 p-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map(product => {
         const isInWishlist = wishlistItems.has(product.id);
         const isLoading = loadingStates.has(product.id);
@@ -284,7 +285,7 @@ export default function ProductGrid({ products }: ProductGridProps) {
                     // Redirect to login or show login modal
                     return;
                   }
-                  handleAddToWishlist(product.id, product.name);
+                  handleAddToWishlist(parseInt(product.id), product.name);
                 }}
                 disabled={product.stockStatus === 'out_of_stock'}
                 className={cn(
@@ -304,14 +305,13 @@ export default function ProductGrid({ products }: ProductGridProps) {
         );
       })}
     </div>
-    <>
-      <WishlistModal
-        isOpen={wishlistModal.isOpen}
-        onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
-        productId={wishlistModal.productId}
-        productName={wishlistModal.productName}
-        onAddToWishlist={handleWishlistSelect}
-      />
+    <WishlistModal
+      isOpen={wishlistModal.isOpen}
+      onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
+      productId={wishlistModal.productId}
+      productName={wishlistModal.productName}
+      onAddToWishlist={handleWishlistSelect}
+    />
     </>
   );
 }
