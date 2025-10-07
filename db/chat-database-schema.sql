@@ -1,5 +1,6 @@
 -- Chat System Database Schema
 -- This file contains the database tables and functions needed for the chat system
+/*
 drop table if exists chat_sessions;
 drop table if exists chat_messages;
 drop table if exists chat_attachments;
@@ -19,7 +20,7 @@ drop function if exists get_user_ai_chat_sessions;
 drop function if exists update_chat_message_status;
 drop function if exists add_chat_attachment;
 drop function if exists get_chat_message_attachments;
-
+*/
 -- Chat Sessions Table
 CREATE TABLE IF NOT EXISTS chat_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

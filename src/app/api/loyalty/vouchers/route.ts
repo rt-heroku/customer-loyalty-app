@@ -4,10 +4,14 @@ import { query } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('Vouchers API: Starting request');
     const user = await getUserFromRequest(request);
     if (!user) {
+      console.log('Vouchers API: No user found');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    console.log('Vouchers API: User found:', user.id);
 
     // Get customer ID
     const customerResult = await query(
@@ -16,6 +20,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (customerResult.rows.length === 0) {
+      console.log('Vouchers API: Customer not found for user:', user.id);
       return NextResponse.json(
         { error: 'Customer not found' },
         { status: 404 }
@@ -23,6 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     const customerId = customerResult.rows[0].id;
+    console.log('Vouchers API: Customer ID:', customerId);
 
     // Get all vouchers for the customer
     const vouchersResult = await query(
@@ -62,6 +68,8 @@ export async function GET(request: NextRequest) {
     );
 
     const vouchers = vouchersResult.rows;
+    console.log('Vouchers API: Found vouchers:', vouchers.length);
+    console.log('Vouchers API: Vouchers data:', vouchers);
 
     // Group vouchers by status
     const groupedVouchers = {
@@ -69,6 +77,8 @@ export async function GET(request: NextRequest) {
       redeemed: vouchers.filter(v => v.status === 'Redeemed'),
       expired: vouchers.filter(v => v.status === 'Expired'),
     };
+
+    console.log('Vouchers API: Grouped vouchers:', groupedVouchers);
 
     return NextResponse.json({
       success: true,
