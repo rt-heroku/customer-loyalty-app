@@ -9,35 +9,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { wishlistId, productId, notes } = await request.json();
+    const { productId, notes } = await request.json();
 
-    if (!wishlistId || !productId) {
+    if (!productId) {
       return NextResponse.json(
-        { error: 'Wishlist ID and Product ID are required' },
+        { error: 'Product ID is required' },
         { status: 400 }
       );
     }
 
-    // Verify wishlist belongs to user
-    const wishlistQuery = `
-      SELECT id FROM wishlists 
-      WHERE id = $1 AND user_id = $2
-    `;
-    const wishlistResult = await query(wishlistQuery, [wishlistId, user.id]);
+    // Get customer ID for the user
+    const customerResult = await query(
+      'SELECT id FROM customers WHERE user_id = $1',
+      [user.id]
+    );
 
-    if (wishlistResult.rows.length === 0) {
+    if (customerResult.rows.length === 0) {
       return NextResponse.json(
-        { error: 'Wishlist not found or access denied' },
+        { error: 'Customer not found' },
         { status: 404 }
       );
     }
 
-    // Check if product already exists in wishlist
+    const customerId = customerResult.rows[0].id;
+
+    // Check if product already exists in customer's wishlist
     const existingQuery = `
-      SELECT id FROM wishlist_items 
-      WHERE wishlist_id = $1 AND product_id = $2
+      SELECT id FROM customer_wishlists 
+      WHERE customer_id = $1 AND product_id = $2
     `;
-    const existingResult = await query(existingQuery, [wishlistId, productId]);
+    const existingResult = await query(existingQuery, [customerId, productId]);
 
     if (existingResult.rows.length > 0) {
       return NextResponse.json(
@@ -46,27 +47,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add product to wishlist
+    // Add product to customer's wishlist
     const addQuery = `
-      INSERT INTO wishlist_items (wishlist_id, product_id, notes, added_at)
-      VALUES ($1, $2, $3, NOW())
+      INSERT INTO customer_wishlists (customer_id, product_id, notes, added_at, priority)
+      VALUES ($1, $2, $3, NOW(), 1)
       RETURNING id, added_at
     `;
 
     const result = await query(addQuery, [
-      wishlistId,
+      customerId,
       productId,
       notes || null,
     ]);
 
-    // Update wishlist updated_at timestamp
-    await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
-      wishlistId,
-    ]);
-
     return NextResponse.json({
       id: result.rows[0].id,
-      wishlistId,
+      customerId,
       productId,
       notes: notes || null,
       addedAt: result.rows[0].added_at,
@@ -88,42 +84,44 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const wishlistId = searchParams.get('wishlistId');
     const productId = searchParams.get('productId');
 
-    if (!wishlistId || !productId) {
+    if (!productId) {
       return NextResponse.json(
-        { error: 'Wishlist ID and Product ID are required' },
+        { error: 'Product ID is required' },
         { status: 400 }
       );
     }
 
-    // Verify wishlist belongs to user
-    const wishlistQuery = `
-      SELECT id FROM wishlists 
-      WHERE id = $1 AND user_id = $2
-    `;
-    const wishlistResult = await query(wishlistQuery, [wishlistId, user.id]);
+    // Get customer ID for the user
+    const customerResult = await query(
+      'SELECT id FROM customers WHERE user_id = $1',
+      [user.id]
+    );
 
-    if (wishlistResult.rows.length === 0) {
+    if (customerResult.rows.length === 0) {
       return NextResponse.json(
-        { error: 'Wishlist not found or access denied' },
+        { error: 'Customer not found' },
         { status: 404 }
       );
     }
 
-    // Remove product from wishlist
+    const customerId = customerResult.rows[0].id;
+
+    // Remove product from customer's wishlist
     const deleteQuery = `
-      DELETE FROM wishlist_items 
-      WHERE wishlist_id = $1 AND product_id = $2
+      DELETE FROM customer_wishlists 
+      WHERE customer_id = $1 AND product_id = $2
     `;
 
-    await query(deleteQuery, [wishlistId, productId]);
+    const result = await query(deleteQuery, [customerId, productId]);
 
-    // Update wishlist updated_at timestamp
-    await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
-      wishlistId,
-    ]);
+    if (result.rowCount === 0) {
+      return NextResponse.json(
+        { error: 'Product not found in wishlist' },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
