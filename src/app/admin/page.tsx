@@ -12,8 +12,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Memory,
-  Cpu
+  Cpu,
+  HardDrive
 } from 'lucide-react';
 
 interface AdminStats {
@@ -356,7 +356,7 @@ export default function AdminPage() {
               
               <div>
                 <h3 className="font-medium text-gray-900 mb-3 flex items-center">
-                  <Memory className="h-4 w-4 mr-2 text-green-600" />
+                  <HardDrive className="h-4 w-4 mr-2 text-green-600" />
                   Memory Usage
                 </h3>
                 <div className="space-y-2 text-sm text-gray-600">
