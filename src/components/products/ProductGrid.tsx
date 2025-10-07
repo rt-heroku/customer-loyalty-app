@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Heart, Eye, ShoppingCart, Share2 } from 'lucide-react';
+import { Heart, Eye, Share2 } from 'lucide-react';
 import { Product } from '@/types/product';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn, formatCurrency } from '@/lib/utils';
+import WishlistModal from './WishlistModal';
 
 interface ProductGridProps {
   products: Product[];
@@ -16,6 +17,15 @@ export default function ProductGrid({ products }: ProductGridProps) {
   const { user } = useAuth();
   const [wishlistItems, setWishlistItems] = useState<Set<string>>(new Set());
   const [loadingStates, setLoadingStates] = useState<Set<string>>(new Set());
+  const [wishlistModal, setWishlistModal] = useState<{
+    isOpen: boolean;
+    productId: number;
+    productName: string;
+  }>({
+    isOpen: false,
+    productId: 0,
+    productName: '',
+  });
 
   const toggleWishlist = async (productId: string) => {
     if (!user) return;
@@ -49,6 +59,34 @@ export default function ProductGrid({ products }: ProductGridProps) {
         newSet.delete(productId);
         return newSet;
       });
+    }
+  };
+
+  const handleAddToWishlist = (productId: number, productName: string) => {
+    setWishlistModal({
+      isOpen: true,
+      productId,
+      productName,
+    });
+  };
+
+  const handleWishlistSelect = async (wishlistId: number) => {
+    try {
+      const response = await fetch('/api/wishlist/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wishlistId,
+          productId: wishlistModal.productId,
+        }),
+      });
+
+      if (response.ok) {
+        // Show success message or update UI
+        console.log('Product added to wishlist successfully');
+      }
+    } catch (error) {
+      console.error('Error adding product to wishlist:', error);
     }
   };
 
@@ -239,8 +277,15 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 </div>
               </div>
 
-              {/* Add to Cart Button */}
+              {/* Add to Wishlist Button */}
               <button
+                onClick={() => {
+                  if (!user) {
+                    // Redirect to login or show login modal
+                    return;
+                  }
+                  handleAddToWishlist(product.id, product.name);
+                }}
                 disabled={product.stockStatus === 'out_of_stock'}
                 className={cn(
                   'flex w-full items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200',
@@ -249,15 +294,24 @@ export default function ProductGrid({ products }: ProductGridProps) {
                     : 'bg-primary-600 text-white hover:bg-primary-700'
                 )}
               >
-                <ShoppingCart className="mr-2 h-4 w-4" />
+                <Heart className="mr-2 h-4 w-4" />
                 {product.stockStatus === 'out_of_stock'
                   ? 'Out of Stock'
-                  : 'Add to Cart'}
+                  : 'Add to Wishlist'}
               </button>
             </div>
           </div>
         );
       })}
     </div>
+    <>
+      <WishlistModal
+        isOpen={wishlistModal.isOpen}
+        onClose={() => setWishlistModal({ isOpen: false, productId: 0, productName: '' })}
+        productId={wishlistModal.productId}
+        productName={wishlistModal.productName}
+        onAddToWishlist={handleWishlistSelect}
+      />
+    </>
   );
 }
