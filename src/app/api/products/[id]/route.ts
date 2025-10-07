@@ -52,7 +52,25 @@ export async function GET(
 
     const row = productResult.rows[0];
 
-    // Get product images
+    // Get product images - prioritize main_image_url first
+    let images: Array<{
+      id: string;
+      url: string;
+      alt: string;
+      isPrimary: boolean;
+    }> = [];
+    
+    // First, check if main_image_url exists and use it as primary
+    if (row.main_image_url && row.main_image_url.trim() !== '') {
+      images.push({
+        id: 'main',
+        url: row.main_image_url,
+        alt: row.name,
+        isPrimary: true
+      });
+    }
+    
+    // Then get additional images from product_images table
     const imagesQuery = `
       SELECT 
         id,
@@ -64,17 +82,12 @@ export async function GET(
       ORDER BY is_primary DESC, id ASC
     `;
     const imagesResult = await query(imagesQuery, [id]);
-
-    // If no images found in product_images table, use main_image_url from products table
-    let images = imagesResult.rows;
-    if (images.length === 0 && row.main_image_url) {
-      images = [{
-        id: 'main',
-        url: row.main_image_url,
-        alt: row.name,
-        isPrimary: true
-      }];
-    }
+    
+    // Add additional images (excluding any that might be duplicates of main_image_url)
+    const additionalImages = imagesResult.rows.filter((img: any) => 
+      !images.some(existing => existing.url === img.url)
+    );
+    images = images.concat(additionalImages);
 
     // Product variants not available in current schema
 
