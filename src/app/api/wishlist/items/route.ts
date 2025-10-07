@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       SELECT id FROM wishlists 
       WHERE id = $1 AND customer_id = $2
     `;
-    const wishlistResult = await query(wishlistQuery, [wishlistId, customerId]);
+    const wishlistResult = await query(wishlistQuery, [parseInt(wishlistId), customerId]);
 
     if (wishlistResult.rows.length === 0) {
       return NextResponse.json(
@@ -71,13 +71,13 @@ export async function POST(request: NextRequest) {
     const result = await query(addQuery, [
       customerId,
       productId,
-      wishlistId,
+      parseInt(wishlistId),
       notes || null,
     ]);
 
     // Update wishlist updated_at timestamp
     await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
-      wishlistId,
+      parseInt(wishlistId),
     ]);
 
     return NextResponse.json({
@@ -135,7 +135,7 @@ export async function DELETE(request: NextRequest) {
       SELECT id FROM wishlists 
       WHERE id = $1 AND customer_id = $2
     `;
-    const wishlistResult = await query(wishlistQuery, [wishlistId, customerId]);
+    const wishlistResult = await query(wishlistQuery, [parseInt(wishlistId), customerId]);
 
     if (wishlistResult.rows.length === 0) {
       return NextResponse.json(
@@ -150,11 +150,11 @@ export async function DELETE(request: NextRequest) {
       WHERE customer_id = $1 AND product_id = $2 AND wishlist_id = $3
     `;
 
-    const result = await query(deleteQuery, [customerId, productId, wishlistId]);
+    const result = await query(deleteQuery, [customerId, productId, parseInt(wishlistId)]);
 
     // Update wishlist updated_at timestamp
     await query('UPDATE wishlists SET updated_at = NOW() WHERE id = $1', [
-      wishlistId,
+      parseInt(wishlistId),
     ]);
 
     if (result.rowCount === 0) {

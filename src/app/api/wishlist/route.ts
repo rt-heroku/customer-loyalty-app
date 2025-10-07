@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
             const imagesResult = await query(imagesQuery, [item.product_id]);
             
             let images: any[] = [];
-            if (imagesResult.rows.length > 0) {
+            if (imagesResult.rows.length > 0 && imagesResult.rows[0].url) {
               const img = imagesResult.rows[0];
               images = [
                 {
@@ -107,6 +107,16 @@ export async function GET(request: NextRequest) {
                   url: img.url,
                   alt: img.alt || item.name,
                   isPrimary: img.isPrimary || false,
+                },
+              ];
+            } else if (item.main_image_url) {
+              // Fallback to main_image_url from products table
+              images = [
+                {
+                  id: 'main',
+                  url: item.main_image_url,
+                  alt: item.name,
+                  isPrimary: true,
                 },
               ];
             }

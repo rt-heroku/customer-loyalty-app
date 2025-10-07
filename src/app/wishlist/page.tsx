@@ -507,20 +507,16 @@ export default function WishlistPage() {
                             {/* Action Buttons */}
                             <div className="flex space-x-2">
                               <button
-                                disabled={
-                                  item.product.stockStatus === 'out_of_stock'
+                                onClick={() =>
+                                  removeFromWishlist(
+                                    activeWishlist.id,
+                                    item.productId
+                                  )
                                 }
-                                className={cn(
-                                  'flex flex-1 items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                                  item.product.stockStatus === 'out_of_stock'
-                                    ? 'cursor-not-allowed bg-gray-100 text-gray-400'
-                                    : 'bg-primary-600 text-white hover:bg-primary-700'
-                                )}
+                                className="flex flex-1 items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700"
                               >
-                                <ShoppingCart className="mr-2 h-4 w-4" />
-                                {item.product.stockStatus === 'out_of_stock'
-                                  ? 'Out of Stock'
-                                  : 'Add to Cart'}
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Remove
                               </button>
 
                               <a
