@@ -18,11 +18,13 @@ export async function GET() {
       // Verify JWT token
       const payload = jwt.verify(authToken, process.env.JWT_SECRET!) as any;
       
-      // Get user data from database
+      // Get complete user data from database
       const userResult = await query(
-        `SELECT u.id, u.email, u.first_name, u.last_name, u.is_active, r.name as role_name
+        `SELECT u.id, u.email, u.first_name, u.last_name, u.is_active, u.phone, r.name as role_name,
+                c.points, c.total_spent, c.visit_count, c.customer_tier, c.member_status, c.enrollment_date
          FROM users u 
          LEFT JOIN roles r ON u.role_id = r.id 
+         LEFT JOIN customers c ON u.id = c.user_id
          WHERE u.id = $1 AND u.is_active = true`,
         [payload.userId]
       );
@@ -32,22 +34,6 @@ export async function GET() {
       }
 
       const user = userResult.rows[0];
-      
-      // Get customer tier if user is a customer
-      let tier = 'Bronze';
-      if (user.role_name === 'customer') {
-        try {
-          const customerResult = await query(
-            'SELECT customer_tier FROM customers WHERE user_id = $1',
-            [user.id]
-          );
-          if (customerResult.rows.length > 0) {
-            tier = customerResult.rows[0].customer_tier || 'Bronze';
-          }
-        } catch (error) {
-          console.log('Customer tier lookup failed:', error);
-        }
-      }
 
       const userData = {
         id: user.id,
@@ -56,7 +42,13 @@ export async function GET() {
         lastName: user.last_name,
         name: `${user.first_name} ${user.last_name}`,
         role: user.role_name || 'customer',
-        tier: tier,
+        phone: user.phone,
+        points: user.points,
+        totalSpent: user.total_spent,
+        visitCount: user.visit_count,
+        tier: user.customer_tier || 'Bronze',
+        memberStatus: user.member_status,
+        enrollmentDate: user.enrollment_date,
         isAuthenticated: true,
       };
 

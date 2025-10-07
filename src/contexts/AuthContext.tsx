@@ -43,8 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch('/api/auth/me');
       if (response.ok) {
         const data = await response.json();
+        console.log('AuthContext - Setting user from /api/auth/me:', data.user);
         setUser(data.user);
       } else {
+        console.log('AuthContext - No user found, setting to null');
         setUser(null);
       }
     } catch (error) {
@@ -68,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       if (response.ok) {
+        console.log('AuthContext - Setting user from login:', data.user);
         setUser(data.user);
         return { success: true };
       } else {
@@ -85,10 +88,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         method: 'POST',
       });
       setUser(null);
+      // Force a page reload to clear any cached data
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
       // Still clear user state even if API call fails
       setUser(null);
+      // Force a page reload to clear any cached data
+      window.location.href = '/';
     }
   };
 
