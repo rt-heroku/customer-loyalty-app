@@ -217,8 +217,9 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
                   <Image
                     src={customerImage}
                     alt="Profile"
-                    fill
-                    className="object-cover"
+                    width={32}
+                    height={32}
+                    className="object-cover rounded-full"
                   />
                 ) : (
                   getInitials(`${user.firstName} ${user.lastName}`)
