@@ -60,10 +60,21 @@ export async function GET(
         alt_text as alt,
         is_primary as "isPrimary"
       FROM product_images 
-      WHERE product_id = $1 
+      WHERE product_id = $1 AND image_url IS NOT NULL AND image_url != ''
       ORDER BY is_primary DESC, id ASC
     `;
     const imagesResult = await query(imagesQuery, [id]);
+
+    // If no images found in product_images table, use main_image_url from products table
+    let images = imagesResult.rows;
+    if (images.length === 0 && row.main_image_url) {
+      images = [{
+        id: 'main',
+        url: row.main_image_url,
+        alt: row.name,
+        isPrimary: true
+      }];
+    }
 
     // Product variants not available in current schema
 
@@ -90,7 +101,7 @@ export async function GET(
       name: row.name,
       description: row.description,
       price: parseFloat(row.price),
-      images: imagesResult.rows.map((img: any) => ({
+      images: images.map((img: any) => ({
         id: img.id,
         url: img.url,
         alt: img.alt || row.name,
