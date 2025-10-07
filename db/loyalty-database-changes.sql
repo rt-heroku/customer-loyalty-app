@@ -934,3 +934,71 @@ CREATE INDEX IF NOT EXISTS idx_user_sessions_token_hash ON user_sessions(token_h
 CREATE INDEX IF NOT EXISTS idx_user_sessions_expires_at ON user_sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_user_activity_log_user_id ON user_activity_log(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_activity_log_created_at ON user_activity_log(created_at);
+
+
+-- Adding test data 
+
+-- Insert sample store locations
+INSERT INTO store_locations (name, address, city, state, zip_code, latitude, longitude, phone, email, description, parking_available, wheelchair_accessible, wifi_available, rating, review_count, featured) VALUES
+('Downtown Service Center', '123 Main Street', 'New York', 'NY', '10001', 40.7589, -73.9851, '555-0101', 'downtown@company.com', 'Our flagship service center in the heart of Manhattan', true, true, true, 4.8, 156, true),
+('Brooklyn Repair Shop', '456 Atlantic Avenue', 'Brooklyn', 'NY', '11201', 40.6905, -73.9965, '555-0102', 'brooklyn@company.com', 'Full-service repair shop serving Brooklyn area', true, true, false, 4.6, 89, false),
+('Queens Maintenance Hub', '789 Queens Boulevard', 'Queens', 'NY', '11375', 40.7282, -73.7949, '555-0103', 'queens@company.com', 'Specialized maintenance and installation services', false, true, true, 4.4, 67, false),
+('Bronx Installation Center', '321 Grand Concourse', 'Bronx', 'NY', '10451', 40.8222, -73.9244, '555-0104', 'bronx@company.com', 'Expert installation and setup services', true, false, true, 4.2, 43, false),
+('Staten Island Service', '654 Victory Boulevard', 'Staten Island', 'NY', '10301', 40.6195, -74.0822, '555-0105', 'statenisland@company.com', 'Comprehensive service center for Staten Island', true, true, true, 4.7, 78, false)
+ON CONFLICT DO NOTHING;
+
+-- Insert sample store hours
+INSERT INTO store_hours (store_id, day_of_week, open_time, close_time, is_closed) VALUES
+(1, 1, '09:00', '17:00', false), -- Monday
+(1, 2, '09:00', '17:00', false), -- Tuesday
+(1, 3, '09:00', '17:00', false), -- Wednesday
+(1, 4, '09:00', '17:00', false), -- Thursday
+(1, 5, '09:00', '17:00', false), -- Friday
+(1, 6, '10:00', '16:00', false), -- Saturday
+(1, 7, NULL, NULL, true),        -- Sunday
+(2, 1, '08:00', '18:00', false),
+(2, 2, '08:00', '18:00', false),
+(2, 3, '08:00', '18:00', false),
+(2, 4, '08:00', '18:00', false),
+(2, 5, '08:00', '18:00', false),
+(2, 6, '09:00', '15:00', false),
+(2, 7, NULL, NULL, true),
+(3, 1, '09:00', '17:00', false),
+(3, 2, '09:00', '17:00', false),
+(3, 3, '09:00', '17:00', false),
+(3, 4, '09:00', '17:00', false),
+(3, 5, '09:00', '17:00', false),
+(3, 6, '10:00', '16:00', false),
+(3, 7, NULL, NULL, true),
+(4, 1, '08:00', '18:00', false),
+(4, 2, '08:00', '18:00', false),
+(4, 3, '08:00', '18:00', false),
+(4, 4, '08:00', '18:00', false),
+(4, 5, '08:00', '18:00', false),
+(4, 6, '09:00', '15:00', false),
+(4, 7, NULL, NULL, true),
+(5, 1, '09:00', '17:00', false),
+(5, 2, '09:00', '17:00', false),
+(5, 3, '09:00', '17:00', false),
+(5, 4, '09:00', '17:00', false),
+(5, 5, '09:00', '17:00', false),
+(5, 6, '10:00', '16:00', false),
+(5, 7, NULL, NULL, true)
+ON CONFLICT DO NOTHING;
+
+-- Insert sample store services
+INSERT INTO store_services (store_id, name, description, category, duration, price, requires_appointment, max_capacity) VALUES
+(1, 'Device Repair', 'Comprehensive repair services for all device types', 'Repair', 120, 89.99, true, 1),
+(1, 'System Maintenance', 'Regular system maintenance and optimization', 'Maintenance', 60, 49.99, true, 1),
+(1, 'Software Installation', 'Professional software installation and setup', 'Installation', 90, 79.99, true, 1),
+(1, 'Technical Consultation', 'Expert technical advice and consultation', 'Consultation', 30, 29.99, false, 5),
+(2, 'Hardware Repair', 'Specialized hardware repair services', 'Repair', 180, 129.99, true, 1),
+(2, 'Network Setup', 'Complete network installation and configuration', 'Installation', 120, 99.99, true, 1),
+(2, 'Data Recovery', 'Professional data recovery services', 'Repair', 240, 199.99, true, 1),
+(3, 'Preventive Maintenance', 'Scheduled preventive maintenance services', 'Maintenance', 90, 69.99, true, 1),
+(3, 'Equipment Installation', 'Professional equipment installation', 'Installation', 150, 149.99, true, 1),
+(4, 'Smart Home Setup', 'Complete smart home system installation', 'Installation', 180, 199.99, true, 1),
+(4, 'Security System Installation', 'Professional security system setup', 'Installation', 240, 299.99, true, 1),
+(5, 'General Consultation', 'General technical consultation services', 'Consultation', 45, 39.99, false, 3),
+(5, 'Emergency Repair', '24/7 emergency repair services', 'Repair', 120, 149.99, true, 1)
+ON CONFLICT DO NOTHING;

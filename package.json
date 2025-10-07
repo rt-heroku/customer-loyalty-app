@@ -18,9 +18,10 @@
     "pre-push": "npm run pre-commit && npm run build",
     "update-cache": "node update-cache-version.js",
     "clear-cache": "npm run update-cache && echo 'Cache version updated! Please refresh your browser.'",
-    "db:migrate": "psql $DATABASE_URL -f loyalty-database-changes.sql",
+    "db:migrate": "psql $DATABASE_URL -f db/loyalty-database-changes.sql",
     "db:seed": "node scripts/seed-database.js",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "psql $DATABASE_URL -f db/loyalty-database-changes.sql",
+    "env": "env"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",

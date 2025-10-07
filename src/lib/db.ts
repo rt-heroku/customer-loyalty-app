@@ -17,14 +17,23 @@ const dbConfig = {
     env.DATABASE_URL || 'postgresql://localhost:5432/loyalty_db',
   /*ssl: env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,*/
   ssl: { rejectUnauthorized: false },
-  max: 20, // Maximum number of clients in the pool
-  idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
-  maxUses: 7500, // Close (and replace) a connection after it has been used 7500 times
+  max: 2, // Maximum number of clients in the pool (reduced for shared database)
+  idleTimeoutMillis: 10000, // Close idle clients after 10 seconds (reduced)
+  connectionTimeoutMillis: 5000, // Return an error after 5 seconds if connection could not be established
+  maxUses: 1000, // Close (and replace) a connection after it has been used 1000 times (reduced)
 };
 
 // Create connection pool
 let pool: Pool | null = null;
+
+// Connection monitoring
+let connectionStats = {
+  totalConnections: 0,
+  activeConnections: 0,
+  idleConnections: 0,
+  waitingClients: 0,
+  lastReset: new Date(),
+};
 
 // Initialize database connection pool
 function initializePool(): Pool {
@@ -35,6 +44,18 @@ function initializePool(): Pool {
     pool.on('error', err => {
       console.error('Unexpected error on idle client', err);
       process.exit(-1);
+    });
+
+    // Monitor connection events
+    pool.on('connect', (client) => {
+      connectionStats.totalConnections++;
+      connectionStats.activeConnections++;
+      console.log(`Database connection established. Active: ${connectionStats.activeConnections}/${dbConfig.max}`);
+    });
+
+    pool.on('remove', () => {
+      connectionStats.activeConnections = Math.max(0, connectionStats.activeConnections - 1);
+      console.log(`Database connection removed. Active: ${connectionStats.activeConnections}/${dbConfig.max}`);
     });
 
     // Test connection on startup
@@ -136,6 +157,38 @@ export async function closePool(): Promise<void> {
   }
 }
 
+// Get connection statistics
+export function getConnectionStats() {
+  if (pool) {
+    return {
+      ...connectionStats,
+      poolConfig: {
+        max: dbConfig.max,
+        idleTimeoutMillis: dbConfig.idleTimeoutMillis,
+        connectionTimeoutMillis: dbConfig.connectionTimeoutMillis,
+        maxUses: dbConfig.maxUses,
+      },
+      poolStats: {
+        totalCount: pool.totalCount,
+        idleCount: pool.idleCount,
+        waitingCount: pool.waitingCount,
+      },
+    };
+  }
+  return connectionStats;
+}
+
+// Reset connection statistics
+export function resetConnectionStats() {
+  connectionStats = {
+    totalConnections: 0,
+    activeConnections: 0,
+    idleConnections: 0,
+    waitingClients: 0,
+    lastReset: new Date(),
+  };
+}
+
 // Database utility functions
 export const db = {
   query,
@@ -144,6 +197,8 @@ export const db = {
   healthCheck,
   closePool,
   getPool,
+  getConnectionStats,
+  resetConnectionStats,
 };
 
 // Graceful shutdown handling
