@@ -43,28 +43,23 @@ export default function HomePage() {
       <header className="relative z-10 border-b border-gray-200 bg-white">
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
-            {/* Logo and Navigation */}
+            {/* Logo Only */}
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="flex items-center space-x-3">
-                  {companyLogo ? (
-                    <div className="flex h-10 w-12 items-center justify-center overflow-hidden relative">
-                      <Image
-                        src={companyLogo}
-                        alt="Company Logo"
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
-                      <Star className="h-5 w-5 text-white" />
-                    </div>
-                  )}
-                  <span className="text-xl font-bold text-gray-900">
-                    {companyName}
-                  </span>
-                </div>
+                {companyLogo ? (
+                  <div className="relative h-12 w-12">
+                    <Image
+                      src={companyLogo}
+                      alt="Company Logo"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg">
+                    <Star className="h-7 w-7 text-white" />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -73,25 +68,25 @@ export default function HomePage() {
               <div className="ml-10 flex items-baseline space-x-8">
                 <Link 
                   href="/loyalty" 
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   My Points
                 </Link>
                 <Link 
                   href="/transactions" 
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   Orders
                 </Link>
                 <Link 
                   href="/loyalty" 
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   Rewards
                 </Link>
                 <Link 
                   href="/help" 
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   Support
                 </Link>
@@ -102,13 +97,13 @@ export default function HomePage() {
             <div className="flex items-center space-x-4">
               <Link 
                 href="/login" 
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
+                className="rounded-lg border-2 border-blue-200 bg-white px-4 py-2 text-sm font-medium text-blue-700 shadow-sm transition-all hover:bg-blue-50 hover:border-blue-300"
               >
                 Sign In
               </Link>
               <Link 
                 href="/register" 
-                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-800"
+                className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-sm font-medium text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl"
               >
                 Join Now
               </Link>
@@ -124,7 +119,7 @@ export default function HomePage() {
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
               Your Loyalty Program,{' '}
-              <span className="text-gray-600 block">Simplified</span>
+              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent block">Simplified</span>
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-gray-600">
               Access your points, track orders, and unlock exclusive rewards all
@@ -133,13 +128,13 @@ export default function HomePage() {
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link 
                 href="/register" 
-                className="rounded-lg bg-gray-900 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-gray-800"
+                className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-3 text-base font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl"
               >
                 Get Started
               </Link>
               <Link 
                 href="/loyalty" 
-                className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-base font-semibold text-gray-900 shadow-sm transition-colors hover:bg-gray-50"
+                className="rounded-lg border-2 border-blue-200 bg-white px-8 py-3 text-base font-semibold text-blue-700 shadow-sm transition-all hover:bg-blue-50 hover:border-blue-300"
               >
                 View Points
               </Link>
@@ -151,16 +146,17 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to manage your loyalty
+              Everything you need to manage your{' '}
+              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">loyalty</span>
             </h2>
           </div>
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Points Tracking */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <TrendingUp className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <TrendingUp className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Points Tracking
@@ -173,10 +169,10 @@ export default function HomePage() {
             </div>
 
             {/* Order Tracking */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <Package className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <Package className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Order Tracking
@@ -189,10 +185,10 @@ export default function HomePage() {
             </div>
 
             {/* Exclusive Rewards */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <Gift className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <Gift className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Exclusive Rewards
@@ -205,10 +201,10 @@ export default function HomePage() {
             </div>
 
             {/* AI Support */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <MessageCircle className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <MessageCircle className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   AI Support
@@ -221,10 +217,10 @@ export default function HomePage() {
             </div>
 
             {/* Secure & Private */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <Shield className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <Shield className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Secure & Private
@@ -237,10 +233,10 @@ export default function HomePage() {
             </div>
 
             {/* Mobile First */}
-            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
-                  <Smartphone className="h-6 w-6 text-gray-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-blue-50 to-blue-100">
+                  <Smartphone className="h-6 w-6 text-blue-600" />
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Mobile First
@@ -255,22 +251,23 @@ export default function HomePage() {
         </div>
 
         {/* CTA Section */}
-        <div className="bg-gray-50">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="text-center">
               <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-                Ready to start earning rewards?
+                Ready to start earning{' '}
+                <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">rewards</span>?
               </h2>
               <div className="mt-8 flex items-center justify-center gap-x-6">
                 <Link
                   href="/register"
-                  className="rounded-lg bg-gray-900 px-8 py-3 font-semibold text-white transition-colors hover:bg-gray-800"
+                  className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-3 font-semibold text-white shadow-lg transition-all hover:from-blue-700 hover:to-blue-800 hover:shadow-xl"
                 >
                   Enroll Now
                 </Link>
                 <Link
                   href="/loyalty"
-                  className="rounded-lg border border-gray-300 bg-white px-8 py-3 font-semibold text-gray-900 transition-colors hover:bg-gray-50"
+                  className="rounded-lg border-2 border-blue-200 bg-white px-8 py-3 font-semibold text-blue-700 transition-all hover:bg-blue-50 hover:border-blue-300"
                 >
                   Learn More
                 </Link>
