@@ -135,7 +135,7 @@ export default function RegisterPage() {
 
         {/* Registration Form */}
         <div className="glass-card rounded-3xl border border-white/20 p-8 shadow-2xl backdrop-blur-xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} method="post" className="space-y-6">
             {/* Name Fields */}
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>

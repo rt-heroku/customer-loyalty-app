@@ -138,7 +138,7 @@ export default function ForgotPasswordPage() {
           )}
 
           {/* Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} method="post" className="space-y-6">
             {/* Email Field */}
             <div>
               <label
