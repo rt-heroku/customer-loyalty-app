@@ -31,34 +31,64 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
   // Load customer image
   useEffect(() => {
     const loadCustomerImage = async () => {
+      if (!user || !user.id) {
+        console.log('TopNav: No user or user.id, skipping profile image load');
+        return;
+      }
+
+      console.log('TopNav: Loading customer image for user:', user.id);
       try {
-        const response = await fetch('/api/customers/profile');
+        const response = await fetch('/api/customers/profile', {
+          credentials: 'include', // Ensure cookies are sent
+        });
+        console.log('TopNav: Profile API response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('TopNav: Profile data received:', data);
+          
           if (data.customer.avatar?.image_data) {
             // Format the image data as a data URL
             const imageData = data.customer.avatar.image_data;
             const mimeType = data.customer.avatar.filename?.endsWith('.png') ? 'image/png' : 'image/jpeg';
-            setCustomerImage(`data:${mimeType};base64,${imageData}`);
+            const dataUrl = `data:${mimeType};base64,${imageData}`;
+            console.log('TopNav: Setting customer image:', dataUrl.substring(0, 50) + '...');
+            setCustomerImage(dataUrl);
           } else {
+            console.log('TopNav: No avatar data found');
             setCustomerImage(null);
           }
+        } else {
+          console.log('TopNav: Profile API failed with status:', response.status);
+          const errorText = await response.text();
+          console.log('TopNav: Error response:', errorText);
+          setCustomerImage(null);
         }
       } catch (error) {
-        console.error('Error loading customer image:', error);
+        console.error('TopNav: Error loading customer image:', error);
         setCustomerImage(null);
       }
     };
 
-    if (user) {
-      loadCustomerImage();
-    }
+    // Add a delay to ensure authentication is complete
+    const timeoutId = setTimeout(() => {
+      if (user && user.id) {
+        loadCustomerImage();
+      }
+    }, 500); // Increased delay to ensure auth is complete
+
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   // Debug logging
   useEffect(() => {
     console.log('TopNav isMenuOpen state:', isMenuOpen);
   }, [isMenuOpen]);
+
+  // Debug user changes
+  useEffect(() => {
+    console.log('TopNav user changed:', user);
+  }, [user]);
 
   if (!user) return null;
 
