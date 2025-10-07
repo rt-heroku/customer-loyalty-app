@@ -48,10 +48,21 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
           console.log('TopNav: Profile data received:', data);
           
           if (data.customer.avatar?.image_data) {
-            // Format the image data as a data URL
+            // Check if the image data is already a data URL
             const imageData = data.customer.avatar.image_data;
-            const mimeType = data.customer.avatar.filename?.endsWith('.png') ? 'image/png' : 'image/jpeg';
-            const dataUrl = `data:${mimeType};base64,${imageData}`;
+            let dataUrl;
+            
+            if (imageData.startsWith('data:')) {
+              // Already a data URL, use as is
+              dataUrl = imageData;
+              console.log('TopNav: Image data is already a data URL');
+            } else {
+              // Format the image data as a data URL
+              const mimeType = data.customer.avatar.filename?.endsWith('.png') ? 'image/png' : 'image/jpeg';
+              dataUrl = `data:${mimeType};base64,${imageData}`;
+              console.log('TopNav: Formatted image data as data URL');
+            }
+            
             console.log('TopNav: Setting customer image:', dataUrl.substring(0, 50) + '...');
             setCustomerImage(dataUrl);
           } else {
