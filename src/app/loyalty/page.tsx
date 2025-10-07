@@ -68,12 +68,45 @@ interface RewardsData {
   customerTier: string;
 }
 
+interface Voucher {
+  id: number;
+  voucher_code: string;
+  name: string;
+  description: string;
+  voucher_type: string;
+  face_value: number;
+  discount_percent: number;
+  discount_amount: number;
+  remaining_value: number;
+  status: string;
+  created_date: string;
+  expiration_date: string;
+  redeemed_date: string;
+  image_url: string;
+  terms_conditions: string;
+  is_active: boolean;
+  product_name: string;
+  product_price: number;
+  product_image_url: string;
+}
+
+interface VouchersData {
+  vouchers: Voucher[];
+  groupedVouchers: {
+    issued: Voucher[];
+    redeemed: Voucher[];
+    expired: Voucher[];
+  };
+  total: number;
+}
+
 export default function LoyaltyPage() {
   const { user, loading, refreshUser } = useAuth();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('overview');
   const [pointsData, setPointsData] = useState<PointsData | null>(null);
   const [rewardsData, setRewardsData] = useState<RewardsData | null>(null);
+  const [vouchersData, setVouchersData] = useState<VouchersData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
@@ -113,6 +146,13 @@ export default function LoyaltyPage() {
       if (rewardsResponse.ok) {
         const rewardsData = await rewardsResponse.json();
         setRewardsData(rewardsData);
+      }
+
+      // Fetch vouchers data
+      const vouchersResponse = await fetch('/api/loyalty/vouchers');
+      if (vouchersResponse.ok) {
+        const vouchersData = await vouchersResponse.json();
+        setVouchersData(vouchersData);
       }
     } catch (error) {
       console.error('Error fetching loyalty data:', error);
@@ -190,6 +230,7 @@ export default function LoyaltyPage() {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Star },
     { id: 'rewards', label: 'Rewards', icon: Gift },
+    { id: 'vouchers', label: 'Vouchers', icon: Percent },
     { id: 'history', label: 'History', icon: Calendar },
     { id: 'referrals', label: 'Referrals', icon: Users },
   ];
@@ -444,6 +485,300 @@ export default function LoyaltyPage() {
                   <p className="text-gray-500">No rewards found</p>
                   <p className="text-sm text-gray-400">
                     Try adjusting your search terms
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Vouchers Tab */}
+          {activeTab === 'vouchers' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  My Vouchers
+                </h2>
+                <div className="text-sm text-gray-500">
+                  {vouchersData?.total || 0} total vouchers
+                </div>
+              </div>
+
+              {/* Voucher Status Summary */}
+              {vouchersData && (
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <Check className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-green-800">
+                          Available
+                        </p>
+                        <p className="text-2xl font-bold text-green-900">
+                          {vouchersData.groupedVouchers.issued.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <Award className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-blue-800">
+                          Redeemed
+                        </p>
+                        <p className="text-2xl font-bold text-blue-900">
+                          {vouchersData.groupedVouchers.redeemed.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0">
+                        <X className="h-6 w-6 text-gray-600" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-gray-800">
+                          Expired
+                        </p>
+                        <p className="text-2xl font-bold text-gray-900">
+                          {vouchersData.groupedVouchers.expired.length}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Available Vouchers */}
+              {vouchersData?.groupedVouchers.issued.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Available Vouchers
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {vouchersData.groupedVouchers.issued.map(voucher => (
+                      <div
+                        key={voucher.id}
+                        className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                      >
+                        {voucher.image_url && (
+                          <div className="mb-4">
+                            <img
+                              src={voucher.image_url}
+                              alt={voucher.name}
+                              className="h-32 w-full rounded-lg object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-3">
+                          <div>
+                            <h4 className="font-semibold text-gray-900">
+                              {voucher.name}
+                            </h4>
+                            <p className="text-sm text-gray-600">
+                              {voucher.voucher_code}
+                            </p>
+                          </div>
+                          
+                          {voucher.description && (
+                            <p className="text-sm text-gray-600">
+                              {voucher.description}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div>
+                              {voucher.voucher_type === 'Percentage' && (
+                                <span className="text-lg font-bold text-green-600">
+                                  {voucher.discount_percent}% OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Fixed' && (
+                                <span className="text-lg font-bold text-green-600">
+                                  {formatCurrency(voucher.discount_amount)} OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Value' && (
+                                <span className="text-lg font-bold text-green-600">
+                                  {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                            </div>
+                            <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+                              Available
+                            </span>
+                          </div>
+
+                          {voucher.expiration_date && (
+                            <p className="text-xs text-gray-500">
+                              Expires: {formatDate(voucher.expiration_date)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Redeemed Vouchers */}
+              {vouchersData?.groupedVouchers.redeemed.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Redeemed Vouchers
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {vouchersData.groupedVouchers.redeemed.map(voucher => (
+                      <div
+                        key={voucher.id}
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-6 opacity-75"
+                      >
+                        {voucher.image_url && (
+                          <div className="mb-4">
+                            <img
+                              src={voucher.image_url}
+                              alt={voucher.name}
+                              className="h-32 w-full rounded-lg object-cover grayscale"
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-3">
+                          <div>
+                            <h4 className="font-semibold text-gray-700">
+                              {voucher.name}
+                            </h4>
+                            <p className="text-sm text-gray-500">
+                              {voucher.voucher_code}
+                            </p>
+                          </div>
+                          
+                          {voucher.description && (
+                            <p className="text-sm text-gray-500">
+                              {voucher.description}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div>
+                              {voucher.voucher_type === 'Percentage' && (
+                                <span className="text-lg font-bold text-gray-600">
+                                  {voucher.discount_percent}% OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Fixed' && (
+                                <span className="text-lg font-bold text-gray-600">
+                                  {formatCurrency(voucher.discount_amount)} OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Value' && (
+                                <span className="text-lg font-bold text-gray-600">
+                                  {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                            </div>
+                            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                              Redeemed
+                            </span>
+                          </div>
+
+                          {voucher.redeemed_date && (
+                            <p className="text-xs text-gray-500">
+                              Redeemed: {formatDate(voucher.redeemed_date)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Expired Vouchers */}
+              {vouchersData?.groupedVouchers.expired.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Expired Vouchers
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {vouchersData.groupedVouchers.expired.map(voucher => (
+                      <div
+                        key={voucher.id}
+                        className="rounded-xl border border-gray-200 bg-gray-50 p-6 opacity-50"
+                      >
+                        {voucher.image_url && (
+                          <div className="mb-4">
+                            <img
+                              src={voucher.image_url}
+                              alt={voucher.name}
+                              className="h-32 w-full rounded-lg object-cover grayscale"
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-3">
+                          <div>
+                            <h4 className="font-semibold text-gray-500">
+                              {voucher.name}
+                            </h4>
+                            <p className="text-sm text-gray-400">
+                              {voucher.voucher_code}
+                            </p>
+                          </div>
+                          
+                          {voucher.description && (
+                            <p className="text-sm text-gray-400">
+                              {voucher.description}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div>
+                              {voucher.voucher_type === 'Percentage' && (
+                                <span className="text-lg font-bold text-gray-400">
+                                  {voucher.discount_percent}% OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Fixed' && (
+                                <span className="text-lg font-bold text-gray-400">
+                                  {formatCurrency(voucher.discount_amount)} OFF
+                                </span>
+                              )}
+                              {voucher.voucher_type === 'Value' && (
+                                <span className="text-lg font-bold text-gray-400">
+                                  {formatCurrency(voucher.face_value)} Value
+                                </span>
+                              )}
+                            </div>
+                            <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                              Expired
+                            </span>
+                          </div>
+
+                          {voucher.expiration_date && (
+                            <p className="text-xs text-gray-400">
+                              Expired: {formatDate(voucher.expiration_date)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No Vouchers Message */}
+              {vouchersData?.total === 0 && (
+                <div className="py-12 text-center">
+                  <Percent className="mx-auto mb-4 h-16 w-16 text-gray-300" />
+                  <p className="text-gray-500">No vouchers found</p>
+                  <p className="text-sm text-gray-400">
+                    You don't have any vouchers yet
                   </p>
                 </div>
               )}
