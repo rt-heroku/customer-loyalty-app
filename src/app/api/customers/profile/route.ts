@@ -41,17 +41,9 @@ export async function GET(request: NextRequest) {
         c.customer_tier,
         c.tier_calculation_number,
         c.created_at,
-        c.updated_at,
-        ci.image_data,
-        ci.filename,
-        ci.file_size,
-        ci.width,
-        ci.height
+        c.updated_at
       FROM customers c
-      LEFT JOIN customer_images ci ON c.id = ci.customer_id
-      WHERE c.user_id = $1
-      ORDER BY ci.created_at DESC
-      LIMIT 1`,
+      WHERE c.user_id = $1`,
       [user.id]
     );
 
@@ -60,6 +52,14 @@ export async function GET(request: NextRequest) {
     }
 
     const customer = customerResult.rows[0];
+
+    // Get customer avatar separately
+    const avatarResult = await query(
+      'SELECT image_data, filename, file_size, width, height FROM customer_images WHERE customer_id = $1 ORDER BY created_at DESC LIMIT 1',
+      [customer.id]
+    );
+
+    const avatar = avatarResult.rows.length > 0 ? avatarResult.rows[0] : null;
     
     return NextResponse.json({
       success: true,
@@ -94,12 +94,12 @@ export async function GET(request: NextRequest) {
         tier_calculation_number: customer.tier_calculation_number,
         created_at: customer.created_at,
         updated_at: customer.updated_at,
-        avatar: customer.image_data ? {
-          image_data: customer.image_data,
-          filename: customer.filename,
-          file_size: customer.file_size,
-          width: customer.width,
-          height: customer.height
+        avatar: avatar ? {
+          image_data: avatar.image_data,
+          filename: avatar.filename,
+          file_size: avatar.file_size,
+          width: avatar.width,
+          height: avatar.height
         } : null
       }
     });
