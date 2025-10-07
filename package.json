@@ -16,6 +16,8 @@
     "syntax-check": "node check-syntax.js",
     "pre-commit": "npm run format && npm run syntax-check",
     "pre-push": "npm run pre-commit && npm run build",
+    "update-cache": "node update-cache-version.js",
+    "clear-cache": "npm run update-cache && echo 'Cache version updated! Please refresh your browser.'",
     "db:migrate": "psql $DATABASE_URL -f loyalty-database-changes.sql",
     "db:seed": "node scripts/seed-database.js",
     "heroku-postbuild": "npm run build"

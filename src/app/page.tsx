@@ -1,4 +1,8 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Star,
   Gift,
@@ -10,21 +14,55 @@ import {
 } from 'lucide-react';
 
 export default function HomePage() {
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string>('Loyalty');
+
+  useEffect(() => {
+    const loadCompanyInfo = async () => {
+      try {
+        // Load company logo and name from system settings
+        const response = await fetch('/api/locations/current');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.location) {
+            setCompanyLogo(data.location.logo_base64 || data.location.logo_url);
+            setCompanyName(data.location.store_name || 'Loyalty');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading company info:', error);
+      }
+    };
+
+    loadCompanyInfo();
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="relative z-10">
+      <header className="relative z-10 border-b border-gray-200 bg-white">
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo and Navigation */}
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <div className="flex items-center space-x-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
-                    <Star className="h-5 w-5 text-white" />
-                  </div>
+                <div className="flex items-center space-x-3">
+                  {companyLogo ? (
+                    <div className="flex h-10 w-12 items-center justify-center overflow-hidden relative">
+                      <Image
+                        src={companyLogo}
+                        alt="Company Logo"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
+                      <Star className="h-5 w-5 text-white" />
+                    </div>
+                  )}
                   <span className="text-xl font-bold text-gray-900">
-                    Loyalty
+                    {companyName}
                   </span>
                 </div>
               </div>
@@ -32,17 +70,29 @@ export default function HomePage() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <Link href="/loyalty" className="nav-link-inactive">
+              <div className="ml-10 flex items-baseline space-x-8">
+                <Link 
+                  href="/loyalty" 
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
                   My Points
                 </Link>
-                <Link href="/orders" className="nav-link-inactive">
+                <Link 
+                  href="/transactions" 
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
                   Orders
                 </Link>
-                <Link href="/rewards" className="nav-link-inactive">
+                <Link 
+                  href="/loyalty" 
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
                   Rewards
                 </Link>
-                <Link href="/support" className="nav-link-inactive">
+                <Link 
+                  href="/help" 
+                  className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                >
                   Support
                 </Link>
               </div>
@@ -50,10 +100,16 @@ export default function HomePage() {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
-              <Link href="/login" className="btn-outline">
+              <Link 
+                href="/login" 
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50"
+              >
                 Sign In
               </Link>
-              <Link href="/enroll" className="btn-primary">
+              <Link 
+                href="/register" 
+                className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-gray-800"
+              >
                 Join Now
               </Link>
             </div>
@@ -68,17 +124,23 @@ export default function HomePage() {
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
               Your Loyalty Program,{' '}
-              <span className="text-gradient-primary block">Simplified</span>
+              <span className="text-gray-600 block">Simplified</span>
             </h1>
             <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-gray-600">
               Access your points, track orders, and unlock exclusive rewards all
               in one place.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Link href="/enroll" className="btn-primary btn-lg">
+              <Link 
+                href="/register" 
+                className="rounded-lg bg-gray-900 px-8 py-3 text-base font-semibold text-white shadow-sm transition-colors hover:bg-gray-800"
+              >
                 Get Started
               </Link>
-              <Link href="/loyalty" className="btn-outline btn-lg">
+              <Link 
+                href="/loyalty" 
+                className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-base font-semibold text-gray-900 shadow-sm transition-colors hover:bg-gray-50"
+              >
                 View Points
               </Link>
             </div>
@@ -95,132 +157,120 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* Points Tracking */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <TrendingUp className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <TrendingUp className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Points Tracking
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Monitor your loyalty points in real-time with detailed
-                  transaction history and earning breakdowns.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Monitor your loyalty points in real-time with detailed
+                transaction history and earning breakdowns.
+              </p>
             </div>
 
             {/* Order Tracking */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <Package className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <Package className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Order Tracking
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Track your current orders with real-time shipping updates and
-                  delivery notifications.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Track your current orders with real-time shipping updates and
+                delivery notifications.
+              </p>
             </div>
 
             {/* Exclusive Rewards */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <Gift className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <Gift className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Exclusive Rewards
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Unlock exclusive rewards, discounts, and special offers
-                  tailored to your preferences.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Unlock exclusive rewards, discounts, and special offers
+                tailored to your preferences.
+              </p>
             </div>
 
             {/* AI Support */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <MessageCircle className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <MessageCircle className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   AI Support
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Get instant help with our AI-powered customer service agent
-                  available 24/7.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Get instant help with our AI-powered customer service agent
+                available 24/7.
+              </p>
             </div>
 
             {/* Secure & Private */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <Shield className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <Shield className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Secure & Private
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Your data is protected with enterprise-grade security and
-                  privacy controls.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Your data is protected with enterprise-grade security and
+                privacy controls.
+              </p>
             </div>
 
             {/* Mobile First */}
-            <div className="card">
-              <div className="card-header">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary-100">
-                  <Smartphone className="h-6 w-6 text-primary-600" />
+            <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100">
+                  <Smartphone className="h-6 w-6 text-gray-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Mobile First
                 </h3>
               </div>
-              <div className="card-body">
-                <p className="text-gray-600">
-                  Optimized for mobile devices with a responsive design that
-                  works perfectly on any screen.
-                </p>
-              </div>
+              <p className="text-gray-600">
+                Optimized for mobile devices with a responsive design that
+                works perfectly on any screen.
+              </p>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="bg-primary-600">
+        <div className="bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
             <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
                 Ready to start earning rewards?
               </h2>
               <div className="mt-8 flex items-center justify-center gap-x-6">
                 <Link
-                  href="/enroll"
-                  className="rounded-lg bg-white px-8 py-3 font-semibold text-primary-600 transition-colors hover:bg-gray-100"
+                  href="/register"
+                  className="rounded-lg bg-gray-900 px-8 py-3 font-semibold text-white transition-colors hover:bg-gray-800"
                 >
                   Enroll Now
                 </Link>
                 <Link
                   href="/loyalty"
-                  className="rounded-lg border border-white px-8 py-3 font-semibold text-white transition-colors hover:bg-white hover:text-primary-600"
+                  className="rounded-lg border border-gray-300 bg-white px-8 py-3 font-semibold text-gray-900 transition-colors hover:bg-gray-50"
                 >
                   Learn More
                 </Link>
@@ -231,18 +281,29 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900">
+      <footer className="bg-white border-t border-gray-200">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             {/* Company Info */}
             <div className="col-span-1 md:col-span-2">
-              <div className="mb-4 flex items-center space-x-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600">
-                  <Star className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-white">Loyalty</span>
+              <div className="mb-4 flex items-center space-x-3">
+                {companyLogo ? (
+                  <div className="flex h-8 w-10 items-center justify-center overflow-hidden relative">
+                    <Image
+                      src={companyLogo}
+                      alt="Company Logo"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
+                    <Star className="h-5 w-5 text-white" />
+                  </div>
+                )}
+                <span className="text-xl font-bold text-gray-900">{companyName}</span>
               </div>
-              <p className="mb-4 text-gray-400">
+              <p className="mb-4 text-gray-600">
                 Your comprehensive loyalty program platform. Track points,
                 manage rewards, and stay connected with your favorite brands.
               </p>
@@ -250,28 +311,28 @@ export default function HomePage() {
 
             {/* Quick Links */}
             <div>
-              <h3 className="mb-4 font-semibold text-white">Quick Links</h3>
+              <h3 className="mb-4 font-semibold text-gray-900">Quick Links</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
                     href="/loyalty"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     My Points
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/orders"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    href="/transactions"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     Order History
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/rewards"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    href="/loyalty"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     Available Rewards
                   </Link>
@@ -279,7 +340,7 @@ export default function HomePage() {
                 <li>
                   <Link
                     href="/profile"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     My Profile
                   </Link>
@@ -289,12 +350,12 @@ export default function HomePage() {
 
             {/* Support */}
             <div>
-              <h3 className="mb-4 font-semibold text-white">Support</h3>
+              <h3 className="mb-4 font-semibold text-gray-900">Support</h3>
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/support"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    href="/help"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     Help Center
                   </Link>
@@ -302,7 +363,7 @@ export default function HomePage() {
                 <li>
                   <Link
                     href="/contact"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     Contact Us
                   </Link>
@@ -310,7 +371,7 @@ export default function HomePage() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     FAQ
                   </Link>
@@ -318,7 +379,7 @@ export default function HomePage() {
                 <li>
                   <Link
                     href="/terms"
-                    className="text-gray-400 transition-colors hover:text-white"
+                    className="text-gray-600 transition-colors hover:text-gray-900"
                   >
                     Terms of Service
                   </Link>
@@ -327,8 +388,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-gray-800 pt-8">
-            <p className="text-center text-sm text-gray-400">
+          <div className="mt-8 border-t border-gray-200 pt-8">
+            <p className="text-center text-sm text-gray-500">
               © 2024 Customer Loyalty App. All rights reserved.
             </p>
           </div>
