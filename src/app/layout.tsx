@@ -157,8 +157,11 @@ export default function RootLayout({
               (function() {
                 if ('serviceWorker' in navigator) {
                   window.addEventListener('load', function() {
-                    // Only register if we're on the correct port
-                    if (window.location.port === '3000' || window.location.hostname === 'localhost') {
+                    // Only register in production or when explicitly enabled
+                    const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+                    const enableSW = window.location.search.includes('sw=true') || isProduction;
+                    
+                    if (enableSW) {
                       // Clear any existing service workers first
                       navigator.serviceWorker.getRegistrations().then(function(registrations) {
                         for(let registration of registrations) {
@@ -195,7 +198,7 @@ export default function RootLayout({
                           }
                         });
                     } else {
-                      console.log('Skipping Service Worker registration on non-localhost');
+                      console.log('Service Worker disabled in development mode');
                     }
                   });
                 }
