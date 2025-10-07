@@ -22,7 +22,7 @@ import {
   Heart,
   Tag,
 } from 'lucide-react';
-import { cn, getInitials } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import navigationConfig from '@/config/navigation.json';
 import { NavigationItem, SidebarProps } from '@/types/navigation';
 
@@ -305,7 +305,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   className="object-cover"
                 />
               ) : (
-                getInitials(`${user.firstName} ${user.lastName}`)
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
               )}
             </div>
             <div className="min-w-0 flex-1">
@@ -471,7 +474,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     className="object-cover"
                   />
                 ) : (
-                  getInitials(`${user?.firstName} ${user?.lastName}`)
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
                 )}
               </div>
               <div className="flex-1 min-w-0">
