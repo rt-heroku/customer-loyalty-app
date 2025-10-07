@@ -664,13 +664,27 @@ export default function TransactionsPage() {
                 <h4 className="mb-4 font-semibold text-gray-900">Receipt</h4>
                 <div className="rounded-lg bg-gray-50 p-4 font-mono text-sm">
                   <div className="mb-4 text-center">
-                    <p className="font-bold">LOYALTY STORE</p>
+                    <p className="font-bold">
+                      {selectedTransaction.store_name || 'LOYALTY STORE'}
+                    </p>
+                    {selectedTransaction.store_code && (
+                      <p className="text-sm text-gray-500">
+                        {selectedTransaction.store_code}
+                      </p>
+                    )}
                     <p className="text-gray-600">
                       Transaction #{selectedTransaction.id}
                     </p>
                     <p className="text-gray-600">
                       {formatDate(selectedTransaction.created_at)}
                     </p>
+                    {selectedTransaction.address_line1 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {selectedTransaction.address_line1}
+                        {selectedTransaction.city && `, ${selectedTransaction.city}`}
+                        {selectedTransaction.state && `, ${selectedTransaction.state}`}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">

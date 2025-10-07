@@ -35,10 +35,12 @@ export async function GET(
 
     const customerId = customerResult.rows[0].id;
 
-    // Get transaction details
+    // Get transaction details with location information
     const transactionResult = await query(
-      `SELECT t.id, t.total, t.points_earned, t.points_redeemed, t.created_at, t.payment_method
+      `SELECT t.id, t.total, t.points_earned, t.points_redeemed, t.created_at, t.payment_method,
+              l.store_name, l.store_code, l.address_line1, l.city, l.state
        FROM transactions t
+       LEFT JOIN locations l ON t.location_id = l.id
        WHERE t.id = $1 AND t.customer_id = $2`,
       [transactionId, customerId]
     );
