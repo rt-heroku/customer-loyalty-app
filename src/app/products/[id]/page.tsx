@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   Heart,
   Share2,
@@ -222,13 +223,14 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <div className="relative h-96 overflow-hidden rounded-lg bg-white">
               {product.images && product.images.length > 0 ? (
-                <img
+                <Image
                   src={
                     product.images[currentImageIndex]?.url ||
                     '/placeholder-product.jpg'
                   }
                   alt={product.images[currentImageIndex]?.alt || product.name}
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gray-200">
@@ -250,10 +252,11 @@ export default function ProductDetailPage() {
                         : 'border-gray-200'
                     }`}
                   >
-                    <img
+                    <Image
                       src={image.url}
                       alt={image.alt}
-                      className="h-full w-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </button>
                 ))}

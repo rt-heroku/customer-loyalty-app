@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Home,
@@ -241,11 +242,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div className="flex items-center space-x-3">
             {locationLogo && (
-              <div className="flex h-12 w-16 items-center justify-center overflow-hidden">
-                <img
+              <div className="flex h-12 w-16 items-center justify-center overflow-hidden relative">
+                <Image
                   src={locationLogo}
                   alt="Company Logo"
-                  className="h-full w-full object-contain"
+                  fill
+                  className="object-contain"
                 />
               </div>
             )}
@@ -296,10 +298,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="flex items-center space-x-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-lg font-bold text-white overflow-hidden">
               {customerImage ? (
-                <img
+                <Image
                   src={customerImage}
                   alt="Profile"
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 getInitials(`${user.firstName} ${user.lastName}`)
@@ -362,11 +365,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="flex items-center justify-between border-b border-gray-200 p-6">
           <div className="flex items-center space-x-3">
             {locationLogo && (
-              <div className="flex h-12 w-16 items-center justify-center overflow-hidden">
-                <img
+              <div className="flex h-12 w-16 items-center justify-center overflow-hidden relative">
+                <Image
                   src={locationLogo}
                   alt="Company Logo"
-                  className="h-full w-full object-contain"
+                  fill
+                  className="object-contain"
                 />
               </div>
             )}
@@ -458,12 +462,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* User Section */}
           <div className="border-t border-gray-200 pt-4">
             <div className="flex items-center space-x-3 rounded-lg px-3 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700 overflow-hidden">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-sm font-medium text-primary-700 overflow-hidden relative">
                 {customerImage ? (
-                  <img
+                  <Image
                     src={customerImage}
                     alt="Profile"
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   getInitials(`${user?.firstName} ${user?.lastName}`)

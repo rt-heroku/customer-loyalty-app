@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, Calendar, Clock, DollarSign, User } from 'lucide-react';
 import type { StoreLocation, Service, Appointment } from '@/lib/database-types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,20 +25,7 @@ export default function ServiceBookingModal({
   const [loading, setLoading] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadServices();
-    }
-  }, [isOpen, store.id]);
-
-  useEffect(() => {
-    if (selectedService) {
-      // Reset time when service changes
-      setSelectedTime('');
-    }
-  }, [selectedService]);
-
-  const loadServices = async () => {
+  const loadServices = useCallback(async () => {
     try {
       const response = await fetch(`/api/stores/${store.id}/services`);
       if (response.ok) {
@@ -48,7 +35,20 @@ export default function ServiceBookingModal({
     } catch (error) {
       console.error('Error loading services:', error);
     }
-  };
+  }, [store.id]);
+
+  useEffect(() => {
+    if (isOpen) {
+      loadServices();
+    }
+  }, [isOpen, store.id, loadServices]);
+
+  useEffect(() => {
+    if (selectedService) {
+      // Reset time when service changes
+      setSelectedTime('');
+    }
+  }, [selectedService]);
 
   const getAvailableTimes = () => {
     if (!selectedService || !selectedDate) return [];

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Image from 'next/image';
 import { X, Wrench, User, Upload } from 'lucide-react';
-import type { StoreLocation, Service, WorkOrder } from '@/lib/database-types';
+import type { StoreLocation, WorkOrder } from '@/lib/database-types';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface WorkOrderModalProps {
@@ -17,8 +18,7 @@ export default function WorkOrderModal({
   onClose,
 }: WorkOrderModalProps) {
   const { user } = useAuth();
-  const [services, setServices] = useState<Service[]>([]);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [serviceDescription, setServiceDescription] = useState('');
   const [workOrderType, setWorkOrderType] =
     useState<WorkOrder['type']>('repair');
   const [priority, setPriority] = useState<WorkOrder['priority']>('medium');
@@ -31,23 +31,6 @@ export default function WorkOrderModal({
   const [loading, setLoading] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadServices();
-    }
-  }, [isOpen, store.id]);
-
-  const loadServices = async () => {
-    try {
-      const response = await fetch(`/api/stores/${store.id}/services`);
-      if (response.ok) {
-        const data = await response.json();
-        setServices(data.services);
-      }
-    } catch (error) {
-      console.error('Error loading services:', error);
-    }
-  };
 
   const getMinDate = () => {
     const today = new Date();
@@ -59,6 +42,7 @@ export default function WorkOrderModal({
     maxDate.setDate(maxDate.getDate() + 90); // 90 days from now
     return maxDate.toISOString().split('T')[0];
   };
+
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -89,8 +73,8 @@ export default function WorkOrderModal({
       };
 
       // Add optional fields only if they have values
-      if (selectedService?.id) {
-        workOrder.serviceId = selectedService.id;
+      if (serviceDescription) {
+        workOrder.description = `${workOrder.description}\n\nService needed: ${serviceDescription}`;
       }
       if (customerNotes) {
         workOrder.customerNotes = customerNotes;
@@ -226,21 +210,13 @@ export default function WorkOrderModal({
                 <label className="mb-2 block text-sm font-medium text-gray-700">
                   Related Service (Optional)
                 </label>
-                <select
-                  value={selectedService?.id || ''}
-                  onChange={e => {
-                    const service = services.find(s => s.id === e.target.value);
-                    setSelectedService(service || null);
-                  }}
+                <input
+                  type="text"
+                  placeholder="Describe the service needed"
+                  value={serviceDescription}
+                  onChange={e => setServiceDescription(e.target.value)}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
-                >
-                  <option value="">No specific service</option>
-                  {services.map(service => (
-                    <option key={service.id} value={service.id}>
-                      {service.name} - ${service.price}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               {/* Title and Description */}
@@ -356,9 +332,11 @@ export default function WorkOrderModal({
                   <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
                     {images.map((image, index) => (
                       <div key={index} className="group relative">
-                        <img
+                        <Image
                           src={URL.createObjectURL(image)}
                           alt={`Upload ${index + 1}`}
+                          width={96}
+                          height={96}
                           className="h-24 w-full rounded-lg object-cover"
                         />
                         <button
@@ -390,11 +368,11 @@ export default function WorkOrderModal({
                     <span>Priority:</span>
                     <span className="font-medium capitalize">{priority}</span>
                   </div>
-                  {selectedService && (
+                  {serviceDescription && (
                     <div className="flex justify-between">
                       <span>Service:</span>
                       <span className="font-medium">
-                        {selectedService.name}
+                        {serviceDescription}
                       </span>
                     </div>
                   )}

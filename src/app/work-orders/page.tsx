@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Wrench,
   AlertTriangle,
@@ -23,13 +23,7 @@ export default function WorkOrdersPage() {
     'all' | 'active' | 'completed' | 'cancelled'
   >('all');
 
-  useEffect(() => {
-    if (user) {
-      loadWorkOrders();
-    }
-  }, [user, filter]);
-
-  const loadWorkOrders = async () => {
+  const loadWorkOrders = useCallback(async () => {
     try {
       setLoading(true);
       const statusParam =
@@ -52,7 +46,13 @@ export default function WorkOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    if (user) {
+      loadWorkOrders();
+    }
+  }, [user, filter, loadWorkOrders]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

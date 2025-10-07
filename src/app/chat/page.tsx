@@ -30,7 +30,7 @@ export default function ChatPage() {
   useEffect(() => {
     loadChatSettings();
     loadSessions();
-  }, []);
+  }, [loadChatSettings]);
 
   const loadSessions = async () => {
     try {

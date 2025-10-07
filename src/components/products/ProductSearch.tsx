@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { Search, X, Clock, TrendingUp } from 'lucide-react';
 import { Product } from '@/types/product';
 import { cn } from '@/lib/utils';
@@ -65,6 +66,33 @@ export default function ProductSearch({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const addToRecentSearches = useCallback((search: string) => {
+    const recent = [search, ...recentSearches.filter(s => s !== search)].slice(
+      0,
+      5
+    );
+    setRecentSearches(recent);
+    localStorage.setItem('recentSearches', JSON.stringify(recent));
+  }, [recentSearches]);
+
+  const handleSuggestionSelect = useCallback((product: Product) => {
+    onChange(product.name);
+    setIsOpen(false);
+    setSelectedIndex(-1);
+    addToRecentSearches(product.name);
+    inputRef.current?.blur();
+  }, [onChange, addToRecentSearches]);
+
+  const handleSearch = useCallback((query: string) => {
+    if (query.trim()) {
+      onChange(query.trim());
+      addToRecentSearches(query.trim());
+      setIsOpen(false);
+      setSelectedIndex(-1);
+      inputRef.current?.blur();
+    }
+  }, [onChange, addToRecentSearches]);
+
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -99,7 +127,7 @@ export default function ProductSearch({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, suggestions, selectedIndex, value]);
+  }, [isOpen, suggestions, selectedIndex, value, handleSearch, handleSuggestionSelect]);
 
   // Search suggestions
   const searchSuggestions = async (query: string) => {
@@ -148,24 +176,6 @@ export default function ProductSearch({
     setIsOpen(true);
   };
 
-  const handleSuggestionSelect = (product: Product) => {
-    onChange(product.name);
-    setIsOpen(false);
-    setSelectedIndex(-1);
-    addToRecentSearches(product.name);
-    inputRef.current?.blur();
-  };
-
-  const handleSearch = (query: string) => {
-    if (query.trim()) {
-      onChange(query.trim());
-      addToRecentSearches(query.trim());
-      setIsOpen(false);
-      setSelectedIndex(-1);
-      inputRef.current?.blur();
-    }
-  };
-
   const handleRecentSearchSelect = (search: string) => {
     onChange(search);
     setIsOpen(false);
@@ -180,15 +190,6 @@ export default function ProductSearch({
     setSelectedIndex(-1);
     addToRecentSearches(search);
     inputRef.current?.blur();
-  };
-
-  const addToRecentSearches = (search: string) => {
-    const recent = [search, ...recentSearches.filter(s => s !== search)].slice(
-      0,
-      5
-    );
-    setRecentSearches(recent);
-    localStorage.setItem('recentSearches', JSON.stringify(recent));
   };
 
   const clearSearch = () => {
@@ -251,12 +252,13 @@ export default function ProductSearch({
                       'border-primary-200 bg-primary-50'
                   )}
                 >
-                  <div className="h-10 w-10 flex-shrink-0 rounded-md bg-gray-100">
+                  <div className="h-10 w-10 flex-shrink-0 rounded-md bg-gray-100 relative">
                     {product.images[0] && (
-                      <img
+                      <Image
                         src={product.images[0].thumbnailUrl}
                         alt={product.images[0].alt}
-                        className="h-full w-full rounded-md object-cover"
+                        fill
+                        className="rounded-md object-cover"
                       />
                     )}
                   </div>

@@ -76,7 +76,7 @@ export default function ProfilePage() {
             first_name: data.customer.first_name || '',
             last_name: data.customer.last_name || '',
             phone: data.customer.phone || '',
-            date_of_birth: data.customer.date_of_birth ? new Date(data.customer.date_of_birth).toISOString().split('T')[0] : '',
+            date_of_birth: (data.customer.date_of_birth && data.customer.date_of_birth !== 'null' ? new Date(data.customer.date_of_birth).toISOString().split('T')[0] : '') || '',
             address_line1: data.customer.address_line1 || '',
             address_line2: data.customer.address_line2 || '',
             city: data.customer.city || '',

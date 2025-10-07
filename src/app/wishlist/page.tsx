@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { Wishlist } from '@/types/product';
 import {
   Heart,
@@ -25,14 +26,7 @@ export default function WishlistPage() {
   const [shareEmail, setShareEmail] = useState('');
   const [shareMessage, setShareMessage] = useState('');
 
-  // Load user's wishlists
-  useEffect(() => {
-    if (user) {
-      loadWishlists();
-    }
-  }, [user]);
-
-  const loadWishlists = async () => {
+  const loadWishlists = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/wishlist');
@@ -48,7 +42,14 @@ export default function WishlistPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeWishlist]);
+
+  // Load user's wishlists
+  useEffect(() => {
+    if (user) {
+      loadWishlists();
+    }
+  }, [user, loadWishlists]);
 
   const createWishlist = async () => {
     if (!newWishlistName.trim()) return;
@@ -435,10 +436,11 @@ export default function WishlistPage() {
                           {/* Product Image */}
                           <div className="relative aspect-square bg-gray-100">
                             {item.product.images[0] ? (
-                              <img
+                              <Image
                                 src={item.product.images[0].url}
                                 alt={item.product.images[0].alt}
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
                               />
                             ) : (
                               <div className="flex h-full w-full items-center justify-center text-gray-400">

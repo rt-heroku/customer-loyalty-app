@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
+import Image from 'next/image';
 import { Camera, X, Upload, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -59,7 +60,7 @@ export default function ImageUpload({
       const reader = new FileReader();
       
       reader.onload = (e) => {
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => {
           // Resize image if too large
           const maxSize = 512;
@@ -188,10 +189,11 @@ export default function ImageUpload({
         onClick={handleClick}
       >
         {preview ? (
-          <img
+          <Image
             src={preview}
             alt="Profile preview"
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">

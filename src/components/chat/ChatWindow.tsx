@@ -64,14 +64,7 @@ export default function ChatWindow({
     }
   }, [isOpen, state.messages, scrollToBottom]);
 
-  // Load chat session when window opens
-  useEffect(() => {
-    if (isOpen && !state.currentSession) {
-      loadOrCreateSession();
-    }
-  }, [isOpen]);
-
-  const loadOrCreateSession = async () => {
+  const loadOrCreateSession = useCallback(async () => {
     try {
       // Try to get existing active session
       const response = await fetch('/api/chat/sessions?limit=1');
@@ -87,9 +80,16 @@ export default function ChatWindow({
     } catch (error) {
       console.error('Error loading chat session:', error);
     }
-  };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const createNewSession = async () => {
+  // Load chat session when window opens
+  useEffect(() => {
+    if (isOpen && !state.currentSession) {
+      loadOrCreateSession();
+    }
+  }, [isOpen, loadOrCreateSession, state.currentSession]);
+
+  const createNewSession = useCallback(async () => {
     try {
       const response = await fetch('/api/chat/sessions', {
         method: 'POST',
@@ -104,9 +104,9 @@ export default function ChatWindow({
     } catch (error) {
       console.error('Error creating chat session:', error);
     }
-  };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadSessionMessages = async (sessionId: string) => {
+  const loadSessionMessages = useCallback(async (sessionId: string) => {
     try {
       const response = await fetch(`/api/chat/sessions/${sessionId}`);
       const data = await response.json();
@@ -121,7 +121,7 @@ export default function ChatWindow({
     } catch (error) {
       console.error('Error loading session messages:', error);
     }
-  };
+  }, []);
 
   const sendMessage = async (content: string, attachments: any[] = []) => {
     if (!content.trim() && attachments.length === 0) return;

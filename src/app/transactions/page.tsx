@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Search,
@@ -575,14 +576,12 @@ export default function TransactionsPage() {
                             {/* Voucher Image */}
                             {voucher.image_url && (
                               <div className="flex-shrink-0">
-                                <img
+                                <Image
                                   src={voucher.image_url}
                                   alt={voucher.voucher_name}
-                                  className="h-12 w-12 rounded-lg object-cover border border-green-300"
-                                  onError={(e) => {
-                                    // Hide image if it fails to load
-                                    e.currentTarget.style.display = 'none';
-                                  }}
+                                  width={48}
+                                  height={48}
+                                  className="rounded-lg object-cover border border-green-300"
                                 />
                               </div>
                             )}

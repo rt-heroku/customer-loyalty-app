@@ -54,6 +54,24 @@ export default function MobileBottomNav() {
     return () => window.removeEventListener('resize', checkIsMobile);
   }, [isClient]);
 
+  // Handle scroll to show/hide navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   // Don't render on server or desktop
   if (!isClient || !isMobile) {
     return null;
@@ -116,24 +134,6 @@ export default function MobileBottomNav() {
       color: 'bg-orange-500',
     },
   ];
-
-  // Handle scroll to show/hide navigation
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   // Handle navigation
   const handleNavigation = (href: string) => {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import {
   X,
   Upload,
@@ -236,10 +237,12 @@ export default function FileUploadModal({
                     className="flex items-center space-x-3 rounded-lg bg-gray-50 p-3"
                   >
                     {file.preview ? (
-                      <img
+                      <Image
                         src={file.preview}
                         alt={file.name}
-                        className="h-10 w-10 rounded object-cover"
+                        width={40}
+                        height={40}
+                        className="rounded object-cover"
                       />
                     ) : (
                       getFileIcon(file)

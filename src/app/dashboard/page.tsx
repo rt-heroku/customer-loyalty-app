@@ -9,11 +9,6 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
 
-  // Test function to manually toggle sidebar
-  const testSidebarToggle = () => {
-    console.log('Test button clicked');
-    // This will be handled by the AppLayout
-  };
 
   const fetchDashboardStats = useCallback(async () => {
     try {
