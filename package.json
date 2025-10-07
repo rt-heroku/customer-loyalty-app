@@ -20,7 +20,7 @@
     "clear-cache": "npm run update-cache && echo 'Cache version updated! Please refresh your browser.'",
     "db:migrate": "psql $DATABASE_URL -f db/loyalty-database-changes.sql",
     "db:seed": "node scripts/seed-database.js",
-    "heroku-postbuild": "psql $DATABASE_URL -f db/loyalty-database-changes.sql",
+    "heroku-postbuild": "npm run build && psql $DATABASE_URL -f db/loyalty-database-changes.sql",
     "env": "env"
   },
   "dependencies": {

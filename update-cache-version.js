@@ -34,8 +34,9 @@ function updateCacheVersion() {
     const swPath = path.join(__dirname, 'public', 'sw.js');
     
     if (!fs.existsSync(swPath)) {
-        console.error('❌ sw.js not found at:', swPath);
-        process.exit(1);
+        console.log('⚠️  sw.js not found at:', swPath);
+        console.log('📝 This is normal during initial build. Skipping cache version update.');
+        return;
     }
     
     const newVersion = generateVersion();

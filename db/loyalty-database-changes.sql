@@ -558,10 +558,13 @@ SELECT
             'created_at', cal.created_at
         )
     )
-    FROM customer_activity_log cal 
-    WHERE cal.customer_id = c.id 
-    ORDER BY cal.created_at DESC 
-    LIMIT 5) as recent_activity
+    FROM (
+        SELECT activity_type, description, points_change, created_at
+        FROM customer_activity_log cal 
+        WHERE cal.customer_id = c.id 
+        ORDER BY cal.created_at DESC 
+        LIMIT 5
+    ) cal) as recent_activity
 
 FROM customers c
 LEFT JOIN loyalty_tiers lt ON c.customer_tier = lt.tier_name
@@ -932,7 +935,7 @@ ALTER TABLE user_sessions ADD COLUMN IF NOT EXISTS user_agent TEXT;
 CREATE TABLE IF NOT EXISTS user_sessions (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    session_token VARCHAR(255) UNIQUE NOT NULL,\queries
+    session_token VARCHAR(255) UNIQUE NOT NULL,
     token_hash VARCHAR(255),
     ip_address VARCHAR(45),
     user_agent TEXT,
