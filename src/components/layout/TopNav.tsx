@@ -35,10 +35,18 @@ export default function TopNav({ onMenuToggle, isMenuOpen }: TopNavProps) {
         const response = await fetch('/api/customers/profile');
         if (response.ok) {
           const data = await response.json();
-          setCustomerImage(data.customer.avatar?.image_data || null);
+          if (data.customer.avatar?.image_data) {
+            // Format the image data as a data URL
+            const imageData = data.customer.avatar.image_data;
+            const mimeType = data.customer.avatar.filename?.endsWith('.png') ? 'image/png' : 'image/jpeg';
+            setCustomerImage(`data:${mimeType};base64,${imageData}`);
+          } else {
+            setCustomerImage(null);
+          }
         }
       } catch (error) {
         console.error('Error loading customer image:', error);
+        setCustomerImage(null);
       }
     };
 

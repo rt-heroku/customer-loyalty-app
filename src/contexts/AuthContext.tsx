@@ -88,14 +88,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         method: 'POST',
       });
       setUser(null);
-      // Force a page reload to clear any cached data
-      window.location.href = '/';
+      // Let ConditionalLayout handle the routing
     } catch (error) {
       console.error('Logout error:', error);
       // Still clear user state even if API call fails
       setUser(null);
-      // Force a page reload to clear any cached data
-      window.location.href = '/';
     }
   };
 
