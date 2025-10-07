@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script to load sample voucher data into the database
+# Script to set up vouchers tables in the database
 # Uses DATABASE_URL from .env file
 
-echo "Loading sample voucher data..."
+echo "Setting up vouchers tables..."
 
 # Check if .env file exists
 if [ ! -f .env ]; then
@@ -23,13 +23,16 @@ fi
 
 echo "Using DATABASE_URL: ${DATABASE_URL:0:20}..."
 
-# Load sample voucher data
-psql "$DATABASE_URL" -f db/sample_vouchers.sql
+# Run the migration
+psql "$DATABASE_URL" -f db/add_customer_vouchers_table.sql
 
 if [ $? -eq 0 ]; then
-    echo "✅ Sample voucher data loaded successfully!"
-    echo "You can now test the vouchers functionality in the loyalty page."
+    echo "✅ Vouchers tables created successfully!"
+    echo ""
+    echo "Next steps:"
+    echo "1. Run: ./load_sample_vouchers.sh"
+    echo "2. Test the vouchers functionality in the loyalty page"
 else
-    echo "❌ Error loading sample data. Please check your database connection."
-    echo "Make sure your database is running and accessible."
+    echo "❌ Error creating vouchers tables."
+    echo "Please check your DATABASE_URL and database connection."
 fi

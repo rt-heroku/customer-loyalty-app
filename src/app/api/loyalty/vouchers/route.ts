@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         cv.effective_date,
         p.name as product_name,
         p.price as product_price,
-        p.image_url as product_image_url
+        p.main_image_url as product_image_url
       FROM customer_vouchers cv
       LEFT JOIN products p ON cv.product_id = p.id
       WHERE cv.customer_id = $1

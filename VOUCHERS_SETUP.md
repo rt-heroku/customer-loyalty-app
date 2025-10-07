@@ -5,17 +5,25 @@ The vouchers functionality has been implemented in the loyalty page. This guide 
 
 ## Database Setup
 
-### 1. Load Sample Voucher Data
+### 1. Create Vouchers Tables
+First, you need to create the required database tables:
+
+```bash
+# Create the customer_vouchers and transaction_vouchers tables
+./setup_vouchers_tables.sh
+```
+
+### 2. Load Sample Voucher Data
 To test the vouchers functionality, you need to load sample data into your database:
 
 ```bash
-# Make sure your database is running
+# Load sample voucher data
 ./load_sample_vouchers.sh
 ```
 
-Or manually run:
-```bash
-psql -h localhost -U postgres -d customer_loyalty_app -f db/sample_vouchers.sql
+**Note:** Both scripts use the `DATABASE_URL` from your `.env` file. Make sure your `.env` file contains:
+```
+DATABASE_URL=postgresql://username:password@localhost:5432/database_name
 ```
 
 ### 2. Sample Data Included
