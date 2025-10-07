@@ -26,6 +26,11 @@ interface Transaction {
   points_redeemed: number;
   created_at: string;
   payment_method: string;
+  store_name?: string;
+  store_code?: string;
+  address_line1?: string;
+  city?: string;
+  state?: string;
   items?: TransactionItem[];
   vouchers?: TransactionVoucher[];
 }

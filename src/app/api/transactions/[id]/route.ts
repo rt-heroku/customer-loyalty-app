@@ -53,6 +53,7 @@ export async function GET(
     }
 
     const transaction = transactionResult.rows[0];
+    console.log('Transaction details with location:', transaction);
 
     // Get transaction items
     const itemsResult = await query(
